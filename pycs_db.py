@@ -1,5 +1,5 @@
 import bpgsql
-import time
+import time, sys, socket
 import search_engines
 
 DBE = bpgsql.DatabaseError
@@ -41,9 +41,20 @@ class DB:
         self.con = bpgsql.connect(host=self.dbhost, dbname=self.dbname, username=self.dbuser, password=self.dbpass)
         print "Connected"
 
+    def quote(self, s):
+        return bpgsql._fix_arg(s)
+
+    def rawquote(self, s):
+        return self.quote(s)[1:-1]
+
     def execute(self, sql, args=None):
         cur = self.con.cursor()
-        cur.execute(sql, args)
+        try:
+            cur.execute(sql, args)
+        except socket.error, e:
+            print>>sys.stderr, "got socket.error",e.args
+            self.connect()
+            cur.execute(sql, args)
         return cur
 
     def fetchone(self, sql, args=None):
@@ -134,5 +145,10 @@ class DB:
             self.execute("""ALTER TABLE pycs_comments ADD COLUMN is_spam INT""")
             self.execute("""UPDATE pycs_comments SET is_spam=0""")
             self.set_db_version(3)
+
+        if self.db_id < 4:
+            self.execute("""DROP INDEX pycs_comments_post_index""")
+            self.execute("""CREATE INDEX pycs_comments_post_index ON pycs_comments (is_spam, usernum, postid, id)""")
+            
         
         print "Finished updating schema"

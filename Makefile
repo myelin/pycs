@@ -48,7 +48,7 @@ CODEFILES = pycs.py pycsadm.py \
 	xmlStorageSystem.py radioCommunityServer.py weblogUpdates.py \
 	pycs_paths.py updatesDb.py pycsAdmin.py changepasswd.py \
 	accessRestrictions.py pycs_webauth_handler.py search_engines.py \
-	pycs_db.py bpgsql.py
+	pycs_db.py bpgsql.py BeautifulSoup.py
 TESTFILES = test_server.py test_settings.py
 CONFFILES = pycs.conf rewrite.conf
 MISCFILES = startserver.sh update.sh startserver.bat analyse_logs.py
