@@ -55,7 +55,7 @@ class formatter( rss.formatter ):
 			<title>%s</title>
 			<link>%s</link>
 			<description><![CDATA[%s]]></description>\n
-		</item>\n"
+		</item>\n
 """ % ( title, link, desc )
 		return src
 
