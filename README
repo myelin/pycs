@@ -1,0 +1,64 @@
+Python Community Server
+=======================
+         --> alpha test v0.01
+
+PyCS is still unstable.  It's suitable for running a web server on -
+it's running http://rcs.myelin.cjb.net/ quite happily - but it will
+require some hacking to get it to work on your system.
+
+
+DEPENDENCIES
+
+Medusa - http://www.nightmare.com/medusa/
+
+- unpack this into the same dir as PyCS.
+
+
+MetaKit - http://www.equi4.com/metakit/python.html
+
+- install as usual.  Put Mk4py.so and metakit.py into your PyCS
+dir if it doesn't work.
+
+
+xmlrpclib - http://www.pythonware.com/products/xmlrpc/
+
+- as above
+
+
+NOTES
+
+To install, first edit pycs.conf and change the settings to ones that
+make sense for you.  'serverhostname' should be your host, and
+'serverport' should be the port you want to run on.  The server runs
+on port 5445 by default - change this to 80 if you don't have another
+server running on the same machine.
+
+You can use mod_rewrite and mod_proxy in Apache if you like to make it
+look like just another virtual host - put the following in your virtual
+host block:
+
+	RewriteEngine On
+	RewriteRule ^/(.*) http://127.0.0.1:5445/$1 [P]
+
+You'll want to run it as an unprivileged user.  It will do this
+automatically one day, but for the moment it just runs as whoever
+started it.  Create another user, copy all the files into their home
+dir, give them rwx to the www/ directory and rx to everytihng else,
+and run as them.
+
+It dumps its log to stdout at the moment; pipe that where you want
+the log to go.  There's a logging framework built into Medusa, but
+I haven't told it where to send things yet.
+
+If anyone wants to fix anything or add features, feel free!  BUT:
+join the mailing list and announce what you're about to do first,
+so everyone else knows not to work on the same thing.
+
+To join the list, mail pycs-request@myelin.co.nz and put 'subscribe
+pycs' in the body of your message.
+
+Cheers,
+Phil <pp@myelin.co.nz>
+
+http://rcs.myelin.cjb.net/
+http://www.myelin.co.nz/
