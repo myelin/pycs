@@ -42,6 +42,12 @@ engines = {
 	'msn': [
 		re.compile(r'^http://search\.msn\..*\?q=([^&]*).*$'),
 		],
+	'lycos': [
+		re.compile(r'^http://.*\.lycos\..*\?query=([^&]*).*$'),
+		],
+	'aol': [
+		re.compile(r'^http://.*\.aol\..*search.jsp\?q=([^&]*).*$'),
+		],
 	}
 
 def orderLink(username,group,order):
