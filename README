@@ -21,7 +21,7 @@ work on your system.
 
 Here are some notes to get you going.  First, you'll want to read the setup howto:
 
-	http://www.myelin.co.nz/cgi-bin/wcswiki.pl?PythonCommunityServer
+	http://www.myelin.co.nz/wcswiki/w/PythonCommunityServer
 
 
 
@@ -52,7 +52,7 @@ NOTES
 		The PyCS page on the Community Server Wiki has the most up-to-
 		date information here.  See also the linked setup HOWTO.
 		
-			http://www.myelin.co.nz/cgi-bin/wcswiki.pl?PythonCommunityServer
+			http://www.myelin.co.nz/wcswiki/w/PythonCommunityServer
 		
 	
 	Virtual Hosting:
@@ -143,25 +143,34 @@ OFFICIAL WEB PAGES
 
 	Community Servers in general:
 
-		http://www.myelin.co.nz/cgi-bin/wcswiki.pl
+		http://www.myelin.co.nz/wcswiki/
 
 
 CREDITS
 
-	Most code:
+	All original code, search integration:
 	
 		Phillip Pearson, pp at myelin dot co dot nz
 
+		http://www.myelin.co.nz/post/
+		http://www.myelin.co.nz/crash/
 		http://www.pycs.net/devlog/
-		http://blogs.salon.com/0000002/
-		http://www.myelin.co.nz/
+		http://www.pycs.net/ (English community server)
 	
-	Referrer tracking and hit counting:
+	Referrer tracking and hit counting, pretty much everything since late 2002:
 	
 		Georg Bauer, gb at murphy dot bofh dot ms
-		
+
+		http://pyds.muensterland.org/		
 		http://hugo.muensterland.org/
-		http://muensterland.org/
+		http://muensterland.org/ (German community server)
+
+	Internationalization:
+
+		Yasushi Iwata
+
+		http://lowlife.jp/yasusii/
+		http://lowlife.jp/ (Japanese community server)
 	
 	Daemonizing:
 	

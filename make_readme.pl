@@ -11,7 +11,8 @@ print <<HTML;
 HTML
 
 while (<>) {
-	print;
+    s|(http://[^\s]+)|<a href="$1">$1</a>|;
+    print;
 }
 
 print <<HTML;
