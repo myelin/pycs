@@ -43,7 +43,7 @@ def test_server( s ):
 	plainPassword = ''
 	password = md5.md5( plainPassword ).hexdigest()
 	clientPort = 80
-	userAgent = 'Python Community Server Test (test_server.py) - http://rcs.myelin.cjb.net/users/0105256/'
+	#userAgent = 'Python Community Server Test (test_server.py) - http://rcs.myelin.cjb.net/users/0105256/'
 
 	#print "registerUser"
 	#print xss.registerUser( email, name, password, clientPort, userAgent )
@@ -61,7 +61,7 @@ def test_server( s ):
 			'serialNumber': '',
 			'organization': 'poor',
 			'flBehindFirewall': xmlrpclib.True,
-			'name': 'me!'
+			'name': name
 		} )
 		
 	

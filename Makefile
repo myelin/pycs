@@ -1,6 +1,8 @@
 # Python Community Server
 #
-#     Makefile: build script for GNU make
+#	Makefile: build script for GNU make
+#
+#	http://www.myelin.co.nz/
 #
 # Copyright (c) 2002, Phillip Pearson <pp@myelin.co.nz>
 # 
@@ -32,6 +34,7 @@ DIRS = $(addprefix $(D)/, $(SUBDIRS))
 PYCSFILES = README LICENSE Makefile mkidx.pl \
 	pycs.py \
 	pycs_settings.py pycs_comments.py pycs_module_handler.py pycs_xmlrpc_handler.py \
+	pycs_http_util.py \
 	xmlStorageSystem.py radioCommunityServer.py \
 	startserver.sh update.sh startserver.bat \
 	test_server.py test_settings.py \
@@ -41,6 +44,7 @@ PYCSMODFILES = updates.py mailto.py users.py comments.py
 SPECIFICS = $(PYCSFILES) medusa/*.py metakit.py Mk4py.so
 VER = 0.01
 DISTFN = pycs-$(VER)-src
+LATESTFN = pycs-latest-src
 
 .PHONY: check install all
 
@@ -59,7 +63,7 @@ install: scripts
 	chmod 744 $(DIRS)
 
 scripts:
-	cp -a modules $(D)/
+	cp -av modules/* $(D)/modules/
 	chown root.root $(D)/modules -R
 	chmod 755 $(D)/modules -R
 	cp www/index.html $(D)/www/
@@ -79,3 +83,5 @@ dist:
 	rm -rf $(DISTFN)/
 	cp $(DISTFN).tar.gz $(D)/www/
 	chmod 644 $(D)/www/$(DISTFN).tar.gz
+	rm -f $(D)/www/$(LATESTFN).tar.gz
+	ln -s $(D)/www/$(DISTFN).tar.gz $(D)/www/$(LATESTFN).tar.gz

@@ -28,8 +28,8 @@ import pycs_settings
 request['Content-Type'] = 'text/html'
 
 [path, params, query, fragment] = request.split_uri()
-query = split_query( query )
-form = split_query( input_data.read() )
+query = util.SplitQuery( query )
+form = util.SplitQuery( input_data.read() )
 
 page = {
 	'title': 'User info',

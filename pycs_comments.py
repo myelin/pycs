@@ -26,12 +26,12 @@
 
 
 import re
-import default_handler
 import metakit
 import StringIO
 import urllib
 import string
-import cgi
+
+import pycs_http_util
 
 def split_query( q ):
 	d = {}
@@ -194,7 +194,7 @@ class comment_handler:
 				request.push( s )
 				
 			else:
-				request.push( "unknown 'c' value: %s ..." % (html_munge( c ),) )
+				request.push( "unknown 'c' value: %s ..." % (pycs_http_util.MungeHTML( c ),) )
 			request.done()
 			return
 			

@@ -25,8 +25,6 @@
 
 
 import metakit
-import string
-import md5
 import time
 import ConfigParser
 
@@ -137,7 +135,7 @@ class Settings:
 		meta = self.meta[0]
 		st = self.meta.structure()
 		for col in st:
-			print "  %s: %s" % ( col.name, eval('meta.%s' % (col.name,)) )
+			print "  %s: %s" % ( col.name, getattr( meta, col.name ) )
 	
 	def DumpUsers( self ):
 		print "Dumping user data"
@@ -145,7 +143,7 @@ class Settings:
 		for u in self.users:
 			print "USER"
 			for col in st:
-				print "  %s: %s" % ( col.name, eval('u.%s' % (col.name,)) )
+				print "  %s: %s" % ( col.name, getattr( u, col.name ) )
 
 	def FormatUsernum( self, usernum ):
 		
@@ -252,7 +250,7 @@ class Settings:
 			td.maintitle {
 				font-size: 24pt
 				}
-			td.black {
+			.black {
 				background-color: black
 				}
 		-->
@@ -271,3 +269,4 @@ class Settings:
 	</html>"""
 	
 		return out
+

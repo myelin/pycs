@@ -38,48 +38,8 @@ it.
 import re
 import sys
 import os
-import default_handler
-import metakit
 import StringIO
-import urllib
-import string
-import cgi
-
-def split_query( q ):
-	d = {}
-
-	if (q == None) or (len( q ) == 0):
-		return d
-	
-	# Skip the first char if it's a '?'
-	if q[0] == '?':
-		q = q[1:]
-	
-	# Split it up ('blah=pokwer&foo=blah' -> ['blah=pokwer', 'foo=blah'])
-	args = re.split( '\&', q )
-	
-	#print 'split args:', args
-	sep = re.compile( '^(.*?)\=(.*)$' )
-	
-	for arg in args:
-		m = sep.search( arg )
-		if m:
-			key, val = m.groups()
-			d[key] = urllib.unquote_plus( val )
-			#print 'key',key,' val',val
-	
-	# Return whole hash
-	return d
-
-
-
-def munge_html( txt ):
-	return string.replace(
-		string.replace(
-		string.replace( txt, '"', '_' ),
-		'<', '_' ),
-		'>', '_' )
-	
+import pycs_http_util
 
 
 
@@ -213,7 +173,7 @@ class pycs_module_handler:
 				'request': request,
 				'input_data': input_data,
 				'set': self.set,
-				'split_query': split_query,
+				'util': pycs_http_util,
 				} )
 		except:
 			# print browser error and log backtrace

@@ -31,221 +31,238 @@ import StringIO
 import urllib
 import string
 import cgi
+import base64
 
-def munge_html( txt ):
-	return string.replace(
-		string.replace(
-		string.replace( txt, '"', '_' ),
-		'<', '_' ),
-		'>', '_' )
+# order by user & paragraph
+comments = set.db.getas(
+	'comments[user:S,paragraph:S,notes[name:S,email:S,url:S,comment:S]]'
+	).ordered( 2 )
 
-class comment_handler:
-		
-	match_regex = re.compile(
-		r'^/comments$'
+[path, params, query, fragment] = request.split_uri()
+s = """
+<html>
+<head>
+<title>Comments</title>
+<style type="text/css">
+<!--
+textarea { width: 100% }
+.black { background-color: black }
+td { background-color:  lightgrey }
+.cmt { background-color: #eeeeee }
+-->
+</style>
+</head>
+<body>
+"""
+
+# Decode information in query string and form		
+query = util.SplitQuery( query )
+form = util.SplitQuery( input_data.read() )
+
+headers = util.IndexHeaders( request )
+cookies = util.IndexCookies( headers )
+
+noCookies = 1
+
+if cookies.has_key( 'commentInfo' ):
+	#s += "decoding cookie " + cookies['commentInfo'] + "<br>"
+	try:
+		# print 'cookies header: ' + cookies['commentInfo']
+		storedEmail, storedName, storedUrl = map(
+			base64.decodestring,
+			string.split( urllib.unquote( cookies['commentInfo'] ), '&' )
 		)
-	
-	def __init__( self ):
-		# order by user & paragraph
-		self.comments = set.db.getas(
-			'comments[user:S,paragraph:S,notes[name:S,email:S,url:S,comment:S]]'
-			).ordered( 2 )
-	
-	def match( self, request ):
-		[path, params, query, fragment] = request.split_uri()
-		#print "attempt to match '%s'" % (path,)
-		m = self.match_regex.match( path )
-		return( m != None )
-	
-	def handle_request( self, request ):
-		if request.command in ('put', 'post'):
-			# look for a Content-Length header.
-			cl = request.get_header ('content-length')
-			length = int(cl)
-			if not cl:
-				request.error (411)
-			else:
-				collector (self, length, request)
-		else:
-			self.continue_request (request, StringIO.StringIO())
-	
-	def continue_request( self, request, input_data ):
-		[path, params, query, fragment] = request.split_uri()
-		s = """
-		<html>
-		<head>
-		<title>Comments</title>
-		<style type="text/css">
-		<!--
-		textarea { width: 100% }
-		.black { background-color: black }
-		td { background-color:  lightgrey }
-		.cmt { background-color: #eeeeee }
-		-->
-		</style>
-		</head>
-		<body>
-		"""
-		#print "path",path
-		#print "params",params
-		#print "query",query
-		#print "fragment",fragment
+		noCookies = 0
 		
-		# Decode information in query string and form		
-		query = split_query( query )
-		form = split_query( input_data.read() )
+	except ValueError:
+		# Broken cookie
+		pass
+	except:
+		# Something else broken? :)
+		raise
+	
+if noCookies:
+	storedEmail = ""
+	storedName = ""
+	storedUrl = "http://"
+	
+#s += "Path %s<br>params %s<br>query %s<br>fragment %s<br>" % (path, params, query, fragment)
+
+u = query['u']
+if query.has_key('c'):
+
+	# We are being called to supply the number of comments; have to
+	# generate JavaScript to do this.  Don't display any forms etc.
+
+	c = query['c']
+	if c == 'counts':
+		paragraphs = []
+		counts = []
+
+		posts = comments.select( { 'user': u } )
+		for post in posts:
+			paragraphs.append( post.paragraph )
+			counts.append( len( post.notes ) )
 		
-		#s += "Path %s<br>params %s<br>query %s<br>fragment %s<br>" % (path, params, query, fragment)
-	
-		u = query['u']
-		if query.has_key('c'):
-			c = query['c']
-			if c == 'counts':
-				paragraphs = []
-				counts = []
-	
-				posts = self.comments.select( { 'user': u } )
-				for post in posts:
-					paragraphs.append( post.paragraph )
-					counts.append( len( post.notes ) )
-				
-				s = "anID = [" + string.join(
-					['"%s"' % (x,) for x in paragraphs]
-					, ", " ) + "]; "
-				
-				s += "anCount = [" + string.join(
-					['"%d"' % (x,) for x in counts]
-					, ", " ) + "]; "
-	
-				s += "nPosts = %d;\n" % (len(counts),)
-				s += """				
-				function commentCounter( nID ) {
-					for ( idx = 0; idx < nPosts; idx ++ ) {
-						if ( anID[idx] == nID ) {
-							document.write( anCount[idx] );
-							return
-						}
-					}
-					document.write ( "0" );
+		s = "anID = [" + string.join(
+			['"%s"' % (x,) for x in paragraphs]
+			, ", " ) + "]; "
+		
+		s += "anCount = [" + string.join(
+			['"%d"' % (x,) for x in counts]
+			, ", " ) + "]; "
+
+		s += "nPosts = %d;\n" % (len(counts),)
+		s += """				
+		function commentCounter( nID ) {
+			for ( idx = 0; idx < nPosts; idx ++ ) {
+				if ( anID[idx] == nID ) {
+					document.write( anCount[idx] );
 					return
 				}
-				"""
-				request.push( s )
-				
-			else:
-				request.push( "unknown 'c' value: %s ..." % (html_munge( c ),) )
-			request.done()
+			}
+			document.write ( "0" );
 			return
-			
-		p = query['p']
-		#s += "user %s, paragraph %s<br>" % (u, p)
+		}
+		"""
+		
+	else:
+		s = "unknown 'c' value: %s ..." % ( html_munge( c ), )
+
+else:	
+
+	# Displaying comments or accepting a new POSTed one
 	
-		vw = self.comments.select( { 'user': u, 'paragraph': p } )
-		if len(vw) == 0:
-			# Never heard of that paragraph
-			#print "(new para)"
-			notes = None
-			nComments = 0
-		else:
-			# Got it - grab the 'notes' view
-			#print "(existing para)"
+	p = query['p']
+	#s += "user %s, paragraph %s<br>" % (u, p)
+	
+	vw = comments.select( { 'user': u, 'paragraph': p } )
+	if len(vw) == 0:
+		# Never heard of that paragraph
+		#print "(new para)"
+		notes = None
+		nComments = 0
+	else:
+		# Got it - grab the 'notes' view
+		#print "(existing para)"
+		notes = vw[0].notes
+		nComments = len(notes)
+	
+	if request.command in ('put', 'post'):
+	
+		# We have a new comment to add
+		
+		#s += "looks like you're adding a comment:<br>"
+		#s += "(data %s)" % (`form`,)
+	
+		storedEmail = util.MungeHTML( form['email'] )
+		storedName = util.MungeHTML( form['name'] )
+		storedUrl = util.MungeHTML( form['url'] )
+		
+		rawCookie = '%s&%s&%s' % (
+			base64.encodestring( storedEmail ),
+			base64.encodestring( storedName ),
+			base64.encodestring( storedUrl ),
+		)
+		
+		outCookie = ''
+		for c in rawCookie:
+			if c not in ( ' ', "\n", "\r" ):
+				outCookie += c
+		
+		request['Set-Cookie'] = 'commentInfo=%s; expires=Fri, 31-Dec-9999 00:00:00 GMT' % (
+			urllib.quote( outCookie )
+		)
+		#s += "set " + request['Set-Cookie'] + "<br>"
+		
+		newComment = {
+			'email': storedEmail,
+			'name': storedName,
+			'url': storedUrl,
+			'comment': util.MungeHTML( form['comment'] ),
+			}
+		
+		nComments += 1
+		
+		# If we don't have a row in for this user/paragraph, make one
+		if notes == None:
+			#print "new comment"
+			notes = metakit.view()
+			
+			# Make a row in 'comments' for this paragraph
+			comments.append( {
+				'user': u,
+				'paragraph': p,
+				'notes': notes,
+				} )
+			
+			# Pull the row out again
+			vw = comments.select( { 'user': u, 'paragraph': p } )
 			notes = vw[0].notes
-			nComments = len(notes)
-	
-		if request.command in ('put', 'post'):
-			#s += "looks like you're adding a comment:<br>"
-			#s += "(data %s)" % (`form`,)
-	
-			newComment = {
-				'email': munge_html( form['email'] ),
-				'name': munge_html( form['name'] ),
-				'url': munge_html( form['url'] ),
-				'comment': munge_html( form['comment'] ),
-				}
 			
-			nComments += 1
-			
-			# If we don't have a row in for this user/paragraph, make one
-			if notes == None:
-				#print "new comment"
-				notes = metakit.view()
-				
-				# Make a row in 'comments' for this paragraph
-				self.comments.append( {
-					'user': u,
-					'paragraph': p,
-					'notes': notes,
-					} )
-				
-				# Pull the row out again
-				vw = self.comments.select( { 'user': u, 'paragraph': p } )
-				notes = vw[0].notes
-				
-				# ... and add this particular comment in
-				notes.append( newComment )
-				set.Commit()
-			else:
-				# It's already there - add more comments
-				notes.append( newComment )
-				set.Commit()
-			
-		# Start enclosing table (gives black borders)
-		s += """
-		<table width="100%" cellspacing="1" cellpadding="0">
-		<tr><td class="black">
-		<table width="100%" cellspacing="1" cellpadding="10">
-		"""
-		
-		# Print all comments
-		if nComments == 0:
-			s += '<tr><td class="cmt"><strong>No comments yet</strong></td></tr>'
+			# ... and add this particular comment in
+			notes.append( newComment )
+			set.Commit()
 		else:
-			#s += '%d comments<br>' % (nComments,)
-	
-			# Display comment table			
-	
-			for iCmt in range( len( notes ) ):
-				cmt = notes[iCmt]
-				#s += 'cmt: %s<br>' % (cmt.comment,)
-				s += """
-				<tr><td class="cmt">
-				%s<br>
-				<a href="%s">%s</a> [<a href="mailto:%s">%s</a>]
-				</td></tr>
-				""" % ( cmt.comment, cmt.url, cmt.name, cmt.email, munge_html( cmt.email ), )
-			
-		# Print 'add comment' form
-		s += """
-		<tr><td>
-		<form method="post" action="comments.py?u=%s&p=%s">
-		<table width="100%%" cellspacing="0" cellpadding="2">
-		<tr><td></td><td><strong>Add a new comment:</strong></td></tr>
-		<tr><td>Name:</td><td width="99%%"><input type="text" size="50" name="name"></td></tr>
-		<tr><td>E-mail:</td><td><input type="text" size="50" name="email"></td></tr>
-		<tr><td>Website:</td><td><input type="text" size="50" name="url"></td></tr>
-		<tr><td>Comment:</td><td><textarea name="comment" width="100%%"></textarea></tr>
-		<tr><td></td><td><input type="submit" value="Save comment" />
-			<input type="button" value="Cancel" onclick="javascript:window.close()" /></td>
-		</table>
-		</form>
-		</td></tr>
-		""" % (u, p)
-	
-		# End enclosing table
-		s += """
-		</table>
-		</td></tr></table>
-		"""
+			# It's already there - add more comments
+			notes.append( newComment )
+			set.Commit()
 		
-		s += """
-		</body>
-		</html>
-		"""
-		# Dump it all in the request object and send it off
-		request['Content-Type'] = 'text/html'
-		request['Content-Length'] = len(s)
-		request.push( s )
-		request.done()
-
-
-comment_handler().continue_request( request, input_data )
+	# Start enclosing table (gives black borders)
+	s += """
+	<table width="100%" cellspacing="1" cellpadding="0">
+	<tr><td class="black">
+	<table width="100%" cellspacing="1" cellpadding="10">
+	"""
+	
+	# Print all comments
+	if nComments == 0:
+		s += '<tr><td class="cmt"><strong>No comments yet</strong></td></tr>'
+	else:
+		#s += '%d comments<br>' % (nComments,)
+	
+		# Display comment table			
+	
+		for iCmt in range( len( notes ) ):
+			cmt = notes[iCmt]
+			#s += 'cmt: %s<br>' % (cmt.comment,)
+			s += """
+			<tr><td class="cmt">
+			%s<br>
+			<a href="%s">%s</a> [<a href="mailto:%s">%s</a>]
+			</td></tr>
+			""" % ( cmt.comment, cmt.url, cmt.name, cmt.email, util.MungeHTML( cmt.email ), )
+		
+	# Print 'add comment' form
+	s += """
+	<tr><td>
+	<form method="post" action="comments.py?u=%s&p=%s">
+	<table width="100%%" cellspacing="0" cellpadding="2">
+	<tr><td></td><td><strong>Add a new comment:</strong></td></tr>
+	<tr><td>Name:</td><td width="99%%"><input type="text" size="50" name="name" value="%s"/></td></tr>
+	<tr><td>E-mail:</td><td><input type="text" size="50" name="email" value="%s"/></td></tr>
+	<tr><td>Website:</td><td><input type="text" size="50" name="url" value="%s"/></td></tr>
+	<tr><td>Comment:</td><td><textarea name="comment" width="100%%"></textarea></tr>
+	<tr><td></td><td><input type="submit" value="Save comment" />
+		<input type="button" value="Cancel" onclick="javascript:window.close()" /></td>
+	</table>
+	</form>
+	</td></tr>
+	""" % (u, p, storedName, storedEmail, storedUrl)
+	
+	# End enclosing table
+	s += """
+	</table>
+	</td></tr></table>
+	"""
+	
+	s += """
+	</body>
+	</html>
+	"""
+	
+# Dump it all in the request object and send it off
+request['Content-Type'] = 'text/html'
+request['Content-Length'] = len(s)
+request.push( s )
+request.done()

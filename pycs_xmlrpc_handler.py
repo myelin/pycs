@@ -32,15 +32,11 @@ root namespace (e.g. 'xmlStorageSystem') is handled by a separate class.  Use
 
 """
 
-import os
 import sys
 import string
-import re
 
 import xmlrpc_handler
 import xmlrpclib
-
-import pycs_settings
 
 
 

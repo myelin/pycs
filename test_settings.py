@@ -25,7 +25,6 @@
 
 
 import pycs_settings
-import md5
 
 set = pycs_settings.Settings()
 
