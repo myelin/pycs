@@ -87,8 +87,11 @@ def makeXmlBoolean( a ):
 
 def done_msg(msg = 'Done!'):
 	return retmsg(0, msg)
-def param_err(n):
-	return retmsg(1, 'Wrong number of parameters (expected %d)!' % n)
+def param_err(n, max = None, args = 'No arguments info available'):
+	if max == None:
+		return retmsg(1, 'Wrong number of parameters (expected %d: %s)!' % (n, args))
+	else:
+		return retmsg(1, 'Wrong number of parameters (expected %d to %d: %s)!' % (n, max, args))
 
 class pycsAdmin_handler:
 	
@@ -99,7 +102,7 @@ class pycsAdmin_handler:
 		self.adminpassword = str( random.random() )
 		stat = os.stat( os.path.join( pycs_paths.CONFDIR, "pycs.conf" ) )
 
-		if (stat[0] & 0077) == 0:
+		if (stat[0] & 0077) == 0 or os.name == 'nt':
 			if set.conf.has_key( 'adminpassword' ):
 				self.adminpassword = set.conf['adminpassword']
 		self.commands = {}
@@ -120,6 +123,7 @@ class pycsAdmin_handler:
 			('add_comments', 'Import some comments into the comments table'),
 			('renumber_comment', 'Moves a comment thread from one postid to another'),
 			('renumber_all_comments', 'Moves all comments for a usernum to another usernum'),
+			('email', 'Set email address for usernum' ),
 			):
 			self.commands[name] = [ getattr(self, name), desc ]
 		
@@ -188,7 +192,7 @@ class pycsAdmin_handler:
 
 	def shuffle( self, params ):
 		if len(params) != 1:
-			return retmsg(1, 'Wrong number of parameters!')
+			return retmsg(1, msg='Wrong number of parameters!')
 
 		if params[0] == 'hits':
 			for row in self.set.users:
@@ -354,7 +358,7 @@ class pycsAdmin_handler:
 
 	def password( self, params ):
 		if len(params) != 2:
-			return param_err(2, "usernum, password")
+			return param_err(2, args="usernum, password")
 		try:
 			user = self.set.User( params[0] )
 		except:
@@ -371,7 +375,7 @@ class pycsAdmin_handler:
 
 	def password_hash(self, params):
 		if len(params) != 2:
-			return param_err(2, "usernum, md5 hash")
+			return param_err(2, args="usernum, md5 hash")
 		try:
 			user = self.set.User( params[0] )
 		except:
@@ -380,6 +384,20 @@ class pycsAdmin_handler:
 				'message': 'User %s not found' % params[1],
 				}
 		self.set.PasswordMD5( params[0], params[1] )
+		self.set.Commit()
+		return done_msg()
+
+	def email( self, params ):
+		if len(params) != 2:
+			return param_err(2, args="usernum, email-address")
+		try:
+			user = self.set.User( params[0] )
+		except:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'User %s not found' % params[1],
+				}
+		user.email = params[1]
 		self.set.Commit()
 		return done_msg()
 
