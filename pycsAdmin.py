@@ -100,6 +100,7 @@ class pycsAdmin_handler:
 			'disable': [ self.disable, 'Disables a user' ],
 			'list': [ self.list, 'List objects (users, etc.)' ],
 			'shuffle': [ self.shuffle, 'Shuffle hit counters' ],
+			'recalc': [ self.recalc, 'Recalculate cached data' ],
 			'alias': [ self.alias, 'Set alias for usernum' ],
 			'password': [ self.password, 'Set password for usernum' ],
 		}
@@ -192,6 +193,24 @@ class pycsAdmin_handler:
 			'message': 'Done!',
 			}
 			
+	def recalc( self, params ):
+		if len(params) != 1:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'Wrong number of parameters!',
+				}
+
+		if params[0] == 'diskspace':
+			self.set.RecalculateUserSpace()
+		else:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'Unknown object-spec %s' % params[0],
+				}
+		return {
+			'flError': xmlrpclib.False,
+			'message': 'Done!',
+			}
 
 	def list( self, params ):
 		cols = []
