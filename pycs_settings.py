@@ -80,7 +80,7 @@ class Settings:
 		self.users = self.db.getas(
 			"users[usernum:S,email:S,password:S,name:S,weblogTitle:S,serialNumber:S,organization:S," +
 			"flBehindFirewall:I,hitstoday:I,hitsyesterday:I,hitsalltime:I," +
-			"membersince:S,lastping:S,pings:I,lastupstream:S,upstreams:I,lastdelete:S,deletes:I," +
+			"membersince:S,lastping:S,pings:I,lastupstream:S,upstreams:I,lastdelete:S,deletes:I,bytesupstreamed:I," +
 			"signons:I,signedon:I,lastsignon:S,lastsignoff:S,clientPort:I,disabled:I]"
 			).ordered()
 			

@@ -145,6 +145,7 @@ class xmlStorageSystem_handler:
 		
 		urlList = []
 		nFilesSaved = 0
+		nBytesSaved = 0
 		for f in map( None, names, files ):
 			name, file = f
 			print "-> name", name #, "file", file
@@ -179,12 +180,14 @@ class xmlStorageSystem_handler:
 				print "saving text file"
 				f = open( fullName, "w" )
 				f.write( file )
+				nBytesSaved += len( file )
 				f.close()
 			elif type(file)==type(xmlrpclib.Binary()):
 				# xmlrpc binary object
 				print "saving xmlrpc bin obj"
 				f = open( fullName, "wb" )
 				f.write( file.data )
+				nBytesSaved += len( file.data )
 				f.close()
 			else:
 				raise "Unknown filetype: %s" % (type(file),)
@@ -196,6 +199,7 @@ class xmlStorageSystem_handler:
 		print "resulting urls:",urlList
 		
 		u.upstreams += nFilesSaved
+		u.bytesupstreamed += nBytesSaved
 		u.lastupstream = self.set.GetTime()
 		self.set.Commit()
 
@@ -453,7 +457,7 @@ class xmlStorageSystem_handler:
 				'whenLastAccess': u.lastping,
 				'whenLastUpstream': u.lastupstream,
 				'port': u.clientPort,
-				'ctBytesUpstreamed': 1234,
+				'ctBytesUpstreamed': u.bytesupstreamed,
 				'userAgent': "don't know",
 				'ctBytesInUse': self.userSpaceUsed( u.usernum ),
 				'whenLastSignOff': u.lastsignoff,
