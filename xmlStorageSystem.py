@@ -68,6 +68,7 @@ class xmlStorageSystem_handler:
 			'requestNotification': self.requestNotification,
 			'ping': self.ping,
 			'mirrorPosts': self.mirrorPosts,
+			'deleteMirroredPosts': self.deleteMirroredPosts,
 			}
 		
 		if len( method ) == 0:
@@ -524,12 +525,54 @@ class xmlStorageSystem_handler:
 		self.set.Commit()
 		# and tell the user it worked
 		return {'flError': xmlrpclib.False,
-			'message': '%d posts updated and %d posts added to the database for you (usernum %s).  Now you have %d posts' % (updateCount, addCount, email, len(posts_t)),
+			'message': _('%d posts updated and %d posts added to the database for you (usernum %s).  Now you have %d posts') % (updateCount, addCount, email, len(posts_t)),
 			'totalPostsKnown': len(posts_t),
 			'postsMirroredNow': len(posts),
 			'addedPosts': addCount,
 			'updatedPosts': updateCount,
 			}
+
+	def deleteMirroredPosts( self, method, params ):
+		if method != []: raise Exception("Namespace not found")
+		
+		email, password, postids = params
+		print "email", email
+		print "password", password
+		print "%d posts to delete from mirror" % len(postids)
+		assert type(postids) == type([])
+
+		# make sure the user exists
+		self.set.FindUser( email, password )
+
+		# make sure the user has a spot in the post mirror database
+		pos = self.set.mirrored_posts.find(usernum=email)
+		if pos != -1:
+			# if user exists, delete posts
+			deleteCount = 0
+			posts_t = self.set.mirrored_posts[pos].posts
+			for postid in postids:
+				# make sure it's a string
+				assert type(postid) == type('')
+				pos = posts_t.find(postid=postid)
+				if pos != -1:
+					deleteCount += 1
+					posts_t.delete(pos)
+			# all there - save
+			self.set.Commit()
+			# and tell the user it worked
+			return {'flError': xmlrpclib.False,
+				'message': _('%d posts deleted from the database for you (usernum %s).  Now you have %d posts') % (deleteCount, email, len(posts_t)),
+				'totalPostsKnown': len(posts_t),
+				'postsDeletedNow': len(postids),
+				'deletedPosts': deleteCount,
+				}
+		else:
+			return {'flError': xmlrpclib.False,
+				'message': _("You (usernum %s) don't have any postings stored, yet.") % email,
+				'totalPostsKnown': 0,
+				'postsDeletedNow': len(postids),
+				'deletedPosts': 0,
+				}
 
 	# Support functions
 
