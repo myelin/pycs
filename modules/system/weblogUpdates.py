@@ -36,7 +36,7 @@ page = {
 	}
 
 s = _("<p>Here are the weblogs that have updated in the last 24 hours.  Is yours in there?  ;-)</p>")
-s += "\n<table width="80%%" cellspacing="0" cellpadding="2">"
+s += '\n<table width="80%" cellspacing="0" cellpadding="2">'
 
 updates = updatesDb.updatesDb( set )
 tbl = updates.updatesTable
