@@ -12,7 +12,7 @@
 'Subscribe to an RSS feed of this comment thread:'::='Abonniere einen Newsfeed f\xfcr diese Kommmentare:'
 'Subscribe to this comment thread in Radio UserLand'::='Abonniere einen Newsfeed f\xfcr diese Kommentare mit Radio UserLand'
 'Link to the RSS (XML) feed for this comment thread'::='Link auf das RSS (XML) f\xfcr diese Kommentare'
-'posted by'::='gepostet von'
+'posted by'::='geschrieben von'
 'Delete comment'::='Kommentar l\xf6schen'
 
 # strings from modules/system/login.py
