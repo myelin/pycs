@@ -32,7 +32,7 @@ class comment:
 		if cmt.date == '':
 			self.dateString = ''
 		else:
-			self.dateString = time.strftime( ' at %I:%M:%S %p on %B %d, %Y', strptime.strptime( cmt.date, STANDARDDATEFORMAT ) )
+			self.dateString = time.strftime( _(' at %I:%M:%S %p on %B %d, %Y'), strptime.strptime( cmt.date, STANDARDDATEFORMAT ) )
 		
 		self.commentFooter = "%s%s" % (
 			self.nameString,

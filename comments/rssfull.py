@@ -9,16 +9,13 @@ footerString = """	</channel>
 </rss>
 """
 
-import defaultFormatter
+import rss
 
-class formatter( defaultFormatter.defaultFormatter ):
+class formatter( rss.formatter ):
 
 	def __init__( self, set ):
 		self.set = set
 
-	def contentType( self ):
-		return 'text/xml'
-		
 	def header( self ):
 		user = self.set.User( self.u )
 		s = """	<channel>
@@ -30,9 +27,9 @@ class formatter( defaultFormatter.defaultFormatter ):
 		<webMaster>%s</webMaster>
 """ % (
 		user.weblogTitle,
-		_("(comments on post %s)") % self.p,
+		_("(comments on weblog)"),
 		self.set.UserFolder( user.usernum ),
-		_("Comments for a weblog post"),
+		_("Comments for a weblog, ordered by date (newest first)"),
 		_("Copyright"),
 		user.name,
 		user.email,
@@ -41,19 +38,14 @@ class formatter( defaultFormatter.defaultFormatter ):
 
 		return headerString + s
 
-	def footer( self ):
-		return footerString
-
-	def comment( self, cmt, paragraph=None ):
+	def comment( self, cmt, paragraph ):
 		title = _("Comment by")
 		if cmt.cmt.name == '':
 			title += _(" an anonymous coward")
 		else:
 			title += " " + cmt.cmt.name
-		if cmt.cmt.url in [ '', 'http://' ]:
-			link = self.set.ServerUrl()
-		else:
-			link = cmt.cmt.url
+		link = '%s/system/comments.py?u=%s&#38;p=%s' % ( self.set.ServerUrl(), paragraph.user, paragraph.paragraph )
+		title += _(" for post %s") % paragraph.paragraph
 		title += cmt.dateString
 		return """		<item>
 			<title>%s</title>

@@ -57,7 +57,7 @@ class PyCSTranslations(gettext.NullTranslations):
 				flog.close()
 			except:
 				print "Missing msg: %s" % repr(msg)
-			return message
+			return msg
 
 	def ugettext(self, message):
 		tmsg = self.gettext(message)

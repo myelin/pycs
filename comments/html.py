@@ -119,7 +119,7 @@ class formatter( defaultFormatter.defaultFormatter ):
 	def footer( self ):
 		return footerString
 
-	def comment( self, cmt ):
+	def comment( self, cmt, paragraph=None ):
 		ret = """
 		<tr><td class="cmt">
 			%s<br />

@@ -63,14 +63,25 @@ if cookies.has_key( 'userInfo' ):
 query = util.SplitQuery( query )
 form = util.SplitQuery( input_data.read() )
 
-formatter = None
+# check the format spec in the query
 format = 'html'
 if query.has_key( 'format' ):
 	format = query['format']
 
+# check wether a full feed is requested and possible (only with rss and not
+# with any command except GET)
+fullfeed = 0
+if query.has_key('full') and format == 'rss' and not( request.command.lower() in ('put', 'post') ):
+	fullfeed = 1
+
+formatter = None
 if format == 'rss':
-	import comments.rss
-	formatter = comments.rss.formatter( set )
+	if fullfeed:
+		import comments.rssfull
+		formatter = comments.rssfull.formatter( set )
+	else:
+		import comments.rss
+		formatter = comments.rss.formatter( set )
 elif format == 'html':
 	import comments.html
 	formatter = comments.html.formatter( set, loggedInUser )
@@ -147,25 +158,44 @@ if query.has_key('c'):
 
 else:	
 
-	# Displaying comments or accepting a new POSTed one
-	
-	formatter.p = query['p']
-	#s += "user %s, paragraph %s<br>" % (u, p)
+	# Displaying comments or accepting a new POSTed one. The list of
+	# notes is a direct view (when only notes for one paragraph are
+	# requested) or a list of tuples of notes and paragraphs, if a
+	# fullfeed is requested. This is a bit hacky but prevents duplicate
+	# implementation
 
-	formatter.xmlFeedLink = "%s%s?u=%s&p=%s&format=rss" % ( set.ServerUrl(), path, formatter.u, formatter.p )
+	if not(fullfeed):
+		formatter.p = query['p']
+		#s += "user %s, paragraph %s<br>" % (u, p)
+
+		formatter.xmlFeedLink = "%s%s?u=%s&p=%s&format=rss" % ( set.ServerUrl(), path, formatter.u, formatter.p )
 
 	s = formatter.header()
-	
-	vw = commentTable.select( { 'user': formatter.u, 'paragraph': formatter.p } )
+
+	# a full feed lists all comments, a paragraph feed only comments to
+	# one paragraph
+	if fullfeed:
+		vw = commentTable.select( { 'user': formatter.u } )
+	else:
+		vw = commentTable.select( { 'user': formatter.u, 'paragraph': formatter.p } )
 	if len(vw) == 0:
-		# Never heard of that post
+		# Never heard of that post or that user, return empty list
 		notes = None
 		nComments = 0
 	else:
-		# Got it - grab the 'notes' view
+		# Got it - grab the 'notes' view or construct a list of
+		# (note, paragraph) tuples
 		#print "(existing post)"
-		notes = vw[0].notes
-		nComments = len(notes)
+		if fullfeed:
+			notes = []
+			nComments = 0
+			for p in vw:
+				for n in p.notes:
+					notes.append( (n, p) )
+				nComments += len(p.notes)
+		else:
+			notes = vw[0].notes
+			nComments = len(notes)
 	
 	if request.command.lower() in ('put', 'post'):
 	
@@ -251,10 +281,21 @@ else:
 	# Display comment table			
 
 	if notes:
+		if fullfeed:
+			# fullfeeds are sorted by date in reverse (newest
+			# note first)
+			notes.sort(lambda a,b: -1*cmp(a[0].date,b[0].date))
 		for iCmt in range( len( notes ) ):
+			# a fullfeed has to pass in the paragraph to the
+			# formatter, while a paragraph related feed does
+			# not
 			cmt = notes[iCmt]
-			cmtObj = comments.comment( cmt, iCmt )
-			s += formatter.comment( cmtObj )
+			if fullfeed:
+				cmtObj = comments.comment( cmt[0], iCmt )
+				s += formatter.comment( cmtObj, paragraph=cmt[1] )
+			else:
+				cmtObj = comments.comment( cmt, iCmt )
+				s += formatter.comment( cmtObj )
 
 	s += formatter.endTable()
 	

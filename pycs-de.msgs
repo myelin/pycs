@@ -1,3 +1,6 @@
+# strings from comments/__init__.py
+' at %I:%M:%S %p on %B %d, %Y'::=' um %H:%M:%S am %d.%m.%Y'
+
 # strings from comments/html.py
 '<tr><td class="cmt"><strong>No comments yet</strong></td></tr>'::='<tr><td class="cmt"><strong>Bis jetzt noch keine Kommentare</strong></td></tr>'
 'Add a new comment:'::='Kommentar abgeben:'
@@ -21,6 +24,14 @@
 'Copyright'::='Copyright'
 'Comment by'::='Kommentar von'
 ' an anonymous coward'::=' einem Unbekannten'
+
+# strings from comments/rssfull.py
+'(comments on weblog)'::='(Kommentare zum Weblog)'
+'Comments for a weblog, ordered by date (newest first)'::='Kommentare für ein Weblog, neueste Kommentare zuoberst.'
+# already defined: "Copyright"
+# already defined: "Comment by"
+# already defined: " an anonymous coward"
+' for post %s'::=' auf Beitrag %s'
 
 # strings from modules/system/comments.py
 'Comment deleted.'::='Kommentar gel\xf6scht.'
@@ -100,10 +111,10 @@
 'This is a test'::='Dieses ist ein Test'
 
 # strings from xmlStorageSystem.py
-'Welcome back, %s!'::='Willkommen zurück, %s!'
+'Welcome back, %s!'::='Willkommen zur\xfcck, %s!'
 'Good to have you here, %s!'::='Klasse das du mitmachst, %s!'
-'%d files have been saved for you, %s'::='%d Dateien wurden für dich gespeichert, %s'
-'%d files have been deleted for you, %s'::='%d Dateien wurden für dich gelöscht, %s'
+'%d files have been saved for you, %s'::='%d Dateien wurden f\xfcr dich gespeichert, %s'
+'%d files have been deleted for you, %s'::='%d Dateien wurden f\xfcr dich gel\xf6scht, %s'
 'Hello, %s, from the Python Community Server!'::='Hallo, %s, Willkommen beim Python Community Server!'
 'Password incorrect'::='Passwort falsch'
 'User not found'::='Benutzerkennung nicht gefunden'
