@@ -278,7 +278,7 @@ class Settings:
 		out = """<html>
 	<head>
 		<title>Python Community Server: """ + data['title'] + """</title>
-		<link rel="stylesheet" href="http://myelin.pycs.net/pycs.css" type="text/css" />
+		<link rel="stylesheet" href="http://www.myelin.co.nz/pycs.css" type="text/css" />
 	</head>
 	<body>
 		<h1>PyCS: <strong>""" + data['title'] + """</strong></h1>

@@ -5,8 +5,8 @@ class updatesDb:
 	def __init__( self, set ):
 		self.set = set
 		self.updatesTable = self.set.db.getas(
-			'weblogUpdates[updateTime:S,blogName:S,blogUrl:S]'
-			).ordered( 3 )
+			'weblogUpdates[updateTime:S,blogUrl:S,blogName:S]'
+			).ordered( 2 )
 		
 	def Update( self, blogName, blogUrl ):
 		"Mark a blog as updated"

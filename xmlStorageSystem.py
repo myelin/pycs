@@ -308,6 +308,7 @@ class xmlStorageSystem_handler:
 				],
 			'urlSpamFreeMailto': self.set.ServerUrl() + '/system/mailto.py',
 			'urlWeblogUpdates': self.set.ServerUrl() + '/system/updates.py',
+			'webBugUrl': self.set.ServerUrl() + '/system/count.py',
 			'flError': xmlrpclib.False,
 			}
 

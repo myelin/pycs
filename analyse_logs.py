@@ -41,8 +41,10 @@ def removeSessId( s ):
 if __name__ == '__main__':
 	if len( sys.argv ) > 1:
 		LOGFILE = sys.argv[1]
+		rooturl = sys.argv[2]
 	else:
 		LOGFILE = "/var/log/apache/rcs-access.log"
+		rooturl = 'http://www.pycs.net'
 	DBFILE = "analysed_logs.db"
 	
 	#db = metakit.storage( DBFILE, 1 )
@@ -89,14 +91,19 @@ if __name__ == '__main__':
 		if page.find( '.gif' ) != -1:
 			continue
 		
-		if ua.find( 'Googlebot' ) == 0:
-			ref = "(googlebot)"
-		elif ua.find( 'Scooter' ) == 0:
-			ref = "(scooter)"
-		elif ua.find( 'Flickbot' ) == 0:
-			ref = "(flickbot)"
-		elif ua.find( 'Rumours' ) == 0:
-			ref = "(rumours-agent)"
+		#if ua.find( 'Googlebot' ) == 0:
+		#	ref = "(googlebot)"
+		#elif ua.find( 'Scooter' ) == 0:
+		#	ref = "(scooter)"
+		#elif ua.find( 'LinkWalker' ) == 0:
+		#	ref = '(linkwalker)'
+		#elif ua.find( 'Flickbot' ) == 0:
+		#	ref = "(flickbot)"
+		#elif ua.find( 'Rumours' ) == 0:
+		#	ref = "(rumours-agent)"
+		
+		if ref == '-':
+			ref = "%s; %s" % ( ip, ua )
 	
 		pageData = pages.setdefault( page, { 'hits': 0, 'refs': {}, } )
 		pageData['hits'] += 1
@@ -137,14 +144,19 @@ if __name__ == '__main__':
 	rankedPages.reverse()
 	
 	for hits, refs, url in rankedPages:
-		print '<a href="http://www.pycs.net' + url + '">' + url + '</a> -', hits, 'hits'
+		print '<a href="' + rooturl + url + '">' + url + '</a> -', hits, 'hits'
 	
 		rankedRefs = [ ( refs[name]['hits'], name ) for name in refs.keys() ]
 		rankedRefs.sort()
 		rankedRefs.reverse()
 	
 		for hits, url in rankedRefs:
-			print "\tref:" + ' <a href="' + url + '">' + url + '</a> -', hits, 'hits'
+			s = "\t%d: " % ( hits, )
+			if url.find( 'http' ) == 0:
+				s += '<a href="' + url + '">' + url + '</a>'
+			else:
+				s += url
+			print s
 	
 		print
 	
