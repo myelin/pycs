@@ -55,16 +55,21 @@ if not query.has_key('usernum'):
 	that way you can get a summary of hits (by referrer) for a weblog hosted on this server.</p>
 	"""
 elif not query.has_key('q'):
-	s += """<p>Enter the words to search for:</p>
+	s += """<p>%s</p>
 
 	<p>
 	<form method="get" action="%s">
 		<input type="hidden" name="usernum" value="%s">
 		<input type="text" name="q" size="40">
-		<input type="submit" value="Search">
+		<input type="submit" value="%s">
 	</form>
 	</p>
-	""" % (cgi.escape(path, 1), cgi.escape(query['usernum'], 1))
+	""" % (
+		_('Enter the words to search for:'),
+		cgi.escape(path, 1),
+		cgi.escape(query['usernum'], 1),
+		_('Search')
+	)
 else:
 
 	try:
@@ -105,10 +110,9 @@ else:
 		for line in os.popen(cmd).readlines():
 			if line[-1] == '\n': line = line[:-1]
 
-			feld = line.split(' ', 3)
-			if len(feld) == 4:
+			if line and line[0] != '#':
 				s += '<tr>'
-				(rank, path, psize, title) = feld
+				(rank, path, psize, title) = line.split(' ', 3)
 
 				lpath = os.path.join(pycs_paths.WEBDIR, 'users', usernum)
 				if len(path) > len(lpath):
