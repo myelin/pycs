@@ -272,7 +272,7 @@ class xmlStorageSystem_handler:
 				flError = xmlrpclib.True
 				try:
 					# Dump to console
-					print "--- EXCEPTION ---"
+					print "--- EXCEPTION IN xmlStorageSystem.deleteMultipleFiles ---"
 					exception, detail, traceback = sys.exc_info()
 					sys.excepthook( exception, detail, traceback )
 					# Send error back to client
