@@ -167,13 +167,15 @@ if __name__ == '__main__':
 
 	# become the PyCS user
 	if os.name == 'posix':
-		if hasattr( os, 'seteuid' ):
+		try:
 			# look in ~medusa/patches for {set,get}euid.
 			import pwd
 			[uid, gid] = pwd.getpwnam( set.conf['serveruser'] )[2:4]
 			os.setegid (gid)
 			os.seteuid (uid)
-		else:
+		except:
+			import traceback
+			traceback.print_exc()
 			print "WARNING: Can't reduce privileges; server is running as the superuser"
 	
 	hs.install_handler( default_h )
