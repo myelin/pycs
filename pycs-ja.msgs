@@ -1,0 +1,218 @@
+# strings from accessRestrictions.py
+'Password incorrect'::='パスワードが正しくありません'
+'User not found'::='User not found'
+'user %s added'::='ユーザ %s を登録しました'
+'user %s is in group %s'::='user %s is in group %s'
+'user %s not found'::='user %s not found'
+'user %s deleted'::='user %s deleted'
+'userlist returned'::='userlist returned'
+'group %s added'::='group %s added'
+'user %s added to group %s'::='user %s added to group %s'
+'user %s already in group %s'::='user %s already in group %s'
+'group %s not found'::='group %s not found'
+'user %s deleted from group %s'::='user %s deleted from group %s'
+'user %s not found in group %s'::='user %s not found in group %s'
+'userlist for group %s returned'::='userlist for group %s returned'
+'group %s is in location %s'::='group %s is in location %s'
+'group %s deleted'::='group %s deleted'
+'grouplist returned'::='grouplist returned'
+'location %s added'::='location %s added'
+'group %s added to location %s'::='group %s added to location %s'
+'group %s already in location %s'::='group %s already in location %s'
+'location %s not found'::='location %s not found'
+'group %s deleted from location %s'::='group %s deleted from location %s'
+'group %s not found in location %s'::='group %s not found in location %s'
+'grouplist for location %s returned'::='grouplist for location %s returned'
+'userlist for location %s returned'::='userlist for location %s returned'
+'location %s deleted'::='location %s deleted'
+'locationlist returned'::='locationlist returned'
+
+# strings from comments/__init__.py
+' at %I:%M:%S %p on %B %d, %Y'::=' at %I:%M:%S %p on %B %d, %Y'
+
+# strings from comments/html.py
+'You are commenting on the following link:<br><a href="%s" target="_blank">%s</a>'::='以下のリンクに対するコメントです:<br><a href="%s" target="_blank">%s</a>'
+'<tr><td class="cmt"><strong>No comments yet</strong></td></tr>'::='<tr><td class="cmt"><strong>コメントはまだありません</strong></td></tr>'
+'Add a new comment:'::='新規コメントの入力:'
+'Name'::='名前'
+'Email'::='メールアドレス'
+'Website'::='Web サイト'
+'Comment'::='コメント'
+'Save Comment'::='コメントを保存'
+'Cancel'::='キャンセル'
+'Note'::='注意'
+"'http://...' will be converted into links. HTML other than &lt;a href&gt;, &lt;b&gt;, &lt;i&gt;, &lt;s&gt; and &lt;tt&gt; will be stripped."::="コメント中に 'http://...' がある場合はリンクに変換されます。また、 &lt;a href&gt;、 &lt;b&gt;、 &lt;i&gt;、 &lt;s&gt;、&lt;tt&gt; 以外の HTML タグは入力しても無効になります。"
+'Subscribe to an RSS feed of this comment thread:'::='このコメントページの RSS フィード:'
+'Subscribe to this comment thread in Radio UserLand'::='Subscribe to this comment thread in Radio UserLand'
+'Link to the RSS (XML) feed for this comment thread'::='Link to the RSS (XML) feed for this comment thread'
+'posted by'::='posted by'
+'Delete comment'::='コメントの削除'
+
+# strings from comments/rss.py
+'(comments on post %s)'::='(comments on post %s)'
+'Comments for a weblog post'::='Comments for a weblog post'
+'Copyright'::='Copyright'
+'Comment by'::='Comment by'
+' an anonymous coward'::=' an anonymous coward'
+
+# strings from comments/rssfull.py
+'(comments on weblog)'::='(comments on weblog)'
+'Comments for a weblog, ordered by date (newest first)'::='Comments for a weblog, ordered by date (newest first)'
+# already defined: "Copyright"
+# already defined: "Comment by"
+# already defined: " an anonymous coward"
+' for post %s'::=' for post %s'
+
+# strings from modules/system/comments.py
+'Comment deleted.'::='Comment deleted.'
+'New comment added - thanks for participating!'::='コメントが追加されました。ありがとう。愛してます!'
+
+# strings from modules/system/login.py
+'<p>Now you should see \'delete\' buttons next to comments for <a href="%s">your weblog</a>.</p>'::='<p><a href="%s">あなたのウエブログ</a>のコメントページには削除用のボタンが表示されるようになっています。</p>'
+'Login'::='ログイン'
+'<p>Sorry, email address <b>%s</b> not found!</p>'::='<p>入力されたメールアドス <b>%s</b> は無効です!</p>'
+'<p>Sorry, the passsword was incorrect.  Please try again.</p>'::='<p>パスワードが正しくありません。入力し直してください。</p>'
+'(password incorrect)'::='(password incorrect)'
+'user already logged in: '::='次のユーザ名でログイン中です: '
+'<p>You are now logged in as user <b>%s</b> (<b>%s</b>)</p>'::='<p>ユーザ <b>%s</b> (<b>%s</b>) としてログインしました。</p>'
+'Enter your e-mail address and your password to log in. If you have more than one weblog hosted here, make sure you enter the e-mail address for the right blog.'::='ログインするにはメールアドレスとパスワードを入力してください。2つ以上のウェブログをここに置いている場合は、そのウェブログに対応する正しいメールアドレスを入力してください。'
+'E-mail address'::='メールアドレス'
+'Password'::='パスワード'
+'Log in'::='ログイン'
+
+# strings from modules/system/mailto.py
+'\n\t\t<h2>Message sent OK; <a href="%s">click here to go back</a>.</h2>\n\t\t'::='\n\t\t<h2>送信完了。<a href="%s">元のページへ戻るにはここをクリックしてください</a>。</h2>\n\t\t'
+"\n\t\t<h2>Sorry, the mail didn't send properly!</h2>\n\t\t<h2>Error:</h2>\n\t\t<h2><center><strong>%s</strong></center></h2>\n\t\t"::="\n\t\t<h2>メールの送信に失敗しました。ごめんなさい!</h2>\n\t\t<h2>エラー:</h2>\n\t\t<h2><center><strong>%s</strong></center></h2>\n\t\t"
+'Feedback'::='フィードバック'
+'<h2>Posting your message</h2>'::='<h2>メッセージの送信</h2>'
+'<h2>Sending a message to %s</h2>'::='<h2>%s さんへのメッセージ送信</h2>'
+"The recipient's mail server didn't like it."::="The recipient's mail server didn't like it."
+'The server didn\'t reply properly to the "HELO" greeting!'::='The server didn\'t reply properly to the "HELO" greeting!'
+"The server didn't accept the from address!"::="The server didn't accept the from address!"
+"The server just didn't like the message for some reason!"::="The server just didn't like the message for some reason!"
+'Your name'::='名前'
+'Your e-mail address'::='メールアドレス'
+'Your URL'::='URL'
+'Subject'::='サブジェクト'
+'Send message'::='メッセージの送信'
+
+# strings from modules/system/rankings.py
+'Rankings'::='人気ウェブログ・ランキング'
+'<p>See also: <a href="weblogUpdates.py">weblogs updated today</a>.</p>\n'::='<p><a href="weblogUpdates.py">本日更新されたウェブログ</a>もご覧ください。</p>\n'
+'hits today'::='本日のヒット数'
+'all-time hits'::='ヒット数累計'
+'blog name'::='ブログ名'
+'link'::='リンク'
+
+# strings from modules/system/referers.py
+'Referrer rankings'::='リファラ・ランキング'
+'Referrers for'::='Referrers for'
+' To see all referrers, <a href="referers.py?usernum=%s&group=%s&order=%s&full=1">click here</a>.'::='すべてのリファラを確認したいときは、<a href="referers.py?usernum=%s&group=%s&order=%s&full=1">ここをクリックしてください</a>。'
+'Referrer'::='リファラ'
+'Last hit'::='最終アクセス'
+'Count'::='カウント'
+'<p>See also: <a href="searches.py?usernum=%s&group=%s&order=%s">Search term rankings for this site</a>.</p>'::='<p><a href="searches.py?usernum=%s&group=%s&order=%s">検索キーワードによるランキング</a>もご覧ください。</p>'
+'<p>Sorry, user %s not found!</p>'::='<p>指定されたユーザ名 %s は登録されていません!</p>'
+'<p>This page shows you all referrers - including search engine hits -  to your page.'::='<p>このページはサーチ・エンジンを含むすべてのリファラ一覧です。'
+'<p>This page shows you only those referrers to your page, that are not comming from search engines.'::='<p>このページはサーチ・エンジン経由のアクセスを除いたリファラの一覧です。'
+
+# strings from modules/system/search.py
+'Search results'::='Search results'
+
+# strings from modules/system/searches.py
+'Search term rankings'::='検索キーワードによるランキング'
+'<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>'::='<p><a href="referers.py?usernum=%s&group=%s&order=%s">このサイトに対するリファラ</a>もご覧ください。</p>'
+# already defined: '<p>Sorry, user %s not found!</p>'
+'<h2>Search terms for <strong>%s</strong></h2>'::='<h2>Search terms for <strong>%s</strong></h2>'
+'Search term'::='検索キーワード'
+# already defined: "Last hit"
+# already defined: "Count"
+# already defined: "Last hit"
+# already defined: "Count"
+# already defined: "Last hit"
+# already defined: "Count"
+
+# strings from modules/system/swish.py
+'Search your Weblog'::='Search your Weblog'
+'Enter the words to search for:'::='Enter the words to search for:'
+'Search'::='Search'
+'<h2>Search results for <strong>%s</strong></h2>'::='<h2>Search results for <strong>%s</strong></h2>'
+'<p>Here are all search results while searching for <strong>%s</strong> on the weblog of <a href="%s">%s</a>.'::='<p>Here are all search results while searching for <strong>%s</strong> on the weblog of <a href="%s">%s</a>.'
+'Rank'::='Rank'
+'Page'::='Page'
+'Size'::='Size'
+'Bytes'::='Bytes'
+# already defined: '<p>Sorry, user %s not found!</p>'
+
+# strings from modules/system/trackback.py
+'The trackback URL for this posting is:<br><br><span style="font-size: 10px">%s</span>'::='この記事に対するトラックバック URL:<br><br><span style="font-size: 10px">%s</span>'
+'an untitled posting'::='an untitled posting'
+'an anonymous blog'::='an anonymous blog'
+# already defined: "Comment deleted."
+'New trackback added - thanks for participating!'::='トラックバックが追加されました。ありがとう。愛してます!'
+
+# strings from modules/system/users.py
+'User info'::='User info'
+# already defined: '<p>Sorry, user %s not found!</p>'
+'Information for user'::='Information for user'
+
+# strings from modules/system/weblogUpdates.py
+'Recently updated weblogs'::='最近更新されたウェブログ'
+'<p>See also: <a href="rankings.py">most popular weblogs, ranked by page views</a>.</p>'::='<p><a href="rankings.py">ページビューによる人気ウェブログ・ランキング</a>もご覧ください。</p>'
+'<p>Here are the weblogs that have updated in the last 24 hours.  Is yours in there?  ;-)</p>'::='<p>ここ24時間以内に更新されたウェブログの一覧です。あなたのサイトはありますか?</p>'
+
+# strings from modules/system/zeitgeist.py
+'Zeitgeist overview'::='Zeitgeist overview'
+'<h2>Zeitgeist overview for <strong><a href="%s">%s</a></strong></h2>'::='<h2>Zeitgeist overview for <strong><a href="%s">%s</a></strong></h2>'
+'<p>Here are all search terms which people followed here, sorted by last hit. The larger the font, the more often the term was searched for. The more to the top, the more current was the access.'::='<p>Here are all search terms which people followed here, sorted by last hit. The larger the font, the more often the term was searched for. The more to the top, the more current was the access.'
+'accessed %d times'::='accessed %d times'
+# already defined: '<p>Sorry, user %s not found!</p>'
+
+# strings from pycs_translation.py
+'Hello World'::='Hello World'
+'This is a test'::='This is a test'
+
+# strings from trackbacks/__init__.py
+# already defined: ' at %I:%M:%S %p on %B %d, %Y'
+
+# strings from trackbacks/html.py
+'<tr><td class="cmt"><strong>No trackbacks yet</strong></td></tr>'::='<tr><td class="cmt"><strong>トラックバックはまだありません</strong></td></tr>'
+'Subscribe to an RSS feed of this trackback thread:'::='このトラックバックページの RSS フィード:'
+'Subscribe to this trackback thread in Radio UserLand'::='Subscribe to this trackback thread in Radio UserLand'
+'Link to the RSS (XML) feed for this trackback thread'::='Link to the RSS (XML) feed for this trackback thread'
+# already defined: "posted by"
+'Delete trackback'::='トラックバックの削除'
+
+# strings from trackbacks/rss.py
+'(trackbacks on post %s)'::='(trackbacks on post %s)'
+'Trackbacks for a weblog post'::='Trackbacks for a weblog post'
+# already defined: "Copyright"
+# already defined: "Comment by"
+' an anonymous blog'::=' an anonymous blog'
+
+# strings from trackbacks/rssfull.py
+'(trackbacks on weblog)'::='(trackbacks on weblog)'
+'Trackbacks for a weblog, ordered by date (newest first)'::='Trackbacks for a weblog, ordered by date (newest first)'
+# already defined: "Copyright"
+# already defined: "Comment by"
+# already defined: " an anonymous blog"
+# already defined: " for post %s"
+
+# strings from xmlStorageSystem.py
+'Welcome back, %s!'::='Welcome back, %s!'
+'Good to have you here, %s!'::='Good to have you here, %s!'
+'%d files have been saved for you, %s'::='%d files have been saved for you, %s'
+'%d files have been deleted for you, %s'::='%d files have been deleted for you, %s'
+'Hello, %s, from the Python Community Server!'::='Hello, %s, from the Python Community Server!'
+# already defined: "Password incorrect"
+# already defined: "Password incorrect"
+# already defined: "User not found"
+# already defined: "Password incorrect"
+# already defined: "User not found"
+# already defined: "Password incorrect"
+# already defined: "User not found"
+# already defined: "Password incorrect"
+# already defined: "User not found"
+# already defined: "Password incorrect"
+# already defined: "User not found"
+
