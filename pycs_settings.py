@@ -94,6 +94,9 @@ class Settings:
 			
 		# Update data
 		self.updates = self.db.getas( "updates[time:S,usernum:S,title:S]" ).ordered(2)
+
+		# Referrer data
+		self.referrers = self.db.getas( "referrers[time:S,usernum:S,group:S,referrer:S,count:I]" ).ordered(2)
 		
 		if not quiet:
 			self.DumpData()
@@ -152,6 +155,47 @@ class Settings:
 				} )
 			
 		self.Commit()
+
+	def AddReferrer( self, usernum, group, referrer ):
+		theTime = self.GetTime()
+
+		# get base URLs to ignore (currently your own site and
+		# the python community server itself)
+		ignore = [
+			self.UserFolder( usernum ),
+			self.ServerUrl()
+			]
+
+		# check for URLs to ignore as referrer
+		ignoreit = 0
+		for url in ignore:
+			if referrer[:len(url)] == url:
+				ignoreit = 1
+
+		# we got something that shouldn't be ignored
+		if not(ignoreit):
+			# See if that user+group+referrer combination
+			# is already there
+			sth = self.referrers.select( {
+				'usernum': usernum,
+				'group': group,
+				'referrer': referrer
+				} )
+			if len( sth ) != 0:
+				# it is, so update the timestamp and count
+				row = sth[0]
+				row.time = theTime
+				row.count += 1
+			else:
+				# it isn't, so add a new row to the DB
+				self.referrers.append( {
+					'usernum': usernum,
+					'time': theTime,
+					'group': group,
+					'referrer': referrer,
+					'count': 1
+					} )
+			self.Commit()
 			
 	def Commit( self ):
 		self.db.commit()
