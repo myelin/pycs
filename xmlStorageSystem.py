@@ -388,6 +388,10 @@ class xmlStorageSystem_handler:
 			
 			print "---USER INFO---",userinfo,"------"
 
+			try:
+				clientPort = int(clientPort)
+			except:
+				pass
 			u.clientPort = clientPort
 			if userinfo != {}:
 				u.email = userinfo['email']
