@@ -23,6 +23,7 @@
 
 
 import os
+import re
 import cgi
 import time
 import pycs_settings
@@ -71,6 +72,7 @@ else:
 		group = query.get('group','default')
 
 		term = query['q']
+		term = re.sub( '[^a-zA-Z0-9_\-\ ]', '', term )
 		
 		user = set.User( usernum )
 		url = set.UserFolder( usernum )
