@@ -146,14 +146,14 @@ install: user scripts
 
 scripts:
 	$(INSTALL_MKDIR_RO) -d $(MODDIR)
-        $(INSTALL_MKDIR_RO) -d $(MODDIR)/system
+	$(INSTALL_MKDIR_RO) -d $(MODDIR)/system
 	for f in `cd modules && find * | grep -E "\.py$$" && cd ..`; do $(INSTALL_RO) modules/$$f $(MODDIR)/$$f; done
 
 	$(INSTALL_MKDIR_RO) -d $(COMMENTDIR)
 	$(INSTALL_RO) $(addprefix comments/, $(COMMENTFILES)) $(COMMENTDIR)/
 
 	/usr/bin/perl -w make_readme.pl < README > www/readme.html
-        $(INSTALL_MKDIR_RO) -d $(WEBDIR)
+	$(INSTALL_MKDIR_RO) -d $(WEBDIR)
 	$(INSTALL_RO) $(addprefix www/, $(WEBFILES)) $(WEBDIR)/
 	if [ -f www/local.css ]; then \
 		$(INSTALL_RO) www/local.css $(WEBDIR)/; \
@@ -162,7 +162,7 @@ scripts:
 		$(INSTALL_RO) www/local_index.html $(WEBDIR)/index.html; \
 	fi
 
-        $(INSTALL_MKDIR_RO) -d $(RESDIR)
+	$(INSTALL_MKDIR_RO) -d $(RESDIR)
 	$(INSTALL_RO) $(addprefix www/initialResources/, $(RESFILES)) $(RESDIR)/
 
 dist:
