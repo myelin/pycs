@@ -154,7 +154,8 @@
 # strings from modules/system/users.py
 'User info'::='Benutzerinfo'
 # already defined: '<p>Sorry, user %s not found!</p>'
-'RSS feed of users'::='RSS Feed für Benutzer'
+'RSS feed of users'::='RSS Feed f\xfcr Benutzer'
+'RSS feed of all blogs and users registered on this community server'::='RSS Feed für alle Blogs und Benutzer die hier registriert sind'
 '<p>This is a list of all users registered on this server:'::='<p>Hier eine Liste aller auf diesem Server registrierten Benutzer:'
 'Information for user'::='Information f\xfcr Benutzer'
 

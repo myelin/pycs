@@ -91,22 +91,24 @@ if query.has_key('usernum'):
 else:
 
 	if query.get('format', '') == 'rss':
-		s += '<?xml version="1.0" encoding="%s"?>' % set.DocumentEncoding()
-		s += '<rss version="2.0">'
-		s += '<channel>'
-		s += '<title>%s</title>' % _('RSS feed of users')
-		s += '</channel>'
+		s += '<?xml version="1.0" encoding="%s"?>\n' % set.DocumentEncoding()
+		s += '<rss version="2.0">\n'
+		s += '<channel>\n'
+		s += '<title>%s</title>\n' % _('RSS feed of users')
+		s += '<link>%s</link>\n' % set.ServerUrl()
+		s += '<description>%s</description>\n' % _('RSS feed of all blogs and users registered on this community server')
 		for user in set.users:
 			url = set.UserFolder( user.usernum )
-			s += '<item>'
-			s += '<title>%s (%d)</title>' % (
+			s += '<item>\n'
+			s += '<title>%s (%d)</title>\n' % (
 				esc(user.name),
 				int(user.usernum)
 			)
-			s += '<link>%s</link>' % url
-			s += '<description>%s</description>' % esc(user.weblogTitle)
-			s += '</item>'
-		s += '</rss>'
+			s += '<link>%s</link>\n' % url
+			s += '<description>%s</description>\n' % esc(user.weblogTitle)
+			s += '</item>\n'
+		s += '</channel>\n'
+		s += '</rss>\n'
 	else:
 		s += _('<p>This is a list of all users registered on this server:')
 		s += '<ul>'
