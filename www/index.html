@@ -1,23 +1,45 @@
 <html>
-<head>
- <title>Python Community Server: home</title>
- <link rel="stylesheet" href="http://myelin.pycs.net/myelin.css" type="text/css">
-</head>
-<body>
- <div class="maintitle"><a href="http://dev.myelin.co.nz"
- style="color: black; text-decoration: none; font-weight: bold;">myelin</a>: Python Community Server</div>
+	<head>
+		<title>Python Community Server: home</title>
+		<link rel="stylesheet" href="http://myelin.pycs.net/myelin.css" type="text/css">
+		<script language="javascript"><!--
+			function relurl( relpart )
+			{
+				return ( document.location + '' ).replace( 'index.html', '' ) + relpart;
+			}
+		// --></script>
+		<style type="text/css"><!--
+			ul li {
+				margin-bottom: 1em;
+			}
+		// --></style>
+	</head>
+	<body>
+	
+		<div class="maintitle">Python Community Server</div>
+		
+		<p align="center">This web site is powered by <a href="http://www.pycs.net/"><b>Python Community Server</b></a> by <a href="http://www.myelin.co.nz/">Myelin Electronics</a>.</p>
+		
+		<hr/>
+		
+		<p align="center" style="font-size: 2em;"><a href="system/weblogUpdates.py">Recently updated weblogs</a></p>
+		
+		<hr/>
+		
+		<p>You can host a weblog here if you have a copy of <a href="http://radio.userland.com/">Radio UserLand</a> or <a href="http://www.myelin.co.nz/bzero/">bzero</a>.</p>
+		
+		<ul>
+		
+			<li>Using Radio, go to your <a href="http://127.0.0.1:5335/system/pages/changeCommunityServer">changeCommunityServer</a> page and paste <a href="RPC2"><script language="javascript">document.write( relurl( 'RPC2' ) )</script><noscript>this link</noscript></a> into the 'server name' box.</li>
+			
+			<li>Using bzero, start a new blog using the command:<br/>
+			<code>bzero new <i>blogname email password</i> <script language="javascript">document.write( relurl( 'RPC2' ) )</script><noscript>this link</noscript></code></i></li>
+			
+		</ul>
+		
+		<hr/>
+		
+		<p><i>If you are the administrator of this server, edit the file <strong>www/index.html</strong> in your PyCS installation to change this page to something more relevant to your system.</i></p>
 
- <p>This web site is powered by <a href="http://www.pycs.net/">Python
- Community Server</a> by <strong><a href="http://www.myelin.co.nz/">Myelin
- Electronics</a></strong>.</p>
-
- <p>You can host a weblog here if you have a copy of <a href="http://radio.userland.com/">Radio</a>
- by <a href="http://www.userland.com/">UserLand Software</a>.  Just go to your
- <a href="http://127.0.0.1:5335/system/pages/changeCommunityServer">changeCommunityServer</a>
- page and enter <strong>http://(server)/RPC2</strong> as the server name.  Change
- <strong>(server)</strong> to the name of this server, e.g. <strong>www.pycs.net</strong>.</p>
-
- <p>If you are the administrator of this server, edit the file <strong>www/index.html</strong>
- in your PyCS installation to change this page to something more relevant to your system.</p>
-
-</body></html>
+	</body>
+</html>
