@@ -309,7 +309,7 @@ class xmlStorageSystem_handler:
 				},
 			'yourUpstreamFolderUrl': self.userFolder( email ),	# user URL
 			'message': 'Hello, %s, from the Python Community Server!' % (u.name,),
-			'ctBytesInUse': 0,	# bytes in use by current user FIXME
+			'ctBytesInUse': self.userSpaceUsed( email ),
 			'maxBytesPerUser': 20 * 1024*1024,	# max 20M per user
 			'weblogUpdates': {
 				'server': self.set.ServerHostname(),
