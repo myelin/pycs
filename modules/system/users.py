@@ -25,6 +25,10 @@
 import string
 import md5
 import pycs_settings
+import cgi
+
+def esc(s):
+	return cgi.escape(s, 1)
 
 request['Content-Type'] = 'text/html; charset=%s' % set.DocumentEncoding()
 
@@ -87,7 +91,7 @@ if query.has_key('usernum'):
 else:
 
 	if query.get('format', '') == 'rss':
-		s += '<?xml version="1.0" encoding="%s"?>' % set.documentEncoding()
+		s += '<?xml version="1.0" encoding="%s"?>' % set.DocumentEncoding()
 		s += '<rss version="2.0">'
 		s += '<channel>'
 		s += '<title>%s</title>' % _('RSS feed of users')
@@ -96,7 +100,7 @@ else:
 			url = set.UserFolder( user.usernum )
 			s += '<item>'
 			s += '<title>%s (%d)</title>' % (
-				user.name,
+				esc(user.name),
 				int(user.usernum)
 			)
 			s += '<link>%s</link>' % url
