@@ -164,21 +164,24 @@ scripts:
 	$(INSTALL_MKDIR_RO) -d $(COMMENTDIR)
 	$(INSTALL_RO) $(addprefix comments/, $(COMMENTFILES)) $(COMMENTDIR)/
 
-	/usr/bin/perl -w make_readme.pl < README > www/readme.html
+	# Install the default web files (index, history, readme) in www/;
+	# you can safely edit the files in $PREFIX/var/lib/pycs/www/ once
+	# this is done as they will not be overwritten by a future install.
+	perl -w make_readme.pl < README > www/readme.html
 	$(INSTALL_MKDIR_RO) -d $(WEBDIR)
-	$(INSTALL_RO) $(addprefix www/, $(WEBFILES)) $(WEBDIR)/
-	if [ -f www/Radio*.exe ]; then \
-		$(INSTALL_RO) www/Radio*.exe $(WEBDIR)/; \
-	fi
-	if [ -f www/local.css ]; then \
-		$(INSTALL_RO) www/local.css $(WEBDIR)/; \
-	fi
-	if [ -f www/local_index.html ]; then \
-		$(INSTALL_RO) www/local_index.html $(WEBDIR)/index.html; \
-	fi
+	for f in $(WEBFILES); do \
+		if [ ! -f $(WEBDIR)/$$f ]; then \
+			$(INSTALL_RO) www/$$f $(WEBDIR)/; \
+		fi; \
+	done
 
+	# Install the default OPML files in www/initialResources
 	$(INSTALL_MKDIR_RO) -d $(RESDIR)
-	$(INSTALL_RO) $(addprefix www/initialResources/, $(RESFILES)) $(RESDIR)/
+	for f in $(RESFILES); do \
+		if [ ! -f $(RESDIR)/$$f ]; then \
+			$(INSTALL_RO) www/initialResources/$$f $(RESDIR)/; \
+		fi; \
+	done
 
 dist:
 	rm -rf $(DISTFN)/
