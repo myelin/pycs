@@ -73,14 +73,14 @@ def show_urls(u):
 
 <p>Now, in your item template, you need to put the following:</p>
 
-<p>Comment [&lt;script type="text/javascript" language="JavaScript"&gt;commentCounter('<i><b>postid</b></i>')&lt;/script&gt;]&lt;/a&gt;<br/>
-TrackBack [&lt;script type="text/javascript" language="JavaScript"&gt;trackbackCounter('<i><b>postid</b></i>')&lt;/script&gt;]&lt;/a&gt;
+<p>&lt;a href="%(commenturl)s?u=%(usernum)s&amp;amp;p=<i><b>postid</b></i>"&gt;Comment [&lt;script type="text/javascript" language="JavaScript"&gt;commentCounter('<i><b>postid</b></i>')&lt;/script&gt;]&lt;/a&gt;<br/>
+&lt;a href="%(tburl)s?u=%(usernum)s&amp;amp;p=<i><b>postid</b></i>"&gt;TrackBack [&lt;script type="text/javascript" language="JavaScript"&gt;trackbackCounter('<i><b>postid</b></i>')&lt;/script&gt;]&lt;/a&gt;
 </p>
 
 <p>Replace <b>postid</b> with script to generate the post ID for your blogging tool.  In Radio, it should look like this:</p>
 
-<p>Comment [&lt;script type="text/javascript" language="JavaScript"&gt;commentCounter('&lt;%%itemNum%%&gt;')&lt;/script&gt;]&lt;/a&gt;<br/>
-TrackBack [&lt;script type="text/javascript" language="JavaScript"&gt;trackbackCounter('&lt;%%itemNum%%&gt;')&lt;/script&gt;]&lt;/a&gt;</p>
+<p>&lt;a href="%(commenturl)s?u=%(usernum)s&amp;amp;p=&lt;%%itemNum%%&gt;"&gt;Comment [&lt;script type="text/javascript" language="JavaScript"&gt;commentCounter('&lt;%%itemNum%%&gt;')&lt;/script&gt;]&lt;/a&gt;<br/>
+&lt;a href="%(tburl)s?u=%(usernum)s&amp;amp;p=&lt;%%itemNum%%&gt;"&gt;TrackBack [&lt;script type="text/javascript" language="JavaScript"&gt;trackbackCounter('&lt;%%itemNum%%&gt;')&lt;/script&gt;]&lt;/a&gt;</p>
 
 <p><b>NOTE: If you are using Radio, you need to turn off the normal comment system.  Go to <a href="http://127.0.0.1:5335/system/pages/prefs?page=2.12">this configuration page</a> and uncheck the box that says "Check this box to enable comments", then click Submit.</b></p>
 
