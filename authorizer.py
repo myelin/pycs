@@ -9,6 +9,8 @@
 #	|			if you restrict this, Radio will have severe trouble
 #	|			getting onto the community server.
 #	|
+#	+--- images - some images for the comments page.  No point restricting these :-)
+#	|
 #	+--- system - various scripts; some odd restrictions are required here
 #	|	|
 #	|	+--- comments.py [?(...)u=(usernum)(...)]
@@ -125,8 +127,8 @@ def classify_file( path, query ):
 		if folder == '':
 			print "root folder; public"
 			filetype = PUBLIC_FILE
-		elif folder == '/initialResources':
-			print "initialResources folder; rpc"
+		elif folder in ( '/initialResources', '/images' ):
+			print "initialResources or images folder; rpc"
 			filetype = RPC_FILE
 		else:
 			print "unknown folder"

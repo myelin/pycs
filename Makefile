@@ -68,7 +68,8 @@ VARDIR = $(PREFIX)/var/lib/pycs
 RUNDIR = $(PREFIX)/var/run/pycs
 DATADIR = $(VARDIR)/data
 WEBDIR = $(VARDIR)/www
-RESDIR = $(VARDIR)/www/initialResources
+WEBIMGDIR = $(WEBDIR)/images
+RESDIR = $(WEBDIR)/initialResources
 MODDIR = $(VARDIR)/modules
 
 # Logging
@@ -83,6 +84,7 @@ PYCSFILES = $(NOTEFILES) $(INSTFILES) $(CODEFILES) \
 COMMENTFILES = __init__.py rss.py html.py defaultFormatter.py
 PYCSMODFILES = updates.py mailto.py users.py comments.py login.py count.py referers.py searches.py rankings.py
 WEBFILES = index.html history.html readme.html pycs.css
+WEBIMGFILES = xml.gif mailto.gif tinyCoffeeCup.gif
 RESFILES = defaultFeeds.opml defaultCategories.opml
 SPECIFICS = $(PYCSFILES) medusa/*.py metakit.py Mk4py.so
 VER = 0.12pre2
@@ -175,6 +177,13 @@ scripts:
 		fi; \
 	done
 
+	$(INSTALL_MKDIR_RO) -d $(WEBIMGDIR)
+	for f in $(WEBIMGFILES); do \
+		if [ ! -f $(WEBIMGDIR)/$$f ]; then \
+			$(INSTALL_RO) www/images/$$f $(WEBIMGDIR)/; \
+		fi; \
+	done
+
 	# Install the default OPML files in www/initialResources
 	$(INSTALL_MKDIR_RO) -d $(RESDIR)
 	for f in $(RESFILES); do \
@@ -194,10 +203,12 @@ dist:
 
 	mkdir -p $(DISTFN)/www
 	cp $(addprefix www/, $(WEBFILES)) $(DISTFN)/www/
-	if [ -f www/dist_index.html ]; then cp -f www/dist_index.html $(DISTFN)/www/index.html; fi
+
+	mkdir -p $(DISTFN)/www/images
+	cp $(addprefix www/images/, $(WEBIMGFILES)) $(DISTFN)/www/images/
 
 	mkdir -p $(DISTFN)/www/initialResources
-	cp $(addprefix www/initialResources/, $(RESFILES)) $(DISTFN)/www/initialResources
+	cp $(addprefix www/initialResources/, $(RESFILES)) $(DISTFN)/www/initialResources/
 
 	mkdir -p $(DISTFN)/comments
 	cp $(addprefix comments/, $(COMMENTFILES)) $(DISTFN)/comments/

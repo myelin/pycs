@@ -87,9 +87,9 @@ class formatter( defaultFormatter.defaultFormatter ):
 		HTML other than &lt;a href&gt;, &lt;b&gt;, &lt;i&gt;, &lt;s&gt; and &lt;tt&gt; will be stripped.</td></tr>
 		<tr><td></td><td>Subscribe to an RSS feed of this comment thread:
 		<a href="http://127.0.0.1:5335/system/pages/subscriptions?url=%s"><img border="0"
-		src="http://myelin.pycs.net/images/tinyCoffeeCup.gif" width="10" height="10"
+		src="%s/images/tinyCoffeeCup.gif" width="10" height="10"
 		alt="Subscribe to this comment thread in Radio UserLand" /></a>
-		<a href="%s"><img border="0" src="http://myelin.pycs.net/images/xml.gif" width="36" height="14"
+		<a href="%s"><img border="0" src="%s/images/xml.gif" width="36" height="14"
 		alt="Link to the RSS (XML) feed for this comment thread" /></a>
 		</td></tr>
 		</table>
@@ -97,7 +97,8 @@ class formatter( defaultFormatter.defaultFormatter ):
 		</td></tr>
 		""" % ( self.u, self.p,
 			self.storedName, self.storedEmail, self.storedUrl,
-			urllib.quote( self.xmlFeedLink ), self.xmlFeedLink
+			urllib.quote( self.xmlFeedLink ), self.set.ServerUrl(),
+			self.xmlFeedLink, self.set.ServerUrl(),
 		) )
 
 		ret.append( endTableString )
