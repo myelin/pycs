@@ -63,7 +63,7 @@ for file in liste:
 				else:
 					strh[ps] = 1
 					strlh[ps] = 1
-					s2 = catalog.get(ps, s)
+					s2 = repr(eval(catalog.get(ps, s)))
 					print "%s::=%s" % (ps, s2)
 		print
 

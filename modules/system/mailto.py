@@ -45,7 +45,7 @@ form = util.SplitQuery( input_data.read() )
 request['Content-Type'] = 'text/html'
 
 page = {
-	'title': 'Feedback',
+	'title': _('Feedback'),
 	'body': """<p>Something went wrong; there should be some text here!</p>
 		<p>Mail <a href="mailto:pp@myelin.co.nz">Phil</a> at 
 		<a href="http://www.myelin.co.nz/">Myelin</a> if you
@@ -68,7 +68,7 @@ if request.command.lower() == 'post':
 
 	err = None
 	
-	s += '<h2>Posting your message</h2>'
+	s += _('<h2>Posting your message</h2>')
 
 	fields = ['fromName', 'fromEmail', 'fromUrl', 'subject', 'msgBody']
 
@@ -125,59 +125,64 @@ Subject: %s
 		err = e
 
 	except smtplib.SMTPRecipientsRefused:
-		err = "The recipient's mail server didn't like it."	
+		err = _("The recipient's mail server didn't like it.")
 	
 	except smtplib.SMTPHeloError:
-		err = "The server didn't reply properly to the \"HELO\" greeting!"
+		err = _("The server didn't reply properly to the \"HELO\" greeting!")
 	
 	except smtplib.SMTPSenderRefused:
-		err = "The server didn't accept the from address!"
+		err = _("The server didn't accept the from address!")
 	
 	except smtplib.SMTPDataError:
-		err = "The server just didn't like the message for some reason!"
+		err = _("The server just didn't like the message for some reason!")
 	
 	#sender.quit()
 	
 	if err == None:
-		s += """
+		s += _("""
 		<h2>Message sent OK; <a href="%s">click here to go back</a>.</h2>
-		""" % ( set.UserFolder( usernum ) )
+		""") % ( set.UserFolder( usernum ) )
 		
 	else: # An error occurred
-		s = """
+		s = _("""
 		<h2>Sorry, the mail didn't send properly!</h2>
 		<h2>Error:</h2>
 		<h2><center><strong>%s</strong></center></h2>
-		""" % (err,)
+		""") % (err,)
 
 else:
 
-	s += '<h2>Sending a message to %s</h2>' % ( u.name, )
+	s += _('<h2>Sending a message to %s</h2>') % ( u.name, )
 
 	s += """
 	<form method="post" action="mailto.py?action=send&usernum=%s">
 	<table width="80%%" cellspacing="0" cellpadding="2">
-	<tr>	<td>Your name</td>
+	<tr>	<td>%s</td>
 		<td><input type="text" name="fromName" size="60" /></td>
 		</tr>
-	<tr>	<td>Your e-mail address</td>
+	<tr>	<td>%s</td>
 		<td><input type="text" name="fromEmail" size="60" /></td>
 		</tr>
-	<tr>	<td>Your URL</td>
+	<tr>	<td>%s</td>
 		<td><input type="text" name="fromUrl" size="60" value="http://" /></td>
 		</tr>
-	<tr>	<td>Subject</td>
+	<tr>	<td>%s</td>
 		<td><input type="text" name="subject" size="60" /></td>
 		</tr>
 	<tr>	<td></td>
 		<td><textarea name="msgBody" rows="20" cols="60"></textarea></td>
 		</tr>
 	<tr>	<td></td>
-		<td><input type="submit" value="Send message" /></td>
+		<td><input type="submit" value="%s" /></td>
 		</tr>
 	</table>
 	</form>
-	""" % (usernum,)
+	""" % ( usernum,
+	        _("Your name"),
+	        _("Your e-mail address"),
+		_("Your URL"),
+		_("Subject"),
+		_("Send message") )
 
 # Dump it all out
 

@@ -1,10 +1,26 @@
+# strings from modules/system/mailto.py
+'\n\t\t<h2>Message sent OK; <a href="%s">click here to go back</a>.</h2>\n\t\t'::='\n\t\t<h2>Die Mitteilung wurde versendet; <a href="%s">Hier klicken um zum Blog zurückzukehren</a>.</h2>\n\t\t'
+"\n\t\t<h2>Sorry, the mail didn't send properly!</h2>\n\t\t<h2>Error:</h2>\n\t\t<h2><center><strong>%s</strong></center></h2>\n\t\t"::="\n\t\t<h2>Sorry, die Mitteilung wurde nicht versendet!</h2>\n\t\t<h2>Fehler:</h2>\n\t\t<h2><center><strong>%s</strong></center></h2>\n\t\t"
+'Feedback'::='Mitteilungsversand'
+'<h2>Posting your message</h2>'::='<h2>Senden Deiner Mitteilung</h2>'
+'<h2>Sending a message to %s</h2>'::='<h2>Senden einer Mitteilung an %s</h2>'
+"The recipient's mail server didn't like it."::="Der Mailserver des Empfängers akzeptierte die Mail nicht."
+'The server didn\'t reply properly to the "HELO" greeting!'::='Der Server hat nicht korrekt auf "HELO" reagiert!'
+"The server didn't accept the from address!"::="Der Server hat den Absender nicht akzeptiert!"
+"The server just didn't like the message for some reason!"::="Der Server hat die Mitteilung aus irgendeinem Grund nicht akzeptiert!"
+'Your name'::='Dein Name'
+'Your e-mail address'::='Deine Mailadresse'
+'Your URL'::='Deine URL'
+'Subject'::='Betreff'
+'Send message'::='Mitteilung senden'
+
 # strings from modules/system/rankings.py
 'Rankings'::='Hitliste'
 '<p>See also: <a href="weblogUpdates.py">weblogs updated today</a>.</p>\n'::='<p>Siehe auch: <a href="weblogUpdates.py">heute aktualisierte Weblogs</a>.</p>\n'
-'hits today'::="Hits heute"
-'all-time hits'::="Hits gesamt"
-'blog name'::="Blogname"
-'link'::="Link"
+'hits today'::='Hits heute'
+'all-time hits'::='Hits gesamt'
+'blog name'::='Blogname'
+'link'::='Link'
 
 # strings from modules/system/referers.py
 'Referrer rankings'::='Verweisliste'
@@ -12,15 +28,15 @@
 'Referrer'::='Verweis'
 'Last hit'::='Letzter Hit'
 'Count'::='Anzahl'
-'<p>See also: <a href="searches.py?usernum=%s&group=%s&order=%s">Search term rankings for this site</a>.</p>'::='<p>Siehe auch: <a href="searches.py?usernum=%s&group=%s&order=%s">Suchbegriffsliste für dieses Weblog</a>.</p>'
+'<p>See also: <a href="searches.py?usernum=%s&group=%s&order=%s">Search term rankings for this site</a>.</p>'::='<p>Siehe auch: <a href="searches.py?usernum=%s&group=%s&order=%s">Suchbegriffsliste f\xfcr dieses Weblog</a>.</p>'
 '<p>Sorry, user %s not found!</p>'::='<p>Sorry, Benutzer %s existiert nicht!</p>'
 
 # strings from modules/system/searches.py
 'Search term rankings'::='Suchbegriffsliste'
-'<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>'::='<p>Siehe auch: <a href="referers.py?usernum=%s&group=%s&order=%s">Verweisliste für dieses Weblog</a>.</p>'
+'<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>'::='<p>Siehe auch: <a href="referers.py?usernum=%s&group=%s&order=%s">Verweisliste f\xfcr dieses Weblog</a>.</p>'
 # already defined: '<p>Sorry, user %s not found!</p>'
-'<h2>Search terms for <strong>%s</strong></h2>'::="<h2>Suchbegriffe für <strong>%s</strong></h2>"
-'Search term'::="Suchbegriff"
+'<h2>Search terms for <strong>%s</strong></h2>'::='<h2>Suchbegriffe f\xfcr <strong>%s</strong></h2>'
+'Search term'::='Suchbegriff'
 # already defined: "Last hit"
 # already defined: "Count"
 # already defined: "Last hit"
@@ -29,9 +45,9 @@
 # already defined: "Count"
 
 # strings from modules/system/weblogUpdates.py
-'Recently updated weblogs'::='Kürzlich aktualisierte Weblogs'
+'Recently updated weblogs'::='K\xfcrzlich aktualisierte Weblogs'
 '<p>See also: <a href="rankings.py">most popular weblogs, ranked by page views</a>.</p>'::='<p>Siehe auch: <a href="rankings.py">Nach Hits sortierte Liste der Weblogs</a>.</p>'
-'<p>Here are the weblogs that have updated in the last 24 hours.  Is yours in there?  ;-)</p>'::="<p>Hier sind die Weblogs, die in den letzten 24 Stunden aktualisiert wurden. Ist Deines dabei? ;-)</p>"
+'<p>Here are the weblogs that have updated in the last 24 hours.  Is yours in there?  ;-)</p>'::='<p>Hier sind die Weblogs, die in den letzten 24 Stunden aktualisiert wurden. Ist Deines dabei? ;-)</p>'
 
 # strings from pycs_translation.py
 'Hello World'::='Hallo Welt'
