@@ -10,6 +10,12 @@ class htmlCleaner( SGMLParser ):
 		SGMLParser.__init__( self )
 		self.cleanedHTML = ''
 		self.cleanedText = ''
+		self.openTags = {}
+
+	def getCleanHtml( self ):
+		for tag, count in self.openTags.items():
+			self.cleanedHTML += ("</%s>" % tag) * count
+		return self.cleanedHTML
 
 	def handle_data( self, data ):
 		self.cleanedText += data
@@ -27,12 +33,17 @@ class htmlCleaner( SGMLParser ):
 		self.cleanedHTML += '&%s;' % entity
 
 	def handle_starttag( self, tag, method, attrs ):
+		self.openTags[tag] = self.openTags.setdefault(tag, 0) + 1
 		if not method( attrs ):
 			self.cleanedHTML += "<" + tag + ">"
 		
 	def handle_endtag( self, tag, method ):
+		count = self.openTags.setdefault(tag, 0)
+		if not count:
+			return
 		if not method():
 			self.cleanedHTML += "</" + tag + ">"
+		self.openTags[tag] = count - 1
 	
 	def start_i( self, attrs ): pass
 	def end_i( self ): pass
@@ -63,7 +74,7 @@ def cleanHtml( text ):
 	parser = htmlCleaner()
 	parser.feed( text )
 	parser.close()
-	return parser.cleanedHTML
+	return parser.getCleanHtml()
 
 if __name__ == '__main__':
 	text = [
@@ -73,6 +84,8 @@ if __name__ == '__main__':
 Your outline is currently the most popular file on this server, because you plus one or two others are downloading it every 10-60 seconds. I can't imagine the hammering radio.weblogs.com must be getting from all the I/O polling, but it must be pretty shocking.""",
 		"""Script should be removed: <script>foo bar</script>""",
 		"""Entities &amp; stuff should stay: &lt;b&gt; shouldn't make the text bold!""",
+		"""unclosed tags should be <i>closed""",
+		"""unopened tags </i> should be ignored""",
 	]
 	for post in text:
 
