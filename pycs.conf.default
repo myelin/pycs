@@ -2,14 +2,24 @@
 
 [main]
 
+# the host that PostgreSQL is running on
+pg_host = localhost
+# the database name for this PyCS instance on the PG server
+pg_db = pycs
+# the login name and password to access the database
+pg_user = pycs
+pg_pass = pycs_database_password
+
+# details of your server.  change serverhostname to be the
+# hostname (e.g. www.pycs.net) of the server.
 serverurl = http://%(serverhostname)s
-
 serverhostname = localhost
-
 serverport = 5445
-
 serveruser = {{USER}}
 
+# the maximum usernum.  PyCS assigns usernums to new users,
+# starting at 1 but never going past this number.  use this to
+# limit the number of users on your server.
 maxusernum = 100
 
 # the next option should be set to a more sensible value, some address

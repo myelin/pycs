@@ -69,18 +69,23 @@ class DB:
 
         # if version 0, need to create the referrers table
         if self.db_id == 0:
+            # grab MK table
+            referrers_table = self.set.db.getas("referrers[time:S,usernum:S,group:S,referrer:S,count:I]").ordered(2)
+            # set up PG
             print "Creating pycs_referrers table"
-            self.execute("""CREATE TABLE pycs_referrers (hit_time TIMESTAMP, usernum INT, usergroup VARCHAR(32), referrer VARCHAR(2048), hit_count INT, is_search_engine BOOLEAN, search_engine VARCHAR(32), search_term VARCHAR(1024))""")
+            self.execute("""CREATE TABLE pycs_referrers (id INT PRIMARY KEY, hit_time TIMESTAMP, usernum INT, usergroup VARCHAR(32), referrer VARCHAR(2048), hit_count INT, is_search_engine BOOLEAN, search_engine VARCHAR(32), search_term VARCHAR(1024))""")
+            self.execute("""CREATE SEQUENCE pycs_referrers_id_seq""")
             self.execute("""CREATE INDEX pycs_referrers_user_index ON pycs_referrers (usernum, usergroup)""")
-            print "Copying referrer data (%d rows) into pycs_referrers table" % len(self.set.referrers)
+            # copy data over
+            print "Copying referrer data (%d rows) into pycs_referrers table" % len(referrers_table)
             count = 0
-            for row in self.set.referrers:
+            for row in referrers_table:
                 if not (count % 1000):
                     print "\r%s" % count,
                 try:
                     matched, term = search_engines.checkUrlForSearchEngine(row.referrer)
                     if term: term = fixupunicode(term).encode("utf-8")
-                    self.execute("INSERT INTO pycs_referrers (hit_time, usernum, usergroup, referrer, hit_count, is_search_engine, search_engine, search_term) VALUES (%s, %d, %s, %s, %d, %s, %s, %s)", (pyto8601(row.time), int(row.usernum), row.group, fixupunicode(row.referrer).encode("utf-8"), row.count, (matched and term) and 't' or 'f', matched, term))
+                    self.execute("INSERT INTO pycs_referrers (id, hit_time, usernum, usergroup, referrer, hit_count, is_search_engine, search_engine, search_term) VALUES (NEXTVAL('pycs_referrers_id_seq'), %s, %d, %s, %s, %d, %s, %s, %s)", (pyto8601(row.time), int(row.usernum), row.group, fixupunicode(row.referrer).encode("utf-8"), row.count, (matched and term) and 't' or 'f', matched, term))
                 except DBE, e:
                     print e
                     print (row.time, row.usernum, row.group, row.referrer, row.count)

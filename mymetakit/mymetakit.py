@@ -30,7 +30,10 @@ __author__ = 'Phillip Pearson; http://www.myelin.co.nz/'
 __license__ = 'MIT; http://www.opensource.org/licenses/mit-license.php'
 
 from __future__ import generators
+from pprint import pprint
 import MySQLdb
+import os.path
+import types
 
 class tablecol:
 	pass
@@ -114,14 +117,22 @@ class tabledef:
 		raise "Internal error: shouldn't get here!"
 	def dumpCols( self ):
 		"Dumps out column structure"
-		import pprint
-		pprint.pprint( self.cols )
+		pprint( self.cols )
 
 class table:
 	def __init__( self, db, tdef ):
 		self.db = db
 		self.tdef = tdef
 		#self.name = self.tdef.cols.name
+		print "table instantiated with",self.tdef
+		self.createTables([self.tdef.cols])
+	def createTables(self, cols, name=''):
+		for c in cols:
+			print "%s col: %s" % (name, c)
+			if type(c) == types.TupleType:
+				tname, tbits = c
+				print "%s bits: %s" % (tname, `tbits`)
+				return self.createTables(tbits, '%s_%s' % (name, tname))
 	def getName( self ):
 		return self.tdef.cols[0]
 	def __len__( self ):
@@ -147,7 +158,6 @@ class storage:
 
 # Unit tests
 if __name__ == '__main__':
-	import os.path
 	print "MyMetakit: test"
 	
 	if not os.path.isfile( 'local_auth.txt' ):

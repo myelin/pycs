@@ -44,6 +44,38 @@ DEPENDENCIES
 		Install this as usual.  Put Mk4py.so and metakit.py into your 
 		PyCS dir if it doesn't work.
 
+	PostgreSQL - http://www.postgresql.org/
+
+		Install this on a machine somewhere.  Now log in as
+		root, and create a database like this:
+
+		su - postgres
+		createdb pycs
+		psql pycs
+		CREATE USER pycs WITH PASSWORD 'mypassword';
+		       (make up a password and use it in the line above 
+		       instead of 'mypassword'!)
+		\q
+		exit
+
+		Don't forget the password you used; you'll need it
+		when writing the pycs.conf file.
+
+		Now you need to give the user access to the database:
+
+		emacs ~postgres/data/pg_hba.conf
+		
+		Comment out all the lines except the first one ("local
+		all postgres ... ident sameuser") and the last one
+		("host all all ... reject"), then add the following
+		lines in between:
+
+		local pycs pycs md5
+		host pycs pycs 127.0.0.1 255.255.255.255 md5
+
+		Now re-load the configuration:
+
+		su - postgres pg_ctl reload
 
 NOTES
 

@@ -33,6 +33,7 @@ import os.path
 import md5
 import ConfigParser
 import pycs_paths
+import pycs_db
 
 
 class Error:
@@ -120,9 +121,6 @@ class Settings:
 			# Update data
 			self.updates = self.db.getas("updates[time:S,usernum:S,title:S]").ordered(2)
 
-			# Referrer data
-			self.referrers = self.db.getas("referrers[time:S,usernum:S,group:S,referrer:S,count:I]").ordered(2)
-
 			# Search data
 			self.mirrored_posts = self.db.getas("mirroredPosts[usernum:S,posts[date:S,postid:S,guid:S,url:S,title:S,description:S]]").ordered()
 
@@ -133,6 +131,12 @@ class Settings:
 
 			if not quiet:
 				self.DumpData()
+
+		# Set up PostgreSQL connection
+		if not self.conf.has_key("pg_host"):
+			print "ERROR: You do not have the pg_* variables set up in pycs.conf.  Are you upgrading from a version that only used MetaKit?  Please read the documentation, and pycs.conf.default, for more information."
+			raise SystemExit(0)
+		self.pdb = apply(pycs_db.DB, [self] + [self.conf[x] for x in ('pg_host', 'pg_db', 'pg_user', 'pg_pass')])
 
 	def getCommentTable(self):
 		return self.comments
@@ -217,6 +221,7 @@ class Settings:
 		self.Commit()
 
 	def AddReferrer(self, usernum, group, referrer):
+		usernum = int(usernum)
 		theTime = self.GetTime()
 
 		# add some regexps to ignore when adding Referrers
@@ -241,27 +246,15 @@ class Settings:
 		if not(ignoreit):
 			# See if that user+group+referrer combination
 			# is already there
-			sth = self.referrers.select({
-				'usernum': usernum,
-				'group': group,
-				'referrer': referrer
-				})
-			if len(sth) != 0:
+			row = self.pdb.fetchone("SELECT id, hit_count FROM pycs_referrers WHERE usernum=%d AND usergroup=%s AND referrer=%s", (usernum, group, referrer))
+			if row:
 				# it is, so update the timestamp and count
-				row = sth[0]
-				row.time = theTime
-				row.count += 1
+				rid, count, = row
+				self.pdb.execute("UPDATE pycs_referrers SET hit_count=%d, hit_time=NOW() WHERE id=%d", (count+1, rid))
 			else:
 				# it isn't, so add a new row to the DB
-				self.referrers.append({
-					'usernum': usernum,
-					'time': theTime,
-					'group': group,
-					'referrer': referrer,
-					'count': 1
-					})
-			self.Commit()
-			
+				self.pdb.execute("INSERT INTO pycs_referrers (id, usernum, usergroup, referrer, hit_time, hit_count) VALUES (NEXTVAL('pycs_referrers_id_seq'), %d, %s, %s, NOW(), 1)", (usernum, group, referrer))
+	
 	def Commit(self):
 		self.db.commit()
 		

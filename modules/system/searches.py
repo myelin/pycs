@@ -77,7 +77,7 @@ else:
 		order = query.get('order','time')
 		
 		user = set.User( usernum )
-		usernum = user.usernum
+		usernum = int(user.usernum)
 		
 		s += _("<h2>Search terms for <strong>%s</strong></h2>") % (user.name,)
 		s += '<table width="80%%" cellspacing="5" cellpadding="2">'
@@ -113,27 +113,21 @@ else:
 				orderLink(usernum, group, 'count'),
 				_("Count") )
 
-		referrerlist = []
-		for row in set.referrers.select( { 'usernum': usernum, 'group': group } ):
-			referrerlist.append(row)
-
 		if order == 'time':
-			referrerlist.sort(sortISOTime)
+			order_criteria = 'hit_time'
 		elif order == 'count':
-			referrerlist.sort(lambda a,b: -1*cmp(a.count,b.count))
+			order_criteria = 'hit_count'
 		else:
-			referrerlist.sort(lambda a,b: -1*cmp(a.referrer,b.referrer))
+			order_criteria = 'referrer'
 
-		for row in referrerlist:
-			(matched, term) = checkUrlForSearchEngine(row.referrer)
-			if matched and term:
-				try:
-					term = term.decode('utf-8').encode('iso-8859-1')
-				except: pass
-				s += """
-				<tr><td align="left"><a target="_new" href="%s">%s: <b>%s</b></a></td>
-				<td align="left"><pre>%s</pre></td><td align="right">%s</td></tr>
-				""" % ( row.referrer.replace('"','%22'), matched, unquote( term ), row.time, row.count)
+		for hit_time, full_referrer, hit_count in set.pdb.execute("SELECT hit_time, referrer, hit_count FROM pycs_referrers WHERE usernum=%d AND usergroup=%s AND is_search_engine='t' ORDER BY "+order_criteria+" DESC LIMIT 100", (usernum, group)):
+			try:
+				term = term.decode('utf-8').encode('iso-8859-1')
+			except: pass
+			s += """
+			<tr><td align="left"><a target="_new" href="%s">%s: <b>%s</b></a></td>
+			<td align="left"><pre>%s</pre></td><td align="right">%s</td></tr>
+			""" % ( row.referrer.replace('"','%22'), matched, unquote( term ), row.time, row.count)
 
 		s += "</table>\n"
 		s += _('<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>') % (usernum, group, order)

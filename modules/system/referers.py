@@ -81,34 +81,26 @@ else:
 		else: full = 0
 		
 		user = set.User( usernum )
-		usernum = user.usernum
+		usernum = int(user.usernum)
 		
-		referrerlist = []
-		searchlist = []
-		fulllist = []
-		data = set.referrers.select( { 'usernum': usernum, 'group': group } )
-		for row in data:
-			(matched, term) = checkUrlForSearchEngine(row.referrer)
-			if not(matched) or not(term):
-				referrerlist.append(row)
-			else:
-				searchlist.append(row)
-			fulllist.append(row)
+		# include search engine hits if there aren't too many
+		for ct,se in set.pdb.execute("SELECT COUNT(*), is_search_engine FROM pycs_referrers WHERE usernum=%d AND usergroup=%s GROUP BY is_search_engine", (usernum, group)):
+			if ct < 30: full = 1
 
-		if len(fulllist) < 100:
-			referrerlist = fulllist
-			full = 1
-		elif len(searchlist) < 30 or len(referrerlist) < 30:
-			referrerlist = fulllist
-			full = 1
-
+		# build sql
 		if order == 'time':
-			referrerlist.sort(sortISOTime)
-		elif order == 'count':
-			referrerlist.sort(lambda a,b: -1*cmp(a.count,b.count))
+			order_criteria = 'hit_time'
+		elif order == 'referrer':
+			order_criteria = 'referrer'
 		else:
-			referrerlist.sort(lambda a,b: -1*cmp(a.referrer,b.referrer))
+			order_criteria = 'hit_count'
 
+		if full:
+			search_criteria = ''
+		else:
+			search_criteria = "AND is_search_engine='f'"
+
+		# start output
 		s += "<h2>%s <strong>%s</strong></h2>" % (
 			_('Referrers for'),
 			user.name,
@@ -149,8 +141,8 @@ else:
 				orderLink(usernum, group, 'count', full),
 				_('Count') )
 
-		for row in referrerlist:
-			referrer = cgi.escape( row.referrer, 1 )
+		for hit_time, full_referrer, hit_count in set.pdb.execute("SELECT hit_time, referrer, hit_count FROM pycs_referrers WHERE usernum=%d AND usergroup=%s "+search_criteria+" ORDER BY "+order_criteria+" DESC LIMIT 100", (usernum, group)):
+			referrer = cgi.escape( full_referrer, 1 )
 			if len(referrer) > 44:
 				referrer = referrer[:40] + ' [...]'
 			referrer = referrer.replace(' ','&nbsp;')
@@ -158,7 +150,7 @@ else:
 			s += """
 			<tr><td align="left"><a target="_new" href="%s">%s</a></td>
 			<td align="left"><pre>%s</pre></td><td align="right">%s</td></tr>
-			""" % ( row.referrer, referrer, row.time, row.count)
+			""" % ( full_referrer, referrer, hit_time, hit_count)
 
 		s += "</table>\n"
 		s += _('<p>See also: <a href="searches.py?usernum=%s&group=%s&order=%s">Search term rankings for this site</a>.</p>') % (usernum, group, order)
