@@ -25,7 +25,6 @@
 import os
 import string
 import time
-import pycs_paths
 import pycs_settings
 
 request['Content-Type'] = 'image/gif'
@@ -38,27 +37,38 @@ form = util.SplitQuery( input_data.read() )
 if query.has_key('usernum'):
 	try:
 		usernum = query['usernum']
+		try:
+			usernum = int(usernum)
+		except: pass
 		user = set.User(usernum)
-		group = query['group']
-		referer = query['referer']
-		time = time.strftime('%d/%b/%Y:%H:%M:%S %Z',time.localtime(time.time()))
 		usernum = user.usernum
+
 		user.hitstoday += 1
 		user.hitsalltime += 1
 		set.Commit()
-		log = open(os.path.join(pycs_paths.LOGDIR, '%s-referer.log' % usernum), 'a')
-		log.write('%s\t%s\t%s\t%s\n' % (time, usernum, group, referer))
-		log.close()
+
+		group = 'default'
+		if query.has_key('group'):
+			group = query['group']
+		referrer = None
+		if query.has_key('referrer'):
+			referrer = query['referrer']
+		if query.has_key('referer'):
+			referrer = query['referer']
+		if referrer:
+			print "referrer %s added for user %s\n" % (referrer, usernum)
+			set.AddReferrer(usernum, group, referrer)
+		
 	except pycs_settings.NoSuchUser:
 		pass
 	
 # Dump a blank gif
 gifstr = """47 49 46 38 39 61 01 00 01 00 B3 00 00 00 00 00
-            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-            00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-            00 00 00 00 00 00 00 00 00 00 00 00 00 21 F9 04
-            01 00 00 00 00 2C 00 00 00 00 01 00 01 00 00 04
-            02 10 44 00 3B"""
+	    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	    00 00 00 00 00 00 00 00 00 00 00 00 00 21 F9 04
+	    01 00 00 00 00 2C 00 00 00 00 01 00 01 00 00 04
+	    02 10 44 00 3B"""
 
 gif = ''
 for byte in string.split(gifstr):
