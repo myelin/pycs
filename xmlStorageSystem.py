@@ -388,18 +388,34 @@ class xmlStorageSystem_handler:
 			
 			print "---USER INFO---",userinfo,"------"
 
-			if userinfo != {}:			
+			u.clientPort = clientPort
+			if userinfo != {}:
 				u.email = userinfo['email']
 				u.weblogTitle = userinfo['weblogTitle']
 				u.serialNumber = userinfo['serialNumber']
 				u.organization = userinfo['organization']
 				u.flBehindFirewall = (userinfo['flBehindFirewall'] == xmlrpclib.True)
 				u.name = userinfo['name']
+			
+			now = self.set.GetTime()
+			
+			if u.signedon:
+				if status:
+					# user is disconnecting
+					u.signedon = 0
+					u.lastsignoff = now
+					u.signons += 1
+			else:
+				if not status:
+					# user is signing on
+					u.signedon = 1
+					u.lastsignon = now
 				
-			u.lastping = self.set.GetTime()
+			u.lastping = now
 			u.pings += 1
 			if u.membersince == '':
-				u.membersince = self.set.GetTime()
+				u.membersince = now
+			
 			self.set.Commit()
 			
 		except pycs_settings.PasswordIncorrect:
@@ -418,7 +434,7 @@ class xmlStorageSystem_handler:
 				'email': u.email,
 				'name': u.name,
 				'organization': u.organization,
-				'ctFileDeletions': 1234, 
+				'ctFileDeletions': u.deletes,
 				'whenCreated': u.membersince,
 				'ctAccesses': u.pings,
 				'serialNumber': u.serialNumber,
@@ -426,18 +442,18 @@ class xmlStorageSystem_handler:
 				'flBehindFirewall': xmlrpclib.boolean( u.flBehindFirewall ),
 				'weblogTitle': u.weblogTitle,
 				'ctUpstreams': u.upstreams,
-				'ctSignons': 1234, 
+				'ctSignons': u.signons,
 				'whenLastAccess': u.lastping,
 				'whenLastUpstream': u.lastupstream,
-				'port': 1234,
+				'port': u.clientPort,
 				'ctBytesUpstreamed': 1234,
 				'userAgent': "don't know",
 				'ctBytesInUse': self.userSpaceUsed( u.usernum ),
-				'whenLastSignOff': "don't know",
+				'whenLastSignOff': u.lastsignoff,
 				'messageOfTheDay': "no news, sorry!",
-				'whenLastSignOn': "don't know",
-				'flSignedOn': xmlrpclib.True,
-				'usernum': 105256, 
+				'whenLastSignOn': u.lastsignon,
+				'flSignedOn': xmlrpclib.boolean( u.signedon ),
+				'usernum': u.usernum,
 				'rssHotlistData': {
 					'f': self.userLocalFolder( u.usernum ) + '/gems/mySubscriptions.opml', 
 					'urls': {
