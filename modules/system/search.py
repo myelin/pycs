@@ -227,12 +227,13 @@ def search(usernum, posts_t, query, skip_hits):
 			extra += extra_link % (urllib.quote(query), first_hit-prev_avail, _("Show previous %s").decode(set.DocumentEncoding()) % prev_avail)
 		if last_hit < total_hits:
 			extra += extra_link % (urllib.quote(query), last_hit, _("Show next %d").decode(set.DocumentEncoding()) % min(max_hits, total_hits - last_hit))
-		add(_("<p>Showing hits %d-%d out of %d. %s</p>").decode(set.DocumentEncoding()) % (
+		navline = _("<p>Showing hits %d-%d out of %d. %s</p>").decode(set.DocumentEncoding()) % (
 			skip_hits + 1,
 			skip_hits + len(hits),
 			total_hits,
 			extra
-			))
+			)
+		add(navline)
 		lastdate = None
 		for post in hits:
 			hitdate = post.date[:8]
@@ -250,6 +251,7 @@ def search(usernum, posts_t, query, skip_hits):
 				desc += ' ...'
 			add('<div class="searchpost">%s</div></div>' % desc)
 		add('</div>')
+		add(navline)
 	html = ''
 	for block in ret:
 		if type(block) == type(u''):
