@@ -80,7 +80,7 @@ class formatter( defaultFormatter.defaultFormatter ):
 		<tr><td><label for="name">Name</label></td><td width="99%%"><input type="text" size="50" name="name" value="%s"/></td></tr>
 		<tr><td><label for="email">Email</label></td><td><input type="text" size="50" name="email" value="%s"/></td></tr>
 		<tr><td><label for="url">Website</label></td><td><input type="text" size="50" name="url" value="%s"/></td></tr>
-		<tr><td><label for="comment">Comment</label></td><td><textarea name="comment" width="100%%" rows="10"></textarea></td></tr>
+		<tr><td><label for="comment">Comment</label></td><td><textarea name="comment" width="100%%" cols="50" rows="10"></textarea></td></tr>
 		<tr><td></td><td><input type="submit" value="Save comment" />
 			<input type="button" value="Cancel" onclick="javascript:window.close()" /></td></tr>
 		<tr><td></td><td><strong>Note</strong>: 'http://...' will be converted into links.
