@@ -288,7 +288,7 @@ else:
 			notes.sort(lambda a,b: -1*cmp(a[0].date,b[0].date))
 			if fullfeed < 3:
 				now = time.strftime( "%Y-%m-%d %H:%M:%S", time.gmtime( time.time() - 14*24*3600 ) )
-				notes = filter( lambda a: a[0].date < now, notes )
+				notes = filter( lambda a: a[0].date >= now, notes )
 		for iCmt in range( len( notes ) ):
 			# a fullfeed has to pass in the paragraph to the
 			# formatter, while a paragraph related feed does
