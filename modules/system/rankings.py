@@ -72,10 +72,11 @@ for title,section in ( (_("hits today"),todayRanks), (_("all-time hits"),alltime
 
 	for hits,user in section:
 		if not hits: break
-		s += _("""
-		<tr><td><a href="%s">%s</a> (<a href="%s">link</a>)</td><td>%d</td></tr>
-		""") % ( "referers.py?usernum=%s&order=count" % ( user.usernum, ),
-			user.weblogTitle, set.UserFolder( user.usernum ), hits
+		s += """
+		<tr><td><a href="%s">%s</a> (<a href="%s">%s</a>)</td><td>%d</td></tr>
+		""" % ( "referers.py?usernum=%s&order=count" % ( user.usernum, ),
+			user.weblogTitle, set.UserFolder( user.usernum ),
+			_("link"), hits
 		)
 
 	s += """

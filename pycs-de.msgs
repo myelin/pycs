@@ -1,43 +1,39 @@
-# Test entry for pycs_translation direct call from shell
-'Hello World'::='Hallo Welt'
+# strings from modules/system/rankings.py
+'Rankings'::='Hitliste'
+'<p>See also: <a href="weblogUpdates.py">weblogs updated today</a>.</p>\n'::='<p>Siehe auch: <a href="weblogUpdates.py">heute aktualisierte Weblogs</a>.</p>\n'
+'hits today'::="Hits heute"
+'all-time hits'::="Hits gesamt"
+'blog name'::="Blogname"
+'link'::="Link"
 
-# Strings for modules/system/weblogUpdates.py
-'Recently updated weblogs'::='Aktualisierte Weblogs'
-
-'\n<p>Here are the weblogs that have updated in the last 24 hours.  Is yours in there?  ;-)</p>\n<table width="80%%" cellspacing="0" cellpadding="2">\n'::='\n<p>Hier sind die Weblogs, die in den letzten 24 Stunden aktualisiert wurden.  Ist Deines mit dabei?  ;-)</p>\n<table width="80%%" cellspacing="0" cellpadding="2">\n'
-
-'\n</table>\n<p>See also: <a href="rankings.py">most popular weblogs, ranked by page views</a>.</p>\n'::='\n</table>\n<p>Siehe auch: <a href="rankings.py">die beliebtesten Weblogs, nach Hits sortiert</a>.</p>\n'
-
-# Strings for modules/system/rankings.py
-'Rankings'::='Hitlisten'
-'hits today'::='Hits Heute'
-'all-time hits'::='Hits gesamt'
-'blog name'::='Blogname'
-
-'\n\t\t<tr><td><a href="%s">%s</a> (<a href="%s">link</a>)</td><td>%d</td></tr>\n\t\t'::='\n\t\t<tr><td><a href="%s">%s</a> (<a href="%s">Link</a>)</td><td>%d</td></tr>\n\t\t'
-
-'<p>See also: <a href="weblogUpdates.py">weblogs updated today</a>.</p>\n'::='<p>Siehe auch: <a href="weblogUpdates.py">Kürzlich aktualisierte Weblogs</a>.</p>\n'
-
-# Strings for modules/system/referers.py
+# strings from modules/system/referers.py
 'Referrer rankings'::='Verweisliste'
+'Referrers for'::='Verweise auf'
+'Referrer'::='Verweis'
+'Last hit'::='Letzter Hit'
+'Count'::='Anzahl'
+'<p>See also: <a href="searches.py?usernum=%s&group=%s&order=%s">Search term rankings for this site</a>.</p>'::='<p>Siehe auch: <a href="searches.py?usernum=%s&group=%s&order=%s">Suchbegriffsliste für dieses Weblog</a>.</p>'
 '<p>Sorry, user %s not found!</p>'::='<p>Sorry, Benutzer %s existiert nicht!</p>'
 
-'\n\t\t<h2>Referrers for <strong>%s</strong></h2>\n\t\t<table width="80%%" cellspacing="5" cellpadding="2">\n\t\t'::='\n\t\t<h2>Verweise auf <strong>%s</strong></h2>\n\t\t<table width="80%%" cellspacing="5" cellpadding="2">\n\t\t'
-
-'\n\t\t\t<tr><th align="left"><a href="%s">Referrer</a></th>\n\t\t\t\t<th align="left">Last hit</th>\n\t\t\t\t<th align="right"><a href="%s">Count</a></th></tr>\n\t\t\t'::='\n\t\t\t<tr><th align="left"><a href="%s">Verweis</a></th>\n\t\t\t\t<th align="left">Letzter Hit</th>\n\t\t\t\t<th align="right"><a href="%s">Anzahl</a></th></tr>\n\t\t\t'
-
-'\n\t\t\t<tr><th align="left">Referrer</th>\n\t\t\t\t <th align="left"><a href="%s">Last hit</a></th>\n\t\t\t\t<th align="right"><a href="%s">Count</a></th></tr>\n\t\t\t'::='\n\t\t\t<tr><th align="left">Verweis</th>\n\t\t\t\t <th align="left"><a href="%s">Letzter Hit</a></th>\n\t\t\t\t<th align="right"><a href="%s">Anzahl</a></th></tr>\n\t\t\t'
-
-'\n\t\t\t<tr><th align="left"><a href="%s">Referrer</a></th>\n\t\t\t\t<th align="left"><a href="%s">Last hit</a></th>\n\t\t\t\t<th align="right">Count</th></tr>\n\t\t\t'::='\n\t\t\t<tr><th align="left"><a href="%s">Verweis</a></th>\n\t\t\t\t<th align="left"><a href="%s">Letzter Zugriff</a></th>\n\t\t\t\t<th align="right">Anzahl</th></tr>\n\t\t\t'
-
-'\n\t\t</table>\n\t\t<p>See also: <a href="searches.py?usernum=%s&group=%s&order=%s">Search term rankings for this site</a>.</p>\n\t\t'::='\n\t\t</table>\n\t\t<p>Siehe auch: <a href="searches.py?usernum=%s&group=%s&order=%s">Liste von Suchbegriffen auf dieses Blog</a>.</p>\n\t\t'
-
-# Strings for modules/system/searches.py
+# strings from modules/system/searches.py
 'Search term rankings'::='Suchbegriffsliste'
+'<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>'::='<p>Siehe auch: <a href="referers.py?usernum=%s&group=%s&order=%s">Verweisliste für dieses Weblog</a>.</p>'
+# already defined: '<p>Sorry, user %s not found!</p>'
+'<h2>Search terms for <strong>%s</strong></h2>'::="<h2>Suchbegriffe für <strong>%s</strong></h2>"
+'Search term'::="Suchbegriff"
+# already defined: "Last hit"
+# already defined: "Count"
+# already defined: "Last hit"
+# already defined: "Count"
+# already defined: "Last hit"
+# already defined: "Count"
 
-'\n\t\t<h2>Search terms for <strong>%s</strong></h2>\n\t\t<table width="80%%" cellspacing="5" cellpadding="2">\n\t\t'::='\n\t\t<h2>Suchbegriffe für <strong>%s</strong></h2>\n\t\t<table width="80%%" cellspacing="5" cellpadding="2">\n\t\t'
+# strings from modules/system/weblogUpdates.py
+'Recently updated weblogs'::='Kürzlich aktualisierte Weblogs'
+'<p>See also: <a href="rankings.py">most popular weblogs, ranked by page views</a>.</p>'::='<p>Siehe auch: <a href="rankings.py">Nach Hits sortierte Liste der Weblogs</a>.</p>'
+'<p>Here are the weblogs that have updated in the last 24 hours.  Is yours in there?  ;-)</p>'::="<p>Hier sind die Weblogs, die in den letzten 24 Stunden aktualisiert wurden. Ist Deines dabei? ;-)</p>"
 
-'\n\t\t\t<tr><th align="left"><a href="%s">Search term</a></th>\n\t\t\t\t<th align="left">Last hit</th>\n\t\t\t\t<th align="right"><a href="%s">Count</a></th></tr>\n\t\t\t'::='\n\t\t\t<tr><th align="left"><a href="%s">Suchbegriff</a></th>\n\t\t\t\t<th align="left">Letzter Hit</th>\n\t\t\t\t<th align="right"><a href="%s">Anzahl</a></th></tr>\n\t\t\t'
-
-'\n\t\t</table>\n\t\t<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>\n\t\t'::='\n\t\t</table>\n\t\t<p>Siehe auch: <a href="referers.py?usernum=%s&group=%s&order=%s">Verweisliste auf dieses Blog</a>.</p>\n\t\t'
+# strings from pycs_translation.py
+'Hello World'::='Hallo Welt'
+'This is a test'::='Dieses ist ein Test'
 

@@ -100,32 +100,39 @@ else:
 		user = set.User( usernum )
 		usernum = user.usernum
 		
-		s += _("""
-		<h2>Search terms for <strong>%s</strong></h2>
-		<table width="80%%" cellspacing="5" cellpadding="2">
-		""") % (user.name,)
+		s += _("<h2>Search terms for <strong>%s</strong></h2>") % (user.name,)
+		s += '<table width="80%%" cellspacing="5" cellpadding="2">'
 
 		if order == 'time':
-			s += _("""
-			<tr><th align="left"><a href="%s">Search term</a></th>
-				<th align="left">Last hit</th>
-				<th align="right"><a href="%s">Count</a></th></tr>
-			""") % ( orderLink( usernum, group, 'referrer' ),
-				orderLink( usernum, group, 'count' ) )
+			s += """
+			<tr><th align="left"><a href="%s">%s</a></th>
+				<th align="left">%s</th>
+				<th align="right"><a href="%s">%s</a></th></tr>
+			""" % ( orderLink( usernum, group, 'referrer' ),
+			        _("Search term"),
+				_("Last hit"),
+				orderLink( usernum, group, 'count' ),
+				_("Count") )
 		elif order == 'count':
-			s += _("""
-			<tr><th align="left"><a href="%s">Search term</a></th>
-				<th align="left"><a href="%s">Last hit</a></th>
-				<th align="right">Count</th></tr>
-			""") % (orderLink(usernum, group, 'referrer'),
-				orderLink(usernum, group, 'time'))
+			s += """
+			<tr><th align="left"><a href="%s">%s</a></th>
+				<th align="left"><a href="%s">%s</a></th>
+				<th align="right">%s</th></tr>
+			""" % ( orderLink(usernum, group, 'referrer'),
+			        _("Search term"),
+				orderLink(usernum, group, 'time'),
+				_("Last hit"),
+				_("Count") )
 		else:
-			s += _("""
-			<tr><th align="left">Search term</th>
-				 <th align="left"><a href="%s">Last hit</a></th>
-				<th align="right"><a href="%s">Count</a></th></tr>
-			""") % (orderLink(usernum, group, 'time'),
-				orderLink(usernum, group, 'count'))
+			s += """
+			<tr><th align="left">%s</th>
+				 <th align="left"><a href="%s">%s</a></th>
+				<th align="right"><a href="%s">%s</a></th></tr>
+			""" % ( _("Search term"),
+			        orderLink(usernum, group, 'time'),
+				_("Last hit"),
+				orderLink(usernum, group, 'count'),
+				_("Count") )
 
 		referrerlist = []
 		for row in set.referrers.select( { 'usernum': usernum, 'group': group } ):
@@ -153,10 +160,8 @@ else:
 				<td align="left"><pre>%s</pre></td><td align="right">%s</td></tr>
 				""" % (cgi.escape( row.referrer, 1 ), matched, term, row.time, row.count)
 
-		s += _("""
-		</table>
-		<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>
-		""") % (usernum, group, order)
+		s += "</table>\n"
+		s += _('<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>') % (usernum, group, order)
 
 	except pycs_settings.NoSuchUser:
 		s += _('<p>Sorry, user %s not found!</p>') % (usernum,)

@@ -35,10 +35,8 @@ page = {
 		think something is broken.</p>""",
 	}
 
-s = _("""
-<p>Here are the weblogs that have updated in the last 24 hours.  Is yours in there?  ;-)</p>
-<table width="80%%" cellspacing="0" cellpadding="2">
-""")
+s = _("<p>Here are the weblogs that have updated in the last 24 hours.  Is yours in there?  ;-)</p>")
+s += "\n<table width="80%%" cellspacing="0" cellpadding="2">"
 
 updates = updatesDb.updatesDb( set )
 tbl = updates.updatesTable
@@ -72,10 +70,8 @@ else:
 			)
 		nDispIndex += 1
 		
-s += _("""
-</table>
-<p>See also: <a href="rankings.py">most popular weblogs, ranked by page views</a>.</p>
-""")
+s += "</table>\n"
+s += _('<p>See also: <a href="rankings.py">most popular weblogs, ranked by page views</a>.</p>')
 
 # Dump it all out
 
