@@ -87,6 +87,7 @@ def makeXmlBoolean( a ):
 
 def done_msg(msg = 'Done!'):
 	return retmsg(0, msg)
+
 def param_err(n, max = None, args = 'No arguments info available'):
 	if max == None:
 		return retmsg(1, 'Wrong number of parameters (expected %d: %s)!' % (n, args))
@@ -205,7 +206,7 @@ class pycsAdmin_handler:
 			
 	def recalc( self, params ):
 		if len(params) != 1:
-			return param_err(1)
+			return param_err(1, args='one of diskspace')
 
 		if params[0] == 'diskspace':
 			self.set.RecalculateUserSpace()
@@ -217,7 +218,7 @@ class pycsAdmin_handler:
 		res = []
 
 		if len(params) != 1:
-			return param_err(1)
+			return param_err(1, args='usernum')
 
 		user = self.set.User( params[0] )
 
@@ -236,7 +237,7 @@ class pycsAdmin_handler:
 		res = []
 
 		if len(params) != 3:
-			return param_err(3)
+			return param_err(3, args='usernum, option, value')
 
 		user = self.set.User( params[0] )
 
@@ -249,7 +250,7 @@ class pycsAdmin_handler:
 		res = []
 
 		if len(params) != 1:
-			return param_err(1)
+			return param_err(1, args='one of users/enabled/disabled/rewrites/aliases')
 
 		if params[0] == 'users':
 			sth = self.set.users.ordered(1)
@@ -292,7 +293,7 @@ class pycsAdmin_handler:
 		res = []
 
 		if len(params) != 1:
-			return param_err(1)
+			return param_err(1, args='usernum')
 
 		user = self.set.User( params[0] )
 		user.disabled = 0
@@ -304,7 +305,7 @@ class pycsAdmin_handler:
 		res = []
 
 		if len(params) != 1:
-			return param_err(1)
+			return param_err(1, args='usernum')
 
 		user = self.set.User( params[0] )
 		user.disabled = 1
@@ -314,7 +315,7 @@ class pycsAdmin_handler:
 
 	def alias( self, params ):
 		if (len(params) < 2) or (len(params) > 3):
-			return param_err(2,3)
+			return param_err(2,3, args='del usernum or simple/manila usernum alias')
 		if params[0] == 'del':
 			if len(params) != 2:
 				return {
@@ -446,7 +447,7 @@ class pycsAdmin_handler:
 		return cmt_block
 
 	def add_comments( self, params ):
-		if len(params) != 2: return param_err(2)
+		if len(params) != 2: return param_err(2, args='usernum, plist')
 
 		import comments
 
@@ -500,7 +501,7 @@ class pycsAdmin_handler:
 		return ret
 
 	def renumber_comment( self, params ):
-		if len(params) != 4: return param_err(4)
+		if len(params) != 4: return param_err(4, args='usernum, oldid, newusernum, newid')
 
 		usernum, oldid, newusernum, newid = params
 
@@ -527,7 +528,7 @@ class pycsAdmin_handler:
 		return done_msg("Comment %s for usernum %s renumbered to %s for usernum %s\n\ndetails:\n%s" % (oldid, usernum, newid, newusernum, ret))
 
 	def renumber_all_comments(self, params):
-		if len(params) != 2: return param_err(2)
+		if len(params) != 2: return param_err(2, args='usernum, newusernum')
 
 		usernum, newusernum = params
 		ret = ''
