@@ -116,7 +116,7 @@ Subject: %s
 	try:
 		sender = smtplib.SMTP( "localhost", 25 )
 		sender.sendmail(
-			'python-community-server-mailto@myelin.co.nz',
+			set.ServerMailTo(),
 			u.email,
 			msg,
 			)

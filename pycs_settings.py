@@ -119,6 +119,12 @@ class Settings:
 	def ServerPort( self ):
 		return int( self.conf['serverport'] )
 
+	def ServerMailTo( self ):
+		if self.conf.has_key('servermailto'):
+			return self.conf['servermailto']
+		else:
+			return 'python-community-server-mailto@myelin.co.nz'
+
 	def GetDate( self ):
 		(y, m, d, hh, mm, ss, wday, jday, dst) = time.localtime()
 		
