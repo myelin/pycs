@@ -331,18 +331,17 @@ class Settings:
 		
 		out = """<html>
 	<head>
-		<title>Python Community Server: """ + data['title'] + """</title>
-		<link rel="stylesheet" href="http://www.myelin.co.nz/pycs.css" type="text/css" />
+		<title>Python Community Server: %s</title>
+		<link rel="stylesheet" href="%s/pycs.css" type="text/css" />
 	</head>
 	<body>
-		<h1>PyCS: <strong>""" + data['title'] + """</strong></h1>
+		<h1>PyCS: <strong>%s</strong></h1>
 		<div class="margins">
-		"""
-		out += data['body']
-		out +=  """
+		%s
 		</div>
 	</body>
-	</html>"""
+	</html>""" % ( data['title'], self.ServerUrl(),
+			data['title'], data['body'] )
 	
 		return out
 
