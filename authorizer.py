@@ -118,7 +118,7 @@ def classify_file( path, query ):
 	else:
 		folder = re.match( r'(.*)\/', path ).group( 1 )
 		print "folder:",folder
-		if folder == '':
+		if folder in ( '', 'initialResources' ):
 			filetype = PUBLIC_FILE
 	
 	return filetype, usernum
