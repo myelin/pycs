@@ -33,16 +33,16 @@ SUBDIRS = www conf modules
 DIRS = $(addprefix $(D)/, $(SUBDIRS))
 PYCSFILES = README LICENSE Makefile mkidx.pl \
 	pycs.py \
-	pycs_settings.py pycs_comments.py pycs_module_handler.py pycs_xmlrpc_handler.py \
-	pycs_http_util.py \
-	xmlStorageSystem.py radioCommunityServer.py \
+	pycs_settings.py pycs_comments.py pycs_module_handler.py pycs_xmlrpc_handler.py pycs_rewrite_handler.py \
+	pycs_http_util.py strptime.py \
+	xmlStorageSystem.py radioCommunityServer.py weblogUpdates.py \
 	startserver.sh update.sh startserver.bat \
 	test_server.py test_settings.py \
 	analyse_logs.py \
-	pycs.conf 
+	pycs.conf rewrite.conf
 PYCSMODFILES = updates.py mailto.py users.py comments.py login.py
 SPECIFICS = $(PYCSFILES) medusa/*.py metakit.py Mk4py.so
-VER = 0.02
+VER = 0.03
 DISTFN = pycs-$(VER)-src
 LATESTFN = pycs-latest-src
 
@@ -69,12 +69,15 @@ scripts:
 	cp www/index.html $(D)/www/
 	chown root.root $(D)/www/index.html
 	chmod 644 $(D)/www/index.html
+	perl -w make_readme.pl < README > $(D)/www/readme.html
 
 dist:
 	rm -rf $(DISTFN)/
 	rm -f $(DISTFN).tar.gz
 	mkdir -p $(DISTFN)
 	cp $(PYCSFILES) $(DISTFN)/
+	perl -w extract_pycs_net.pl < pycs.conf > $(DISTFN)/pycs.conf
+	perl -w extract_pycs_net.pl < rewrite.conf > $(DISTFN)/rewrite.conf
 	mkdir -p $(DISTFN)/modules/system
 	cp $(addprefix modules/system/, $(PYCSMODFILES)) $(DISTFN)/modules/system/
 	mkdir -p $(DISTFN)/www

@@ -26,20 +26,26 @@
 
 print "[Loading server]"
 
-import default_handler
+# System & web server modules
 import asyncore
 import http_server
 import filesys
+import re
 
-# internal modules
+# Internal modules
 import pycs_settings
 import pycs_comments # OBSOLETE - WILL BE REMOVED SOON
+
+# HTTP handlers
+import default_handler
+import pycs_rewrite_handler
 import pycs_module_handler
 import pycs_xmlrpc_handler
 
-# xml-rpc handlers
+# XML-RPC handlers
 import xmlStorageSystem
 import radioCommunityServer
+import weblogUpdates
 
 
 
@@ -49,12 +55,18 @@ print "[Loaded]"
 # Make sure we can be imported (need this for pychecker)
 
 if __name__ == '__main__':
-	# Make GET handler
-	fs = filesys.os_filesystem( "./www" )
-	default_h = default_handler.default_handler( fs )
-	
 	# Get config
 	set = pycs_settings.Settings()
+
+	# Make URL rewriter
+	rewriteMap = []
+	execfile( 'rewrite.conf' )
+	
+	rw_h = pycs_rewrite_handler.pycs_rewrite_handler( set, rewriteMap )
+
+	# Make GET handler	
+	fs = filesys.os_filesystem( "./www" )
+	default_h = default_handler.default_handler( fs )
 	
 	# Make XML-RPC handler
 	rpc_h = pycs_xmlrpc_handler.pycs_xmlrpc_handler( set )
@@ -66,6 +78,10 @@ if __name__ == '__main__':
 	# Make radioCommunityServer XML-RPC handler
 	rpc_rcs_h = radioCommunityServer.radioCommunityServer_handler( set )
 	rpc_h.AddNamespace( 'radioCommunityServer', rpc_rcs_h )
+	
+	# Make weblogUpdates XML-RPC handler
+	rpc_wu_h = weblogUpdates.weblogUpdates_handler( set )
+	rpc_h.AddNamespace( 'weblogUpdates', rpc_wu_h )
 	
 	######
 	# Make handler for /comments
@@ -84,6 +100,7 @@ if __name__ == '__main__':
 	hs.install_handler( comment_h )
 	hs.install_handler( mod_h )
 	hs.install_handler( rpc_h )
+	hs.install_handler( rw_h )
 	
 	print "[Server started]"
 	asyncore.loop()

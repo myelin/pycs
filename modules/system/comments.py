@@ -33,10 +33,12 @@ import string
 import cgi
 import binascii
 import base64
+import time
+import strptime
 
 # order by user & paragraph
 comments = set.db.getas(
-	'comments[user:S,paragraph:S,notes[name:S,email:S,url:S,comment:S]]'
+	'comments[user:S,paragraph:S,notes[name:S,email:S,url:S,comment:S,date:S]]'
 	).ordered( 2 )
 
 [path, params, query, fragment] = request.split_uri()
@@ -47,14 +49,18 @@ s = """
 <style type="text/css">
 <!--
 textarea { width: 100% }
-.black { background-color: black }
-td { background-color:  lightgrey }
-.cmt { background-color: #eeeeee }
+.black { background-color: black; }
+td { background-color:  lightgrey; }
+.cmt { background-color: #eeeeee; }
+.commentfooter { font-size: 0.8em; background-color: white; }
+.quietlink { font-weight: bold; color: black; }
 -->
 </style>
 </head>
 <body>
 """
+
+STANDARDDATEFORMAT = '%Y-%m-%d %H:%M:%S'
 
 # Decode information in query string and form		
 query = util.SplitQuery( query )
@@ -185,6 +191,7 @@ else:
 			'name': storedName,
 			'url': storedUrl,
 			'comment': form['comment'],
+			'date': time.strftime( STANDARDDATEFORMAT ),
 			}
 		
 		nComments += 1
@@ -231,20 +238,40 @@ else:
 		for iCmt in range( len( notes ) ):
 			cmt = notes[iCmt]
 			#s += 'cmt: %s<br>' % (cmt.comment,)
+			if cmt.name == '':
+				name = 'an anonymous coward'
+			else:
+				name = cmt.name
+			if cmt.url in [ '', 'http://' ]:
+				nameString = '<span class="quietlink">%s</span>' % ( cgi.escape( name ), )
+			else:
+				nameString = '<a href="%s" class="quietlink">%s</a>' % ( util.MungeHTML( cmt.url ), cgi.escape( name ) )
+			if cmt.email == '':
+				emailString = ''
+			else:
+				emailString = ' [<a href="mailto:%s" class="quietlink">%s</a>]' % ( cmt.email, cgi.escape( cmt.email ), )
+			if cmt.date == '':
+				dateString = ''
+			else:
+				dateString = time.strftime( ' at %I:%M:%S %p on %B %d, %Y', strptime.strptime( cmt.date, STANDARDDATEFORMAT ) )
 			s += """
 			<tr><td class="cmt">
 			%s<br>
-			<a href="%s">%s</a> [<a href="mailto:%s">%s</a>]
+			<span class="commentfooter">&nbsp;&nbsp;posted by
+			%s%s%s&nbsp;&nbsp;</span>
 			</td></tr>
 			""" % (
 				string.replace(
-					cgi.escape( cmt.comment ),
+					re.sub(
+						r'(http://[^\r\n \"\<]+)',
+						r'<a href="\1">\1</a>',
+						cgi.escape( cmt.comment ),
+					),
 					"\n", "<br />"
 				),
-				util.MungeHTML( cmt.url ),
-				cgi.escape( cmt.name ),
-				cmt.email,
-				cgi.escape( cmt.email ),
+				nameString,
+				emailString,
+				dateString,
 			)
 		
 	# Print 'add comment' form
@@ -256,9 +283,10 @@ else:
 	<tr><td>Name:</td><td width="99%%"><input type="text" size="50" name="name" value="%s"/></td></tr>
 	<tr><td>E-mail:</td><td><input type="text" size="50" name="email" value="%s"/></td></tr>
 	<tr><td>Website:</td><td><input type="text" size="50" name="url" value="%s"/></td></tr>
-	<tr><td>Comment:</td><td><textarea name="comment" width="100%%"></textarea></tr>
+	<tr><td>Comment:</td><td><textarea name="comment" width="100%%" rows="10"></textarea></tr>
 	<tr><td></td><td><input type="submit" value="Save comment" />
 		<input type="button" value="Cancel" onclick="javascript:window.close()" /></td>
+	<tr><td></td><td><strong>Note</strong>: 'http://...' will be converted into links and HTML will be stripped.</td>
 	</table>
 	</form>
 	</td></tr>

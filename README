@@ -1,64 +1,118 @@
 Python Community Server
 =======================
-         --> alpha test v0.01
+         --> alpha test v0.03
 
-PyCS is still unstable.  It's suitable for running a web server on -
-it's running http://rcs.myelin.cjb.net/ quite happily - but it will
-require some hacking to get it to work on your system.
+PyCS is still unstable.  It's suitable for running a web server on - it's 
+running http://www.pycs.net/ quite happily - but it may require some hacking to 
+get it to work on your system.
+
+Here are some notes to get you going.
 
 
 DEPENDENCIES
-
-Medusa - http://www.nightmare.com/medusa/
-
-- unpack this into the same dir as PyCS.
-
-
-MetaKit - http://www.equi4.com/metakit/python.html
-
-- install as usual.  Put Mk4py.so and metakit.py into your PyCS
-dir if it doesn't work.
-
-
-xmlrpclib - http://www.pythonware.com/products/xmlrpc/
-
-- as above
+	
+	Medusa - http://www.nightmare.com/medusa/
+	
+		Unpack this into the same dir as PyCS.
+	
+	
+	MetaKit - http://www.equi4.com/metakit/python.html
+	
+		Install this as usual.  Put Mk4py.so and metakit.py into your 
+		PyCS dir if it doesn't work.
+	
+	
+	xmlrpclib - http://www.pythonware.com/products/xmlrpc/
+	
+		Just install this as you usually would.
 
 
 NOTES
 
-To install, first edit pycs.conf and change the settings to ones that
-make sense for you.  'serverhostname' should be your host, and
-'serverport' should be the port you want to run on.  The server runs
-on port 5445 by default - change this to 80 if you don't have another
-server running on the same machine.
+	Installation:
+	
+		To install, first edit pycs.conf and change the settings to ones 
+		that make sense for you.  'serverhostname' should be your host, 
+		and 'serverport' should be the port you want to run on.  The 
+		server runs on port 5445 by default - change this to 80 if you 
+		don't have another server running on the same machine.
+		
+	
+	Virtual Hosting:
+	
+		If you already have a copy of Apache running on your box and 
+		want PyCS to only serve requests for a certain (virtual) host or 
+		group of hosts, you can accomplish this with mod_rewrite and 
+		mod_proxy.
+		
+		Put the following in your VirtualHost block:
+	
+			RewriteEngine On
+			RewriteRule ^(.+) http://127.0.0.1:5445/~~vhost~~/%{HTTP_HOST}$1 [P]
+		
+		This way, Apache will send the requested hostname through to the 
+		PyCS server, allowing it to work out virtual hosts on its own. 
+		See rewrite.conf for more info on how to do this.
+		
+		Here's a more complete example of a VirtualHost block that 
+		proxies requests through to a PyCS server.
+		
+		<VirtualHost *>
+		        DocumentRoot /var/www/external
+		        ServerAlias pycs.net rcs.myelin.cjb.net
+		        ServerAlias pycs.net *.pycs.net
+		        ServerName pycs.net
+		
+		        ErrorLog /var/log/apache/rcs-error.log
+		        CustomLog /var/log/apache/rcs-access.log combined
+		
+		        RewriteEngine On
+			RewriteRule ^(.+) http://127.0.0.1:5445/~~vhost~~/%{HTTP_HOST}$1 [P]
+		</VirtualHost>
+		
+		This tells Apache that requests for pycs.net, *.pycs.net and 
+		rcs.myelin.cjb.net should be sent through to the PyCS using the 
+		~~vhost~~ syntax (see rewrite.conf for more info), and that 
+		logging should go to /var/log/apache/rcs-{error,access}.log.
+		
+	
+	Security:
+	
+		You'll want to run PyCS as an unprivileged user.  It will do 
+		this automatically one day, but for the moment it just runs as 
+		whoever started it.  Create another user, copy all the files 
+		into their home dir, give them rwx to the www/ directory and rx 
+		to everytihng else, and run as them.
+	
 
-You can use mod_rewrite and mod_proxy in Apache if you like to make it
-look like just another virtual host - put the following in your virtual
-host block:
+	Logging:
+	
+		It dumps its log to stdout at the moment; pipe that to where you 
+		want the log to go.  There's a logging framework built into 
+		Medusa, but I haven't told it where to send things yet.
 
-	RewriteEngine On
-	RewriteRule ^/(.*) http://127.0.0.1:5445/$1 [P]
 
-You'll want to run it as an unprivileged user.  It will do this
-automatically one day, but for the moment it just runs as whoever
-started it.  Create another user, copy all the files into their home
-dir, give them rwx to the www/ directory and rx to everytihng else,
-and run as them.
+CONCLUSION
 
-It dumps its log to stdout at the moment; pipe that where you want
-the log to go.  There's a logging framework built into Medusa, but
-I haven't told it where to send things yet.
+	If anyone wants to fix anything or add features, go ahead!
+	
+	BUT: join the mailing list and announce what you're about to do first, 
+	so everyone else knows not to work on the same thing.
 
-If anyone wants to fix anything or add features, feel free!  BUT:
-join the mailing list and announce what you're about to do first,
-so everyone else knows not to work on the same thing.
+	To join the list, mail pycs-request@myelin.co.nz and put 'subscribe 
+	pycs' in the body of your message.
 
-To join the list, mail pycs-request@myelin.co.nz and put 'subscribe
-pycs' in the body of your message.
+	Cheers,
+		Phil <pp@myelin.co.nz>
 
-Cheers,
-Phil <pp@myelin.co.nz>
+OFFICIAL WEB PAGES
 
-http://rcs.myelin.cjb.net/
-http://www.myelin.co.nz/
+	Project:
+
+		http://www.pycs.net/
+		http://pycs.sourceforge.net/
+
+	Author:
+
+		http://www.myelin.co.nz/
+

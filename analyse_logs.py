@@ -76,11 +76,14 @@ while 1:
 		#sys.stderr.write( "line: " + s + "\n" )
 		continue
 
-	if page != '/' and page.find( '/users' ) != 0:
-		continue
+	#if page != '/' and page.find( '/users' ) != 0:
+	#	continue
 		
 	if page.find( '.gif' ) != -1:
 		continue
+	
+	if ua.find( 'Googlebot' ) == 0:
+		ref = "(googlebot)"
 
 	pageData = pages.setdefault( page, { 'hits': 0, 'refs': {}, } )
 	pageData['hits'] += 1
@@ -116,7 +119,7 @@ rankedPages.sort()
 rankedPages.reverse()
 
 for hits, refs, url in rankedPages:
-	print '<a href="http://rcs.myelin.cjb.net' + url + '">' + url + '</a> -', hits, 'hits'
+	print '<a href="http://www.pycs.net' + url + '">' + url + '</a> -', hits, 'hits'
 
 	rankedRefs = [ ( refs[name]['hits'], name ) for name in refs.keys() ]
 	rankedRefs.sort()

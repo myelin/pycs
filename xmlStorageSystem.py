@@ -304,8 +304,8 @@ class xmlStorageSystem_handler:
 				'wav', 'swf', 'sit', 'hqx', 'gz', 'zip',
 				'htaccess',
 				],
-			'urlSpamFreeMailto': self.set.ServerUrl() + 'system/mailto.py',
-			'urlWeblogUpdates': self.set.ServerUrl() + 'system/updates.py',
+			'urlSpamFreeMailto': self.set.ServerUrl() + '/system/mailto.py',
+			'urlWeblogUpdates': self.set.ServerUrl() + '/system/updates.py',
 			'flError': xmlrpclib.False,
 			}
 
@@ -376,15 +376,16 @@ class xmlStorageSystem_handler:
 			u = self.set.FindUser( email, password )
 			
 			print "---USER INFO---",userinfo,"------"
-			
-			u.email = userinfo['email']
-			u.weblogTitle = userinfo['weblogTitle']
-			u.serialNumber = userinfo['serialNumber']
-			u.organization = userinfo['organization']
-			u.flBehindFirewall = (userinfo['flBehindFirewall'] == xmlrpclib.True)
-			u.name = userinfo['name']
-			
-			self.set.Commit()
+
+			if userinfo != {}:			
+				u.email = userinfo['email']
+				u.weblogTitle = userinfo['weblogTitle']
+				u.serialNumber = userinfo['serialNumber']
+				u.organization = userinfo['organization']
+				u.flBehindFirewall = (userinfo['flBehindFirewall'] == xmlrpclib.True)
+				u.name = userinfo['name']
+				
+				self.set.Commit()
 			
 		except pycs_settings.PasswordIncorrect:
 			return { 'flError': xmlrpclib.True,
@@ -454,7 +455,7 @@ class xmlStorageSystem_handler:
 	def userFolder( self, email ):
 		return self.set.UserFolder( email )
 		#safeEmail = self.usernumMunge( email )
-		#return self.set.ServerUrl() + ( "users/%s/" % (safeEmail,) )
+		#return self.set.ServerUrl() + ( "/users/%s/" % (safeEmail,) )
 
 
 

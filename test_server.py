@@ -42,7 +42,7 @@ def test_server( s ):
 	email = 'pycs_test@myelin.co.nz'
 	name = 'Test user'
 	usernum = '100035'
-	plainPassword = ''
+	plainPassword = 'asdf'
 	password = md5.md5( plainPassword ).hexdigest()
 	clientPort = 80
 	userAgent = 'Python Community Server Test (test_server.py) - http://notes.pycs.net/'

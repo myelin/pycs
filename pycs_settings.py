@@ -52,6 +52,10 @@ class Settings:
 		# Read in general config		
 		self.conf = self.readAllOptions( cp, "main" )
 		
+		defaults = cp.defaults()
+		for v in self.conf.keys():
+			defaults[v] = self.conf[v]
+		
 		# Read in name aliases
 		self.aliases = self.readAllOptions( cp, "aliases" )
 		
@@ -241,13 +245,13 @@ class Settings:
 
 	def UserFolder( self, usernum ):
 		formattedUsernum = self.FormatUsernum( usernum )
-		print "find user folder: usernum =", usernum, " formatted usernum =",formattedUsernum
+		#print "find user folder: usernum =", usernum, " formatted usernum =",formattedUsernum
 		if self.aliases.has_key( formattedUsernum ):
-			print "got alias for this:", self.aliases[formattedUsernum]
+			#print "got alias for this:", self.aliases[formattedUsernum]
 			return self.aliases[formattedUsernum] + '/'
 		else:
-			print "no alias"
-			return self.ServerUrl() + "users/%s/" % ( formattedUsernum, )
+			#print "no alias"
+			return self.ServerUrl() + "/users/%s/" % ( formattedUsernum, )
 		
 	# Template renderer
 	def Render( self, data ):

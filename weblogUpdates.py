@@ -2,7 +2,7 @@
 
 # Python Community Server
 #
-#     radioCommunityServer.py: XML-RPC handler for radioCommunityServer.*
+#     weblogUpdates.py: XML-RPC handler for weblogUpdates.*
 #
 # Copyright (c) 2002, Phillip Pearson <pp@myelin.co.nz>
 # 
@@ -24,43 +24,76 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-"""radioCommunityServer XML-RPC Handler
+"""weblogUpdates XML-RPC Handler
 
-This file handles XML-RPC requests for the radioCommunityServer namespace.
+This file handles XML-RPC requests for the weblogUpdates namespace.
+
+Kind of like http://www.weblogs.com/RPC2 and RCS
 
 """
 
-class radioCommunityServer_handler:
+import os
+import sys
+import re
+import string
 
-	"radioCommunityServer XML-RPC functions"
+import pycs_settings
+import xmlrpclib
 
+
+
+
+
+def makeXmlBoolean( a ):
+	if a:
+		return xmlrpclib.True
+	else:
+		return xmlrpclib.False
+		
+
+
+
+
+class weblogUpdates_handler:
+	
+	"weblogUpdates XML-RPC functions"
+	
 	def __init__( self, set ):
 		self.set = set
-
-
-
+		
+		
+		
 	def call( self, method, params ):
-		print "RCS method",method #,"params",params
+		print "WU method",method #,"params",params
 		
 		handlers = {
-			'getInitialResources': self.getInitialResources,
+			'ping': self.ping,
 			}
 		
 		if len( method ) == 0:
-			raise "radioCommunityServer method not specified"
+			raise "weblogUpdates method not specified"
 		
 		base = method[0]
 		if handlers.has_key( base ):
 			return handlers[base]( method[1:], params )
 		
-		raise "radioCommunityServer method not found"
+		raise "weblogUpdates method not found"
 
 
 
-	def getInitialResources( self, method, params ):
+	def ping( self, method, params ):
 		if method != []: raise "Namespace not found"
-		if params != (): raise "Too many parameters"
-	
+
+		print "params:",params		
+		blogName, blogUrl = params
+		
+		print "got a ping from '%s' at '%s'" % ( blogName, blogUrl )
+		
+		# Don't actually do it yet - we have to change a table
+		#self.set.AddUpdate( blogName, blogUrl )
+		
 		return {
-			'commentsPageUrl': self.set.ServerUrl() + '/system/comments.py',
+			'flError': xmlrpclib.False,
+			'message': 'Thanks for the ping!',
 			}
+		
