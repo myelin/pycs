@@ -52,7 +52,7 @@ shorttitle = PyCS
 # this default to something else than UTF-8. To activate it, uncomment it and
 # set it to the value you need. You have to check with the XML parser doc,
 # expat for example only supports unicode, utf-8 and iso-8859-1!
-#defaultEncoding = iso-8859-1
+#defaultencoding = iso-8859-1
 
 [aliases]
 

@@ -39,6 +39,22 @@ import xmlrpc_handler
 import xmlrpclib
 
 
+# Helper class for patching strings to iso-8859-1.
+
+class Unmarshaller( xmlrpclib.Unmarshaller ):
+
+	def set_resultencoding( self, encoding ):
+		self.resultencoding = encoding
+
+	def end_string( self, data ):
+		if self._encoding:
+			data = xmlrpclib._decode( data, self._encoding )
+		str = xmlrpclib._stringify( data )
+		if type( str ) == type( u'' ):
+			str = str.encode( self.resultencoding )
+		self.append( str )
+		self._value = 0
+
 
 
 class pycs_xmlrpc_handler( xmlrpc_handler.xmlrpc_handler ):
@@ -49,10 +65,52 @@ class pycs_xmlrpc_handler( xmlrpc_handler.xmlrpc_handler ):
 		
 
 	# a hack to introduce a default encoding, if one is set in the
-	# server to circumvent encoding problems introduced by Radio
+	# server to circumvent encoding problems introduced by Radio.
+	# the code is stolen from the medusa xmlrpc_handler.py and just
+	# changed slightly to add the encoding header and convert back
+	# to latin1 strings
 	def continue_request( self, data, request ):
-		data = self.set.PatchEncodingHeader( data )
-		xmlrpc_handler.xmlrpc_handler.continue_request( self, data, request )
+		if self.set.conf.has_key('defaultencoding'):
+			encoding = self.set.conf['defaultencoding']
+			new = self.set.PatchEncodingHeader( data )
+			xmlrpclib.OriginalUnmarshaller = xmlrpclib.Unmarshaller
+			xmlrpclib.Unmarshaller = Unmarshaller
+			p, u = xmlrpclib.getparser()
+			u.set_resultencoding( encoding )
+			p.feed( new )
+			p.close()
+			params = u.close()
+			method = u.getmethodname()
+			#parms = []
+			#for p in params:
+			#	if type( p ) == type( u'' ):
+			#		parms.append( p.encode( encoding ) )
+			#	else:
+			#		parms.append( p )
+			#params = tuple(parms)
+			try:
+				# generate response
+				try:
+					response = self.call( method, params )
+					if type( response ) != type( () ):
+						response = ( response, )
+				except:
+					# report exception back to server
+					response = xmlrpclib.dumps( 
+						xmlrpclib.Fault( 1, "%s:%s" % (sys.exc_type, sys.exc_value))
+						)
+				else:
+					response = xmlrpclib.dumps( response, methodresponse=1, encoding=encoding )
+			except:
+				# report internal error
+				request.error( 500 )
+			else:
+				# got a valid response
+				request['Content-Type'] = 'text/xml'
+				request.push( response )
+				request.done()
+		else:
+			xmlrpc_handler.xmlrpc_handler.continue_request( self, data, request )
 
 		
 	def AddNamespace( self, name, handler ):
