@@ -42,7 +42,7 @@ PYCSFILES = README LICENSE Makefile mkidx.pl \
 	pycs.conf 
 PYCSMODFILES = updates.py mailto.py users.py comments.py login.py
 SPECIFICS = $(PYCSFILES) medusa/*.py metakit.py Mk4py.so
-VER = 0.01
+VER = 0.02
 DISTFN = pycs-$(VER)-src
 LATESTFN = pycs-latest-src
 

@@ -452,8 +452,9 @@ class xmlStorageSystem_handler:
 
 
 	def userFolder( self, email ):
-		safeEmail = self.usernumMunge( email )
-		return self.set.ServerUrl() + ( "users/%s/" % (safeEmail,) )
+		return self.set.UserFolder( email )
+		#safeEmail = self.usernumMunge( email )
+		#return self.set.ServerUrl() + ( "users/%s/" % (safeEmail,) )
 
 
 

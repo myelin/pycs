@@ -3,7 +3,6 @@
 # Python Community Server
 #
 #     analyse_logs.py: Log analysis (for referrers & rankings)
-#	EXPERIMENTAL - not going properly yet
 #
 # Copyright (c) 2002, Phillip Pearson <pp@myelin.co.nz>
 # 
@@ -27,6 +26,8 @@
 import metakit
 import string
 import re
+import time
+import sys
 
 """Log analysis
 
@@ -34,20 +35,25 @@ For referrers & rankings.
 
 """
 
-LOGFILE = "/var/log/apache/rcs-access.log"
+if len( sys.argv ) > 1:
+	LOGFILE = sys.argv[1]
+else:
+	LOGFILE = "/var/log/apache/rcs-access.log"
 DBFILE = "analysed_logs.db"
 
-db = metakit.storage( DBFILE, 1 )
+#db = metakit.storage( DBFILE, 1 )
 
-logdata = db.getas( "hits[date:S,ip:S,page:S,ua:S,ref:S,err:S]" ).ordered( 6 )
+#logdata = db.getas( "hits[date:S,ip:S,page:S,ua:S,ref:S,err:S]" ).ordered( 6 )
 
 f = open( LOGFILE, "rt" )
 
-splitter = re.compile( r'^([\d\.]*?) (.*?) (.*?) \[(.*?)\] \"(.*?)\" (\d*?) (\d*?) \"(.*?)\" \"(.*?)\"$' )
+splitter = re.compile( r'^([\d\.]*?) (.*?) (.*?) \[(.*?)\] \"(.*?)\" (.*?) (.*?) \"(.*?)\" \"(.*?)\"$' )
 req_splitter = re.compile( r'^(\w*?) (.*?) (.*?)$' )
 
 nPages = 0
 nNew = 0
+
+pages = {}
 
 while 1:
 	s = f.readline()
@@ -55,43 +61,70 @@ while 1:
 	if s == '': break
 	if s[-1] == "\n": s = s[:-1]
 
-	ip, a, b, date, req, err, clen, ref, ua = splitter.search( s ).groups()
-	method, page, proto = req_splitter.search( req ).groups()
+	try:
+		ip, a, b, date, req, err, clen, ref, ua = splitter.search( s ).groups()
+	except:
+		sys.stderr.write( "exception thrown while trying to split a line!\n" )
+		sys.stderr.write( "line: " + s + "\n" )
+		continue
 
-	r = logdata.find( date=date, ip=ip, page=page, ua=ua, ref=ref, err=err )
-	#print r
-	if r == -1:
-		#print "adding page",page, ", ref ",ref
-		logdata.append( date=date, ip=ip, page=page, ua=ua, ref=ref, err=err )
-		nNew += 1
+	try:		
+		method, page, proto = req_splitter.search( req ).groups()
+	except:
+		#sys.stderr.write( "exception thrown while trying to split a request!\n" )
+		#sys.stderr.write( "req: " + req + "\n" )
+		#sys.stderr.write( "line: " + s + "\n" )
+		continue
+
+	if page != '/' and page.find( '/users' ) != 0:
+		continue
+		
+	if page.find( '.gif' ) != -1:
+		continue
+
+	pageData = pages.setdefault( page, { 'hits': 0, 'refs': {}, } )
+	pageData['hits'] += 1
+
+	if ref.find( 'rcs.myelin.cjb.net' ) != -1:
+		continue
+
+	refData = pageData['refs'].setdefault( ref, { 'hits': 0, } )
+	refData['hits'] += 1
+	#print 'referrer',ref,'hits',refData['hits']
+
+	#r = logdata.find( date=date, ip=ip, page=page, ua=ua, ref=ref, err=err )
+	#if r == -1:
+	#	#print "adding page",page, ", ref ",ref
+	#	logdata.append( date=date, ip=ip, page=page, ua=ua, ref=ref, err=err )
+	#	nNew += 1
 	#else:
 	#	print "already got", date, ip, page, ua, ref, err
-	nPages += 1
+	#nPages += 1
 
-db.commit()
+#db.commit()
 
-print "%d pages, %d new (%d ignored)" % ( nPages, nNew, nPages - nNew )
+#print "%d pages, %d new (%d ignored)" % ( nPages, nNew, nPages - nNew )
 
 print "<html><head></head><body>"
 
+print "<h1>Hits and referrer rankings as of", time.ctime(), "</h1>"
+
 print "<pre>"
 
+rankedPages = [ ( pages[url]['hits'], pages[url]['refs'], url ) for url in pages.keys() ]
+rankedPages.sort()
+rankedPages.reverse()
 
-def sort_by_hits( list ):
-	augmented = map( lambda x: (x[1], x), list.items() )
-	augmented.sort()
-	return [ x[1] for x in augmented ]
+for hits, refs, url in rankedPages:
+	print '<a href="http://rcs.myelin.cjb.net' + url + '">' + url + '</a> -', hits, 'hits'
 
-print "user agents:"
-for a, ct in sort_by_hits( dat.agents ):
-	print "\t%d: %s" % (ct, a)
+	rankedRefs = [ ( refs[name]['hits'], name ) for name in refs.keys() ]
+	rankedRefs.sort()
+	rankedRefs.reverse()
 
-print "pages:"
-for p, ct in sort_by_hits( dat.pages ):
-	print "\t%d: %s" % (ct, p)
+	for hits, url in rankedRefs:
+		print "\tref:" + ' <a href="' + url + '">' + url + '</a> -', hits, 'hits'
 
-print "referrers:"
-for r, ct in sort_by_hits( dat.refs ):
-	print "\t%d: %s" % (ct, r)
+	print
 
 print "</pre></body></html>"

@@ -44,13 +44,22 @@ class User:
 class Settings:
 
 	def __init__( self ):
+
 		self.db = metakit.storage( "conf/settings.dat", 1 )
 		cp = ConfigParser.ConfigParser()
 		cp.read( "pycs.conf" )
-		self.conf = {}
-		mainsection = "main"
-		for opt in cp.options( mainsection ):
-			self.conf[opt] = cp.get( mainsection, opt )
+
+		# Read in general config		
+		self.conf = self.readAllOptions( cp, "main" )
+		
+		# Read in name aliases
+		self.aliases = self.readAllOptions( cp, "aliases" )
+		
+		# Strip extra slashes off the name aliases
+		for user in self.aliases.keys():
+			alias = self.aliases[user]
+			if len( alias ) and alias[-1] == '/':
+				self.aliases[user] = alias[:-1]		
 
 		# User info - one row per user
 		self.users = self.db.getas(
@@ -73,6 +82,12 @@ class Settings:
 		self.updates = self.db.getas( "updates[time:S,usernum:S,title:S]" ).ordered(2)
 		
 		self.DumpData()
+
+	def readAllOptions( self, cp, section ):
+		conf = {}
+		for opt in cp.options( section ):
+			conf[opt] = cp.get( section, opt )
+		return conf
 
 	def ServerUrl( self ):
 		return self.conf['serverurl']
@@ -225,7 +240,14 @@ class Settings:
 		return user
 
 	def UserFolder( self, usernum ):
-		return self.ServerUrl() + "users/%s/" % ( self.FormatUsernum( usernum ),)
+		formattedUsernum = self.FormatUsernum( usernum )
+		print "find user folder: usernum =", usernum, " formatted usernum =",formattedUsernum
+		if self.aliases.has_key( formattedUsernum ):
+			print "got alias for this:", self.aliases[formattedUsernum]
+			return self.aliases[formattedUsernum] + '/'
+		else:
+			print "no alias"
+			return self.ServerUrl() + "users/%s/" % ( formattedUsernum, )
 		
 	# Template renderer
 	def Render( self, data ):
