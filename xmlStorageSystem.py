@@ -34,25 +34,23 @@ import os
 import sys
 import re
 import string
+import stat
 
 import pycs_settings
 import pycs_paths
 
 import xmlrpclib
 
+# count used bytes in a path
+def counterCallback( sumf, dir, files):
+	for f in files:
+		fn = os.path.join(dir, f)
+		sumf[0] += os.stat(fn)[stat.ST_SIZE]
 
-
-
-
-def makeXmlBoolean( a ):
-	if a:
-		return xmlrpclib.True
-	else:
-		return xmlrpclib.False
-		
-
-
-
+def usedBytes( path ):
+	sumf = [0]
+	os.path.walk( path, counterCallback, sumf )
+	return sumf[0]
 
 class xmlStorageSystem_handler:
 	
@@ -197,6 +195,10 @@ class xmlStorageSystem_handler:
 		
 		print "resulting urls:",urlList
 		
+		u.upstreams += nFilesSaved
+		u.lastupstream = self.set.GetTime()
+		self.set.Commit()
+
 		# update 'updates' page
 		self.set.AddUpdate( email )
 		
@@ -259,7 +261,11 @@ class xmlStorageSystem_handler:
 					del exception
 					del detail
 					del traceback
-						
+		
+		u.deletes += nFilesDeleted
+		u.lastdelete = self.set.GetTime()
+		self.set.Commit()
+		
 		return {
 			'errorList': errorList,
 			'flError': flError,
@@ -390,7 +396,11 @@ class xmlStorageSystem_handler:
 				u.flBehindFirewall = (userinfo['flBehindFirewall'] == xmlrpclib.True)
 				u.name = userinfo['name']
 				
-				self.set.Commit()
+			u.lastping = self.set.GetTime()
+			u.pings += 1
+			if u.membersince == '':
+				u.membersince = self.set.GetTime()
+			self.set.Commit()
 			
 		except pycs_settings.PasswordIncorrect:
 			return { 'flError': xmlrpclib.True,
@@ -409,20 +419,20 @@ class xmlStorageSystem_handler:
 				'name': u.name,
 				'organization': u.organization,
 				'ctFileDeletions': 1234, 
-				'whenCreated': "don't know",
-				'ctAccesses': 1234,
+				'whenCreated': u.membersince,
+				'ctAccesses': u.pings,
 				'serialNumber': u.serialNumber,
 				'url': self.userFolder( u.usernum ),
-				'flBehindFirewall': makeXmlBoolean( u.flBehindFirewall ),
+				'flBehindFirewall': xmlrpclib.boolean( u.flBehindFirewall ),
 				'weblogTitle': u.weblogTitle,
-				'ctUpstreams': 1234,
+				'ctUpstreams': u.upstreams,
 				'ctSignons': 1234, 
-				'whenLastAccess': "don't know",
-				'whenLastUpstream': "don't know",
+				'whenLastAccess': u.lastping,
+				'whenLastUpstream': u.lastupstream,
 				'port': 1234,
 				'ctBytesUpstreamed': 1234,
 				'userAgent': "don't know",
-				'ctBytesInUse': 1234,
+				'ctBytesInUse': self.userSpaceUsed( u.usernum ),
 				'whenLastSignOff': "don't know",
 				'messageOfTheDay': "no news, sorry!",
 				'whenLastSignOn': "don't know",
@@ -449,6 +459,10 @@ class xmlStorageSystem_handler:
 
 	# Support functions
 
+
+
+	def userSpaceUsed( self, email ):
+		return usedBytes( self.userLocalFolder( email ) )
 
 
 	def userLocalFolder( self, email ):
