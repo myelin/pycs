@@ -202,7 +202,10 @@ class xmlStorageSystem_handler:
 		print "resulting urls:",urlList
 		
 		u.upstreams += nFilesSaved
-		u.bytesupstreamed += nBytesSaved
+		# Bytes upstreamed can wrap around on 2 GB, so prevent
+		# this from happening
+		try: u.bytesupstreamed += nBytesSaved
+		except TypeError: u.bytesupstreamed = nBytesSaved
 		u.bytesused = self.set.UserSpaceUsed(email)
 		u.lastupstream = self.set.GetTime()
 		self.set.Commit()
