@@ -26,6 +26,7 @@
 
 import metakit
 import time
+import re
 import ConfigParser
 import pycs_paths
 
@@ -159,18 +160,22 @@ class Settings:
 	def AddReferrer( self, usernum, group, referrer ):
 		theTime = self.GetTime()
 
-		# get base URLs to ignore (currently your own site and
-		# the python community server itself)
-		ignore = [
-			self.UserFolder( usernum ),
-			'http://127.0.0.1:5335/',
-			'http://localhost:5335/',
+		# add some regexps to ignore when adding Referrers
+		# this should actually be pulled out of the config, I think
+		userfolder = self.UserFolder( usernum )
+		ignoreReferrers = [
+			re.compile('^'+userfolder),
+			re.compile('^http://127.0.0.1:[0-9]+/'),
+			re.compile('^http://localhost:[0-9]+/'),
 			]
+		if userfolder[-1:] == '/':
+			ignoreReferrers.append(
+			re.compile('^'+ userfolder[:-1] +'$'))
 
 		# check for URLs to ignore as referrer
 		ignoreit = 0
-		for url in ignore:
-			if referrer[:len(url)] == url:
+		for url in ignoreReferrers:
+			if url.match(referrer):
 				ignoreit = 1
 
 		# we got something that shouldn't be ignored
