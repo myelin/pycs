@@ -167,9 +167,6 @@ def check_permission( filetype, usernum, currentUser ):
 	
 	print "checking permissions for filetype",filetype,"usernum",usernum,"for user",currentUser
 	
-	# Everyone can see public files
-	if filetype == PUBLIC_FILE: return 1
-	
 	# See what the current user can see
 	can_see = currentUser['can_see']
 	if not can_see.has_key( filetype ):
