@@ -178,11 +178,13 @@ class Settings:
 	def User( self, usernum ):
 	
 		"See if the user exists, and return its DB row if it does"
+
+		no = self.FormatUsernum( usernum )
 		
-		row = self.users.select( { 'usernum': self.FormatUsernum( usernum ) } )
+		row = self.users.select( { 'usernum': self.FormatUsernum( no ) } )
 		
 		if len(row) == 0:
-			print "User not found (%s) !" % (usernum,)
+			print "User not found (%s) !" % (no,)
 			raise NoSuchUser
 			
 		return row[0]
@@ -191,9 +193,7 @@ class Settings:
 	
 		"Find a user and verify the password"
 		
-		no = self.FormatUsernum( usernum )
-
-		u = self.User( no )
+		u = self.User( usernum )
 		
 		if u.password != password:
 			print "Password incorrect (for %s) !" % (usernum,)

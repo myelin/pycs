@@ -35,36 +35,33 @@ import binascii
 import base64
 import time
 import strptime
+import html_cleaner
+import comments
 
 # order by user & paragraph
-comments = set.db.getas(
+commentTable = set.db.getas(
 	'comments[user:S,paragraph:S,notes[name:S,email:S,url:S,comment:S,date:S]]'
 	).ordered( 2 )
 
 [path, params, query, fragment] = request.split_uri()
-s = """
-<html>
-<head>
-<title>Comments</title>
-<style type="text/css">
-<!--
-textarea { width: 100% }
-.black { background-color: black; }
-td { background-color:  lightgrey; }
-.cmt { background-color: #eeeeee; }
-.commentfooter { font-size: 0.8em; background-color: white; }
-.quietlink { font-weight: bold; color: black; }
--->
-</style>
-</head>
-<body>
-"""
-
-STANDARDDATEFORMAT = '%Y-%m-%d %H:%M:%S'
 
 # Decode information in query string and form		
 query = util.SplitQuery( query )
 form = util.SplitQuery( input_data.read() )
+
+formatter = None
+format = 'html'
+if query.has_key( 'format' ):
+	format = query['format']
+
+if format == 'rss':
+	import comments.rss
+	formatter = comments.rss.formatter( set )
+elif format == 'html':
+	import comments.html
+	formatter = comments.html.formatter( set )
+
+request['Content-Type'] = formatter.contentType()
 
 headers = util.IndexHeaders( request )
 cookies = util.IndexCookies( headers )
@@ -75,7 +72,7 @@ if cookies.has_key( 'commentInfo' ):
 	#s += "decoding cookie " + cookies['commentInfo'] + "<br>"
 	try:
 		# print 'cookies header: ' + cookies['commentInfo']
-		storedEmail, storedName, storedUrl = map(
+		formatter.storedEmail, formatter.storedName, formatter.storedUrl = map(
 			base64.decodestring,
 			string.split( urllib.unquote( cookies['commentInfo'] ), '&' )
 		)
@@ -93,13 +90,13 @@ if cookies.has_key( 'commentInfo' ):
 		raise
 	
 if noCookies:
-	storedEmail = ""
-	storedName = ""
-	storedUrl = "http://"
+	formatter.storedEmail = ""
+	formatter.storedName = ""
+	formatter.storedUrl = "http://"
 	
 #s += "Path %s<br>params %s<br>query %s<br>fragment %s<br>" % (path, params, query, fragment)
 
-u = query['u']
+formatter.u = query['u']
 if query.has_key('c'):
 
 	# We are being called to supply the number of comments; have to
@@ -110,7 +107,7 @@ if query.has_key('c'):
 		paragraphs = []
 		counts = []
 
-		posts = comments.select( { 'user': u } )
+		posts = commentTable.select( { 'user': formatter.u } )
 		for post in posts:
 			paragraphs.append( post.paragraph )
 			counts.append( len( post.notes ) )
@@ -144,10 +141,14 @@ else:
 
 	# Displaying comments or accepting a new POSTed one
 	
-	p = query['p']
+	formatter.p = query['p']
 	#s += "user %s, paragraph %s<br>" % (u, p)
+
+	formatter.xmlFeedLink = "%s%s?u=%s&p=%s&format=rss" % ( set.ServerUrl(), path, formatter.u, formatter.p )
+
+	s = formatter.header()
 	
-	vw = comments.select( { 'user': u, 'paragraph': p } )
+	vw = commentTable.select( { 'user': formatter.u, 'paragraph': formatter.p } )
 	if len(vw) == 0:
 		# Never heard of that paragraph
 		#print "(new para)"
@@ -166,14 +167,14 @@ else:
 		#s += "looks like you're adding a comment:<br>"
 		#s += "(data %s)" % (`form`,)
 	
-		storedEmail = util.MungeHTML( form['email'] )
-		storedName = util.MungeHTML( form['name'] )
-		storedUrl = util.MungeHTML( form['url'] )
+		formatter.storedEmail = util.MungeHTML( form['email'] )
+		formatter.storedName = util.MungeHTML( form['name'] )
+		formatter.storedUrl = util.MungeHTML( form['url'] )
 		
 		rawCookie = '%s&%s&%s' % (
-			base64.encodestring( storedEmail ),
-			base64.encodestring( storedName ),
-			base64.encodestring( storedUrl ),
+			base64.encodestring( formatter.storedEmail ),
+			base64.encodestring( formatter.storedName ),
+			base64.encodestring( formatter.storedUrl ),
 		)
 		
 		outCookie = ''
@@ -187,9 +188,9 @@ else:
 		#s += "set " + request['Set-Cookie'] + "<br>"
 		
 		newComment = {
-			'email': storedEmail,
-			'name': storedName,
-			'url': storedUrl,
+			'email': formatter.storedEmail,
+			'name': formatter.storedName,
+			'url': formatter.storedUrl,
 			'comment': form['comment'],
 			'date': time.strftime( STANDARDDATEFORMAT ),
 			}
@@ -202,14 +203,14 @@ else:
 			notes = metakit.view()
 			
 			# Make a row in 'comments' for this paragraph
-			comments.append( {
+			commentTable.append( {
 				'user': u,
 				'paragraph': p,
 				'notes': notes,
 				} )
 			
 			# Pull the row out again
-			vw = comments.select( { 'user': u, 'paragraph': p } )
+			vw = commentTable.select( { 'user': u, 'paragraph': p } )
 			notes = vw[0].notes
 			
 			# ... and add this particular comment in
@@ -219,17 +220,11 @@ else:
 			# It's already there - add more comments
 			notes.append( newComment )
 			set.Commit()
-		
-	# Start enclosing table (gives black borders)
-	s += """
-	<table width="100%" cellspacing="1" cellpadding="0">
-	<tr><td class="black">
-	<table width="100%" cellspacing="1" cellpadding="10">
-	"""
 	
 	# Print all comments
 	if nComments == 0:
-		s += '<tr><td class="cmt"><strong>No comments yet</strong></td></tr>'
+		if format == 'html':
+			s += '<tr><td class="cmt"><strong>No comments yet</strong></td></tr>'
 	else:
 		#s += '%d comments<br>' % (nComments,)
 	
@@ -237,74 +232,13 @@ else:
 	
 		for iCmt in range( len( notes ) ):
 			cmt = notes[iCmt]
-			#s += 'cmt: %s<br>' % (cmt.comment,)
-			if cmt.name == '':
-				name = 'an anonymous coward'
-			else:
-				name = cmt.name
-			if cmt.url in [ '', 'http://' ]:
-				nameString = '<span class="quietlink">%s</span>' % ( cgi.escape( name ), )
-			else:
-				nameString = '<a href="%s" class="quietlink">%s</a>' % ( util.MungeHTML( cmt.url ), cgi.escape( name ) )
-			if cmt.email == '':
-				emailString = ''
-			else:
-				emailString = ' [<a href="mailto:%s" class="quietlink">%s</a>]' % ( cmt.email, cgi.escape( cmt.email ), )
-			if cmt.date == '':
-				dateString = ''
-			else:
-				dateString = time.strftime( ' at %I:%M:%S %p on %B %d, %Y', strptime.strptime( cmt.date, STANDARDDATEFORMAT ) )
-			s += """
-			<tr><td class="cmt">
-			%s<br>
-			<span class="commentfooter">&nbsp;&nbsp;posted by
-			%s%s%s&nbsp;&nbsp;</span>
-			</td></tr>
-			""" % (
-				string.replace(
-					re.sub(
-						r'(http://[^\r\n \"\<]+)',
-						r'<a href="\1">\1</a>',
-						cgi.escape( cmt.comment ),
-					),
-					"\n", "<br />"
-				),
-				nameString,
-				emailString,
-				dateString,
-			)
-		
-	# Print 'add comment' form
-	s += """
-	<tr><td>
-	<form method="post" action="comments.py?u=%s&p=%s">
-	<table width="100%%" cellspacing="0" cellpadding="2">
-	<tr><td></td><td><strong>Add a new comment:</strong></td></tr>
-	<tr><td>Name:</td><td width="99%%"><input type="text" size="50" name="name" value="%s"/></td></tr>
-	<tr><td>E-mail:</td><td><input type="text" size="50" name="email" value="%s"/></td></tr>
-	<tr><td>Website:</td><td><input type="text" size="50" name="url" value="%s"/></td></tr>
-	<tr><td>Comment:</td><td><textarea name="comment" width="100%%" rows="10"></textarea></tr>
-	<tr><td></td><td><input type="submit" value="Save comment" />
-		<input type="button" value="Cancel" onclick="javascript:window.close()" /></td>
-	<tr><td></td><td><strong>Note</strong>: 'http://...' will be converted into links and HTML will be stripped.</td>
-	</table>
-	</form>
-	</td></tr>
-	""" % (u, p, storedName, storedEmail, storedUrl)
-	
-	# End enclosing table
-	s += """
-	</table>
-	</td></tr></table>
-	"""
-	
-	s += """
-	</body>
-	</html>
-	"""
+			cmtObj = comments.comment( cmt )
+
+			s += formatter.comment( cmtObj )
+				
+	s += formatter.footer()
 	
 # Dump it all in the request object and send it off
-request['Content-Type'] = 'text/html'
 request['Content-Length'] = len(s)
 request.push( s )
 request.done()

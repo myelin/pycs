@@ -29,20 +29,22 @@ D = /home/$(U)
 
 F = *.py *.pyc *.sh *.pl *.conf
 FILES = $(addprefix $(D)/, $(F))
-SUBDIRS = www conf modules
+SUBDIRS = www conf modules comments
 DIRS = $(addprefix $(D)/, $(SUBDIRS))
 PYCSFILES = README LICENSE Makefile mkidx.pl \
 	pycs.py \
 	pycs_settings.py pycs_comments.py pycs_module_handler.py pycs_xmlrpc_handler.py pycs_rewrite_handler.py \
-	pycs_http_util.py strptime.py \
+	pycs_http_util.py html_cleaner.py strptime.py \
 	xmlStorageSystem.py radioCommunityServer.py weblogUpdates.py \
 	startserver.sh update.sh startserver.bat \
 	test_server.py test_settings.py \
 	analyse_logs.py \
 	pycs.conf rewrite.conf
+COMMENTFILES = __init__.py rss.py html.py
 PYCSMODFILES = updates.py mailto.py users.py comments.py login.py
+WEBFILES = index.html history.html
 SPECIFICS = $(PYCSFILES) medusa/*.py metakit.py Mk4py.so
-VER = 0.03
+VER = 0.04
 DISTFN = pycs-$(VER)-src
 LATESTFN = pycs-latest-src
 
@@ -55,7 +57,7 @@ check:
 	export PYTHONPATH=medusa && pychecker pycs.py
 
 install: scripts
-	cp -f $(SPECIFICS) $(D)/
+	cp -af $(SPECIFICS) $(D)/
 	#chmod -R 644 $(D)/*
 	chmod 755 $(FILES)
 	mkdir -p $(DIRS)
@@ -66,7 +68,11 @@ scripts:
 	for f in `cd modules && find | grep -E "\.py$$" && cd ..`; do cp modules/$$f $(D)/modules/$$f; done
 	chown root.root $(D)/modules -R
 	chmod 755 $(D)/modules -R
-	cp www/index.html $(D)/www/
+	
+	cp -af comments $(D)/
+	chmod 755 $(D)/comments -R
+	
+	cp $(addprefix www/, $(WEBFILES)) $(D)/www/
 	chown root.root $(D)/www/index.html
 	chmod 644 $(D)/www/index.html
 	perl -w make_readme.pl < README > $(D)/www/readme.html
@@ -78,10 +84,16 @@ dist:
 	cp $(PYCSFILES) $(DISTFN)/
 	perl -w extract_pycs_net.pl < pycs.conf > $(DISTFN)/pycs.conf
 	perl -w extract_pycs_net.pl < rewrite.conf > $(DISTFN)/rewrite.conf
+	
 	mkdir -p $(DISTFN)/modules/system
 	cp $(addprefix modules/system/, $(PYCSMODFILES)) $(DISTFN)/modules/system/
+	
 	mkdir -p $(DISTFN)/www
 	cp www/dist_index.html $(DISTFN)/www/index.html
+	
+	mkdir -p $(DISTFN)/comments
+	cp $(addprefix comments/, $(COMMENTFILES)) $(DISTFN)/comments/
+	
 	tar -czf $(DISTFN).tar.gz $(DISTFN)/*
 	rm -rf $(DISTFN)/
 	cp $(DISTFN).tar.gz $(D)/www/
