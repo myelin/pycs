@@ -299,7 +299,7 @@ class xmlStorageSystem_handler:
 		return {
 			'community': {
 				'flCanHostComments': xmlrpclib.True,
-				'name': 'Python Community Server',
+				'name': self.set.LongTitle(),
 				'discussionGroupUrl': 'http://radio.userland.com/discuss/',
 				'domainName': self.set.ServerUrl(),
 				'flHasSearch': xmlrpclib.False,
