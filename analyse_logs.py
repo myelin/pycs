@@ -91,6 +91,12 @@ if __name__ == '__main__':
 		
 		if ua.find( 'Googlebot' ) == 0:
 			ref = "(googlebot)"
+		elif ua.find( 'Scooter' ) == 0:
+			ref = "(scooter)"
+		elif ua.find( 'Flickbot' ) == 0:
+			ref = "(flickbot)"
+		elif ua.find( 'Rumours' ) == 0:
+			ref = "(rumours-agent)"
 	
 		pageData = pages.setdefault( page, { 'hits': 0, 'refs': {}, } )
 		pageData['hits'] += 1

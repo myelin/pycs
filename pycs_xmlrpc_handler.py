@@ -75,6 +75,19 @@ class pycs_xmlrpc_handler( xmlrpc_handler.xmlrpc_handler ):
 		print "trying to find",base
 		if self.namespaces.has_key( base ):
 			try:
+				# We could just say 'return xmlFunc()', or
+				# 'return self.namespaces[base].call( ... )'
+				# but this way we can profile XMLRPC
+				# handlers if we want.
+
+				# The reason this is here is that XMLRPC
+				# calls seemed to be going extremely slowly
+				# a while ago and it was suspected that the
+				# scripts weren't very quick.  Actually it
+				# was the XML parser -- but I haven't taken
+				# this code here out because someone might
+				# want to profile scripts in future.
+
 				import profile
 				import __main__
 				__main__.xmlFunc = lambda theBase=base, namespaces=self.namespaces, qualifiedName=qualifiedName, params=params: namespaces[theBase].call( qualifiedName[1:], params )

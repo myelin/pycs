@@ -44,7 +44,7 @@ class User:
 
 class Settings:
 
-	def __init__( self ):
+	def __init__( self, quiet=False ):
 		storFn = pycs_paths.DATADIR + "/settings.dat"
 		self.db = metakit.storage( storFn, 1 )
 
@@ -93,7 +93,8 @@ class Settings:
 		# Update data
 		self.updates = self.db.getas( "updates[time:S,usernum:S,title:S]" ).ordered(2)
 		
-		self.DumpData()
+		if not quiet:
+			self.DumpData()
 
 	def readAllOptions( self, cp, section ):
 		conf = {}

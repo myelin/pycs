@@ -35,7 +35,7 @@ print IDX <<HTML;
 <html>
 <head>
  <title>Python Community Server:User dirs</title>
- <link rel="stylesheet" href="http://www.myelin.co.nz/myelin.css" type="text/css" />
+ <link rel="stylesheet" href="http://myelin.pycs.net/myelin.css" type="text/css" />
 </head>
 <body>
  <div class="maintitle"><strong>PyCS</strong>: User directories</div>

@@ -149,6 +149,9 @@ scripts:
 
 	/usr/bin/perl -w make_readme.pl < README > www/readme.html
 	$(INSTALL_RO) $(addprefix www/, $(WEBFILES)) $(WEBDIR)/
+	if [ -f www/local_index.html ]; then \
+		$(INSTALL_RO) www/local_index.html $(WEBDIR)/index.html; \
+	fi
 	
 	$(INSTALL_RO) $(addprefix www/initialResources/, $(RESFILES)) $(RESDIR)/
 
