@@ -17,6 +17,15 @@ this. You usually should keep those special strings where they are in the
 original. The string to the left is the english input from the modules, the
 string to the right is your translation.
 
+Important notice for programmers: Please use _always_ the _("..."), _('...')
+or _("""  ... ... """) form. This is especially for Phil, he likes to write
+function calls with extra whitespace after and before ( ). Please don't do
+this, as make_msgs.py won't recognize those strings! And don't compute those
+strings inside _( ... ), as this might create different strings during
+runtime and so the translation might not exist already - and the parser might
+break, as the resultant translations in the translation file might have
+invalid syntax (they are actually evaluated on read!).
+
 To create a new translation file (start from scratch):
 ------------------------------------------------------
 
@@ -42,6 +51,10 @@ mv pycs-de.msgs-new pycs-de.msgs
 This would update pycs-de.msgs with all new strings of the scripts and would
 drop all strings that are no longer available. That's why you should edit
 the new file, so you have the old file available for references to old strings.
+
+New strings are marked by a # !!! comment, so just search for !!!, jump to the
+next ::= and translate. You can leave comments as they are, the next iteration
+will overwrite all comments again.
 
 That's all there is to know about, so just go ahead and create translation
 files for your favorite language. Please send them to the pycs-dev list for

@@ -1,13 +1,30 @@
+# strings from comments/html.py
+'<tr><td class="cmt"><strong>No comments yet</strong></td></tr>'::='<tr><td class="cmt"><strong>Bis jetzt noch keine Kommentare</strong></td></tr>'
+'Add a new comment:'::='Kommentar abgeben:'
+'Name'::='Name'
+'Email'::='Email'
+'Website'::='Website'
+'Comment'::='Kommentar'
+'Save Comment'::='Kommentar speichern'
+'Cancel'::='Abbrechen'
+'Note'::='Achtung'
+"'http://...' will be converted into links. HTML other than &lt;a href&gt;, &lt;b&gt;, &lt;i&gt;, &lt;s&gt; and &lt;tt&gt; will be stripped."::="'http://...' wird in einen Link umgesetzt. Anderes HTML als &lt;a href&gt;, &lt;b&gt;, &lt;i&gt;, &lt;s&gt; und &lt;tt&gt; wird entfernt."
+'Subscribe to an RSS feed of this comment thread:'::='Abonniere einen Newsfeed für diese Kommmentare:'
+'Subscribe to this comment thread in Radio UserLand'::='Abonniere einen Newsfeed für diese Kommentare mit Radio UserLand'
+'Link to the RSS (XML) feed for this comment thread'::='Link auf das RSS (XML) für diese Kommentare'
+'posted by'::='gepostet von'
+'Delete comment'::='Kommentar löschen'
+
 # strings from modules/system/mailto.py
-'\n\t\t<h2>Message sent OK; <a href="%s">click here to go back</a>.</h2>\n\t\t'::='\n\t\t<h2>Die Mitteilung wurde versendet; <a href="%s">Hier klicken um zum Blog zurückzukehren</a>.</h2>\n\t\t'
-"\n\t\t<h2>Sorry, the mail didn't send properly!</h2>\n\t\t<h2>Error:</h2>\n\t\t<h2><center><strong>%s</strong></center></h2>\n\t\t"::="\n\t\t<h2>Sorry, die Mitteilung wurde nicht versendet!</h2>\n\t\t<h2>Fehler:</h2>\n\t\t<h2><center><strong>%s</strong></center></h2>\n\t\t"
+'\n\t\t<h2>Message sent OK; <a href="%s">click here to go back</a>.</h2>\n\t\t'::='\n\t\t<h2>Die Mitteilung wurde versendet; <a href="%s">Hier klicken um zum Blog zur\xfcckzukehren</a>.</h2>\n\t\t'
+"\n\t\t<h2>Sorry, the mail didn't send properly!</h2>\n\t\t<h2>Error:</h2>\n\t\t<h2><center><strong>%s</strong></center></h2>\n\t\t"::='\n\t\t<h2>Sorry, die Mitteilung wurde nicht versendet!</h2>\n\t\t<h2>Fehler:</h2>\n\t\t<h2><center><strong>%s</strong></center></h2>\n\t\t'
 'Feedback'::='Mitteilungsversand'
 '<h2>Posting your message</h2>'::='<h2>Senden Deiner Mitteilung</h2>'
 '<h2>Sending a message to %s</h2>'::='<h2>Senden einer Mitteilung an %s</h2>'
-"The recipient's mail server didn't like it."::="Der Mailserver des Empfängers akzeptierte die Mail nicht."
+"The recipient's mail server didn't like it."::='Der Mailserver des Empf\xe4ngers akzeptierte die Mail nicht.'
 'The server didn\'t reply properly to the "HELO" greeting!'::='Der Server hat nicht korrekt auf "HELO" reagiert!'
-"The server didn't accept the from address!"::="Der Server hat den Absender nicht akzeptiert!"
-"The server just didn't like the message for some reason!"::="Der Server hat die Mitteilung aus irgendeinem Grund nicht akzeptiert!"
+"The server didn't accept the from address!"::='Der Server hat den Absender nicht akzeptiert!'
+"The server just didn't like the message for some reason!"::='Der Server hat die Mitteilung aus irgendeinem Grund nicht akzeptiert!'
 'Your name'::='Dein Name'
 'Your e-mail address'::='Deine Mailadresse'
 'Your URL'::='Deine URL'

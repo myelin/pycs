@@ -44,20 +44,19 @@ class PyCSTranslations(gettext.NullTranslations):
 					msg1 = line[:p]
 					msg2 = line[p+3:]
 					if msg2:
-						catalog[msg1] = eval(msg2)
+						catalog[eval(msg1)] = eval(msg2)
 			line = fp.readline()
 
-	def gettext(self, message):
-		msg = repr(message)
+	def gettext(self, msg):
 		if self._catalog.has_key(msg):
 			return self._catalog[msg]
 		else:
 			try:
 				flog = open(self._failedlog, 'a')
-				flog.write('%s::=%s\n' % (msg, msg))
+				flog.write('%s::=%s\n' % (repr(msg), repr(msg)))
 				flog.close()
 			except:
-				print "Missing msg: %s" % msg
+				print "Missing msg: %s" % repr(msg)
 			return message
 
 	def ugettext(self, message):

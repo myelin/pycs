@@ -64,6 +64,8 @@ for file in liste:
 					strh[ps] = 1
 					strlh[ps] = 1
 					s2 = repr(eval(catalog.get(ps, s)))
+					if lang != 'empty' and not(catalog.has_key(ps)):
+						print "# !!! new string"
 					print "%s::=%s" % (ps, s2)
 		print
 
