@@ -79,6 +79,9 @@ else:
 			lines.append( '-' * len( c ) )
 		print string.join( lines, '\t' )
 		for row in res['table']:
-			print string.join( row, '\t' )
+			s = string.join( row, '\t' )
+			if type(s) == type(u''):
+				s = s.encode('ISO-8859-1')
+			print s
 	print res['message']
 
