@@ -125,6 +125,11 @@ class Settings:
 		if not quiet:
 			self.DumpData()
 
+	def getCommentTable(self):
+		return self.db.getas(
+			'comments[user:S,paragraph:S,link:S,notes[name:S,email:S,url:S,comment:S,date:S]]'
+			).ordered( 2 )
+
 	def readAllOptions(self, cp, section):
 		conf = {}
 		for opt in cp.options(section):
@@ -275,13 +280,11 @@ class Settings:
 	def FormatUsernum(self, usernum):
 		
 		"Converts a usernum into DB-format, e.g. 123 -> '0000123'"
-		
-		if type(usernum)==type(''):
-			# zero-pad it
-			return ('0' * (7 - len(usernum))) + usernum
-		else:
-			# convert to a string
-			return "%07d" % (usernum,)
+
+		if type(usernum) != type(0):
+#			print "converting %s to integer" % `usernum`
+			usernum = int(usernum)
+		return "%07d" % usernum
 
 	def PatchEncodingHeader(self, str):
 		"Patches the default encoding into a <?xml ...?> header"
@@ -440,6 +443,16 @@ class Settings:
 		else:
 			raise KeyError(option)
 	
+	def getUserStylesheet(self, usernum):
+		css = self.getUserOption(usernum, 'stylesheet')
+		if css:
+			base = self.UserFolder(usernum)
+			if base[-1] == '/' and css[0] == '/':
+				stylesheet = base[:-1] + css
+			else:
+				stylesheet = base + css
+		return css
+
 	def setUserOption( self, usernum, option, value ):
 		u = self.User(usernum)
 		if option == 'stylesheet':
@@ -518,13 +531,8 @@ class Settings:
 
 		stylesheet = '%s/pycs.css' % self.ServerUrl()
 		if usernum:
-			css = self.getUserOption(usernum, 'stylesheet')
-			if css:
-				base = self.UserFolder(usernum)
-				if base[-1] == '/' and css[0] == '/':
-					stylesheet = base[:-1] + css
-				else:
-					stylesheet = base + css
+			x = self.getUserStylesheet(usernum)
+			if x: css = x
 		
 		metatags = ''
 		if hidden:

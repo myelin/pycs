@@ -1,39 +1,50 @@
 # comments.html
 
 import urllib
+import cgi
 import pycs_settings
 
 set = pycs_settings.Settings( quiet=True )
 
-headerString = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+def getHeaderString(usernum):
+	if usernum:
+		csslink = set.getUserStylesheet(usernum)
+	else:
+		csslink = None
+	css = """<style type="text/css">
+<!--
+body { font-family: verdana, sans-serif; }
+.black { background-color: black; }
+.cmt { background-color: #eeeeee; padding: 1em; border: solid 1px black; margin-bottom: 1em; }
+.commentfooter { font-size: 0.8em; background-color: white; }
+.quietlink { font-weight: bold; color: black; }
+-->
+</style>"""
+	if csslink:
+		css += """\n<link rel="stylesheet" type="text/css" href="%s" />""" % cgi.escape(csslink, 1)
+	
+	headerString = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=%s" />
 <title>Comments</title>
-<style type="text/css">
-<!--
-body { font-family: verdana, sans-serif; }
-.black { background-color: black; }
-td { background-color:  lightgrey; }
-.cmt { background-color: #eeeeee; }
-.commentfooter { font-size: 0.8em; background-color: white; }
-.quietlink { font-weight: bold; color: black; }
--->
-</style>
+%s
 </head>
 <body>
-""" % set.DocumentEncoding()
+""" % (set.DocumentEncoding(), css)
+	return headerString
 
 startTableString = """
+<ol><!--
 	<table width="100%" cellspacing="1" cellpadding="0">
 	<tr><td class="black">
-	<table width="100%" cellspacing="1" cellpadding="10">
+	<table width="100%" cellspacing="1" cellpadding="10">-->
 """
 
 endTableString = """
-	</table>
-	</td></tr></table>
+</ol><!--	</table>
+	</td></tr></table>-->
 """
 
 footerString = """
@@ -54,37 +65,37 @@ class formatter( defaultFormatter.defaultFormatter ):
 		return 'text/html'
 
 	def header( self ):
-		return headerString
+		return getHeaderString(self.u)
 		
 	def startTable( self ):
-		ret = [ startTableString ]
+		ret = []
+
+		def notediv(msg):
+			return [
+				'<div style="border: solid; border-color: black; border-width: 5px; padding: 1em; font-weight: bold; margin-bottom: 1em;">',
+				msg,
+				'</div>'
+				]
 		
 		if hasattr( self, 'note' ):
-			ret += [
-				'<tr><td style="border: solid; border-color: black; border-width: 5px; font-weight: bold;">',
-				self.note,
-				'</td></tr>'
-			]
+			ret += notediv(self.note)
 
 		if hasattr( self, 'link' ):
 			if self.link:
-				ret += [
-					'<tr><td style="border: solid; border-color: black; border-width: 5px; font-weight: bold;">',
-					_('You are commenting on the following link:<br><a href="%s" target="_blank">%s</a>') % (self.link, self.link),
-					'</td></tr>'
-				]
-			
+				ret += notediv(_('You are commenting on the following link:<br><a href="%s" target="_blank">%s</a>') % (self.link, self.link))
+
+		ret.append(startTableString)
 		return ''.join( ret )
-		
 	
 	def endTable( self ):
 		ret = []
 		
 		if self.nComments == 0:
-			ret.append( _('<tr><td class="cmt"><strong>No comments yet</strong></td></tr>') )
+			ret.append( _('<div class="cmt"><strong>No comments yet</strong></li>') )
 
 		ret.append( """
-		<tr><td>
+		</ol>
+		<div style="border: solid 1px black; padding: 1em; background-color: lightgrey; ">
 		<form method="post" action="comments.py?u=%s&p=%s">
 		""" % ( self.u, self.p ) )
 		if hasattr(self, 'link'):
@@ -109,7 +120,7 @@ class formatter( defaultFormatter.defaultFormatter ):
 		</td></tr>
 		</table>
 		</form>
-		</td></tr>
+		</div>
 		""" % ( _("Add a new comment:"),
 			_("Name"),
 			self.storedName,
@@ -136,7 +147,7 @@ class formatter( defaultFormatter.defaultFormatter ):
 
 	def comment( self, cmt, paragraph=None ):
 		ret = """
-		<tr><td class="cmt">
+		<li class="cmt">
 			%s<br />
 			<span class="commentfooter">&nbsp;&nbsp;%s %s&nbsp;&nbsp;</span>
 		""" % (
@@ -159,7 +170,7 @@ class formatter( defaultFormatter.defaultFormatter ):
 				""" % ( self.u, self.p, cmt.iCmt,
 					_("Delete comment") )
 		
-		ret += """</td></tr>
+		ret += """</li>
 		"""
 		
 		self.nComments += 1
