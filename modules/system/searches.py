@@ -42,6 +42,9 @@ engines = {
 	'msn': [
 		re.compile(r'^http://search\.msn\..*\?q=([^&]*).*$'),
 		],
+	'blo.gs': [
+		re.compile(r'^http://blo\.gs\/\?q=([^&]*).*$'),
+		],
 	'lycos': [
 		re.compile(r'^http://.*\.lycos\..*\?query=([^&]*).*$'),
 		],
