@@ -155,6 +155,9 @@ scripts:
 	/usr/bin/perl -w make_readme.pl < README > www/readme.html
 	$(INSTALL_MKDIR_RO) -d $(WEBDIR)
 	$(INSTALL_RO) $(addprefix www/, $(WEBFILES)) $(WEBDIR)/
+	if [ -f www/Radio*.exe ]; then \
+		$(INSTALL_RO) www/Radio*.exe $(WEBDIR)/; \
+	fi
 	if [ -f www/local.css ]; then \
 		$(INSTALL_RO) www/local.css $(WEBDIR)/; \
 	fi
