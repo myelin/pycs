@@ -2,8 +2,6 @@
 
 # (C) 2003 Phillip Pearson
 # MIT license (like the rest of PyCS)
-# but this depends on the GPL 'rssparser.py' from Mark Pilgrim
-# so an app built arount this will be covered by the GPL.
 
 import os.path
 

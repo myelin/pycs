@@ -2,16 +2,19 @@
 
 # (C) 2003 Phillip Pearson
 # MIT license (like the rest of PyCS)
-# but this depends on the GPL 'rssparser.py' from Mark Pilgrim
-# so an app built arount this will be covered by the GPL.
 
-import urllib, sgmllib, rssparser, pprint, os, os.path, re
+import urllib, sgmllib, feedparser, pprint, os, os.path, re, traceback
 
 root = 'http://www.pycs.net/'
 system = root + 'system/'
 
+class PasswordRequired(Exception):
+    pass
+
 class opener(urllib.FancyURLopener):
-    version = "All your RSS are belong to us/0.01"
+    version = "All your RSS are belong to us/0.02"
+    def prompt_user_passwd(self, host, realm):
+        raise PasswordRequired()
 
 def get(url):
     return opener().open(url).read()
@@ -54,12 +57,19 @@ if __name__ == '__main__':
     recent = []
     max_recent = 10
     if os.path.isfile('cache/recent'):
-        recent = eval(open('cache/recent').read())
+        try:
+            recent = eval(open('cache/recent').read())
+        except:
+            recent = []
     for url in p.urls.keys():
         cachePath = 'cache/' + munge(url)
         print url
         print "\t",cachePath
-        page = get(url)
+        try:
+            page = get(url)
+        except:
+            traceback.print_exc()
+            continue
         urls = re.findall(r'\<link rel=\"alternate\" type=\"application\/rss\+xml\" title=\"RSS\" href\=\"(.*?)\"', page)
         if len(urls):
             rssUrl = urls[0]
@@ -71,7 +81,7 @@ if __name__ == '__main__':
         if os.path.isfile(cachePath):
             olddata = eval(open(cachePath).read())
             modified = olddata.get('modified', None)
-        data = rssparser.parse(rssUrl, modified=modified)
+        data = feedparser.parse(rssUrl, modified=modified)
         print len(data['items'])
         if not len(data['items']):
             continue
