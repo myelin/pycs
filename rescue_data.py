@@ -1,6 +1,21 @@
 #!/usr/bin/env python
 
-# Rescue data from a broken database (e.g. one which takes forever to open the weblogUpdates table)
+# Rescue data from a broken database (e.g. one which takes forever to
+# open the weblogUpdates table)
+
+# Read from rescued/settings.dat and save as rescued/settings.txt
+
+# Copyright (C) 2002 Phillip Pearson; MIT license (see other PyCS
+# files)
+
+# To save a broken database file, stop the PyCS server, then copy your
+# settings.dat file into rescued/settings.dat, run this script
+# (rescue_data.py), then rename rescued/settings.dat and run
+# rescue_return_data.py, which will create a new rescued/settings.dat.
+# Copy that file into your /var/lib/pycs/data/ directory and start the
+# server again.
+
+# Good luck!
 
 import os,metakit,sys
 
@@ -9,7 +24,7 @@ import os,metakit,sys
 
 print "open"
 import pycs_settings
-pycs_settings.pycs_paths.DATADIR = pycs_settings.pycs_paths.CONFDIR = '.'
+pycs_settings.pycs_paths.DATADIR = pycs_settings.pycs_paths.CONFDIR = 'rescued'
 set = pycs_settings.Settings()
 db = set.db
 set.comments = set.db.getas(
@@ -51,7 +66,7 @@ for table in ( 'users', 'meta', 'comments' ):
 	import pprint
 	so = sys.stdout
 	try:
-		sys.stdout = open( 'settings.txt', 'wt' )
+		sys.stdout = open( 'rescued/settings.txt', 'wt' )
 		print "alldata = ("
 		pprint.pprint( output )
 		print ")"
@@ -61,10 +76,4 @@ for table in ( 'users', 'meta', 'comments' ):
 		
 	#print ":",metakit.dump(v)
 
-#import metakit
-#s = metakit.storage( 's.dat', 1 )
-#print "dump users"
-#v = s.getas( 'users' )
-#metakit.dump( v )
-
-print "all done!"
+print "All done!  This script might crash now if you have a dodgy database.  Don't worry about that - just hit Ctrl-C (or kill this process).  The data dump file has been saved so you can rebuild the database using rescue_return_data.py now."

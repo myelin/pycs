@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-# Return rescued data to database form: settings.txt -> rescued.db
+# Return rescued data to database form: rescued/settings.txt -> rescued/settings.dat
+# Copyright (C) 2002 Phillip Pearson; MIT license (see other PyCS files)
 
 import os,os.path,metakit,sys
 
@@ -19,24 +20,35 @@ set.comments = set.db.getas(
 
 # read in all data
 alldata = {}
-execfile( 'settings.txt', alldata )
+execfile( 'rescued/settings.txt', alldata )
 alldata = alldata['alldata']
 
-def massage( row ):
-	for key,val in row.items():
-		if type(val)==type([]):
-			v = metakit.view()
-			vsize = len( v )
-			assert( vsize == 0 )
-			for subrow in val:
-				print "fix subrow",subrow
-				fixed = massage(subrow)
-				print "fixed up:",fixed
-				v.append( fixed )
-				vsize += 1
-				assert( vsize == len( v ) )
-			row[key] = v
-	return row
+def pushRowsIntoView( rows, view ):
+	print "push rows into view"
+	for row in rows:
+		scalarKeys = {}
+		viewKeys = {}
+		#print "getting values from",row
+		for key,val in row.items():
+			if type(val) == type([]):
+				viewKeys[key] = val
+			else:
+				scalarKeys[key] = val
+		idx = view.append( scalarKeys )
+		print "insert index",idx
+		subview = view[idx]
+		for key,val in viewKeys.items():
+			#print "key",key,"val",val
+			#print "subview.",key,"..."
+			pushRowsIntoView( val, getattr( subview, key ) )
+
+# pycs_settings.Settings.__init__ creates a row in set.meta that we
+# don't want because we are about to restore one from the old
+# database.
+
+del set.meta[0]
+
+# Now run through all the tables and put them back into the DB
 
 for table in ( 'users', 'meta', 'comments' ):
 	print "table",table
@@ -44,14 +56,10 @@ for table in ( 'users', 'meta', 'comments' ):
 	v = getattr( set, table )
 	l = len( v )
 	print "currently",l,"rows in table"
-	for row in data:
-		print "add row to",table
-		v.append( massage( row ) )
-		l += 1
-		if not ( l == len( v ) ):
-			print "warning: expected",l,"rows, got",len(v)
+	assert( l == 0 )
+	pushRowsIntoView( data, v )
 
-print "commit"
+print "Commit to disk ..."
 db.commit()
-print dir(db)
-print "all done!"
+
+print "All done!  Now you can copy rescued/settings.dat to /var/lib/pycs/data/, cross your fingers, and start the server again!  Make a copy of your old /var/lib/pycs/data/settings.dat first though, just in case something hasn't worked."
