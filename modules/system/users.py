@@ -96,7 +96,11 @@ if query.has_key('usernum'):
 
 else:
 
-	if query.get('format', '') == 'rss':
+	sort_spec = query.get('sort', 'usernum')
+	if sort_spec not in ('usernum', 'space'):
+		s += "<p>Invalid sort specifier!</p>"
+
+	elif query.get('format', '') == 'rss':
 		s += '<?xml version="1.0" encoding="%s"?>\n' % set.DocumentEncoding()
 		s += '<rss version="2.0">\n'
 		s += '<channel>\n'
@@ -122,16 +126,27 @@ else:
 		s += '</channel>\n'
 		s += '</rss>\n'
 	else:
-		s += _('<p>This is a list of all users registered on this server:')
+		s += _('<p>This is a list of all users registered on this server:</p>')
+		s += '<p><a href="users.py?format=rss">RSS</a> | <a href="users.py?sort=usernum">sort by usernum</a> | <a href="users.py?sort=space">sort by space used</a></p>'
 		s += '<ul>'
+		users = []
 		for user in set.users:
 			url = set.UserFolder( user.usernum )
-			s += '<li><strong>%d</strong> <a href="%s">%s</a> - %s</li>' % (
+			if sort_spec == 'usernum':
+				sort_key = int(user.usernum)
+			elif sort_spec == 'space':
+				sort_key = user.bytesused
+			user_info = (
 				int(user.usernum),
 				url,
 				user.name,
-				user.weblogTitle
+				user.weblogTitle,
+				set.SpaceString(user.bytesused),
 			)
+			users.append((sort_key, user_info))
+		users.sort()
+		for user in users:
+			s += '<li><strong>%d</strong> <a href="%s">%s</a> - %s (%s)</li>' % user[1]
 		s += '</ul>'
 
 # Dump it all out

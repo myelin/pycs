@@ -27,6 +27,9 @@
 import metakit
 import time
 import re
+import os
+import stat
+import os.path
 import md5
 import ConfigParser
 import pycs_paths
@@ -44,6 +47,17 @@ class NoSuchUser(Error):
 class User:
 	pass
 
+# count used bytes in a path
+def counterCallback( sumf, dir, files):
+	for f in files:
+		fn = os.path.join(dir, f)
+		sumf[0] += os.stat(fn)[stat.ST_SIZE]
+
+def usedBytes( path ):
+	sumf = [0]
+	os.path.walk( path, counterCallback, sumf )
+	return sumf[0]
+
 class Settings:
 
 	def __init__(self, quiet=0, authorizer=None):
@@ -58,7 +72,6 @@ class Settings:
 
 		confFn = pycs_paths.CONFDIR + "/pycs.conf"
 		try:
-			import os
 			os.stat(confFn)
 		except:
 			raise "Can't read config data file: " + confFn
@@ -86,7 +99,7 @@ class Settings:
 			"users[usernum:S,email:S,password:S,name:S,weblogTitle:S,serialNumber:S,organization:S," +
 			"flBehindFirewall:I,hitstoday:I,hitsyesterday:I,hitsalltime:I," +
 			"membersince:S,lastping:S,pings:I,lastupstream:S,upstreams:I,lastdelete:S,deletes:I,bytesupstreamed:I," +
-			"signons:I,signedon:I,lastsignon:S,lastsignoff:S,clientPort:I,disabled:I,alias:S,flManila:I]"
+			"signons:I,signedon:I,lastsignon:S,lastsignoff:S,clientPort:I,disabled:I,alias:S,flManila:I,bytesused:I]"
 			).ordered()
 			
 		if len(self.users) == 0:
@@ -403,6 +416,65 @@ class Settings:
 		u = self.User(usernum)
 		u.password = md5.md5(password).hexdigest()
 		self.Commit()
+
+	def RecalculateUserSpace(self):
+		"re-calculate space used for all users and store in the database"
+		for user in self.users:
+			user.bytesused = self.UserSpaceUsed(user.usernum)
+			print "user %s: %d bytes used" % (user.usernum, user.bytesused)
+		self.Commit()
+
+	def UserSpaceUsed( self, email ):
+		return usedBytes( self.UserLocalFolder( email ) )
+
+	def SpaceString(self, bytes):
+		if bytes < 1024:
+			return "%d bytes" % bytes
+		if bytes < 1024**2:
+			return "%.2f kB" % (float(bytes) / 1024.0)
+		if bytes < 1024**3:
+			return "%.2f MB" % (float(bytes) / 1024.0**2)
+		return "%.2f GB" % (float(bytes) / 1024.0**3)
+
+	def UsernumMunge( self, name ):
+		# We have to zero pad everything properly, so this is a bit
+		# more work that normal filename munging (see below)
+		
+		# If we've been given a string, turn it into a number
+		if type(name) == type(''):
+			name = int(name)
+			
+		# Now turn the number into a zero-padded string
+		if type(name) == type(123):
+			name = '%07d' % (name,)
+			
+		# Fail if it's something we don't understand now
+		if type(name) != type(''):
+			raise Exception("Usernum must be a string or a number")
+		return self.Munge( name )
+
+
+
+	def Munge( self, name ):
+		# Make sure we don't have any '..'s
+		if name.find( '..' ) != -1:
+			raise Exception("Security warning: '..' found in filename")
+
+		# Get rid of odd chars		
+		safeName = ""
+		r = re.compile( '[A-Za-z0-9\_\-\.\/]' )
+		for c in name:
+			if r.search( c ):
+				safeName += c
+			else:
+				safeName += "@%02X" % (ord(c),)
+
+		return safeName
+
+	def UserLocalFolder( self, email ):
+		safeEmail = self.UsernumMunge( email )
+		return pycs_paths.WEBDIR + "/users/%s/" % (safeEmail,)
+
 
 	def UserFolder(self, usernum):
 		formattedUsernum = self.FormatUsernum(usernum)

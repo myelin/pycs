@@ -40,17 +40,6 @@ import pycs_paths
 
 import xmlrpclib
 
-# count used bytes in a path
-def counterCallback( sumf, dir, files):
-	for f in files:
-		fn = os.path.join(dir, f)
-		sumf[0] += os.stat(fn)[stat.ST_SIZE]
-
-def usedBytes( path ):
-	sumf = [0]
-	os.path.walk( path, counterCallback, sumf )
-	return sumf[0]
-
 def encodeUnicode( text, encoding='iso-8859-1' ):
 	if type(text) == type(u''):
 		text = text.encode( encoding )
@@ -155,11 +144,11 @@ class xmlStorageSystem_handler:
 			
 			try:
 				# Munge the name to help protect against directory traversal attacks
-				safeName = self.munge( name )
+				safeName = self.set.Munge( name )
 				print "safe name:", safeName
 				
 				# Save the file
-				fullName = "%s%s" % ( self.userLocalFolder( email ), safeName ) 
+				fullName = "%s%s" % ( self.set.UserLocalFolder( email ), safeName ) 
 				
 				# See if we need to create any dirs
 				r = re.compile( '(.*?)\/(.*)' )
@@ -212,6 +201,7 @@ class xmlStorageSystem_handler:
 		
 		u.upstreams += nFilesSaved
 		u.bytesupstreamed += nBytesSaved
+		u.bytesused = self.set.UserSpaceUsed(email)
 		u.lastupstream = self.set.GetTime()
 		self.set.Commit()
 
@@ -248,11 +238,11 @@ class xmlStorageSystem_handler:
 			print "-> delete",name
 			
 			# Munge the name to help protect against directory traversal attacks
-			safeName = self.munge( name )
+			safeName = self.set.Munge( name )
 			print "safe name:", safeName
 			
 			# Save the file
-			fullName = "%s%s" % ( self.userLocalFolder( email ), safeName ) 
+			fullName = "%s%s" % ( self.set.UserLocalFolder( email ), safeName ) 
 			print "full name:", fullName
 			
 			try:
@@ -276,6 +266,7 @@ class xmlStorageSystem_handler:
 		
 		u.deletes += nFilesDeleted
 		u.lastdelete = self.set.GetTime()
+		u.bytesused = self.set.UserSpaceUsed(email)
 		self.set.Commit()
 		
 		return {
@@ -324,7 +315,7 @@ class xmlStorageSystem_handler:
 				},
 			'yourUpstreamFolderUrl': self.userFolder( email ),	# user URL
 			'message': _('Hello, %s, from the Python Community Server!') % (u.name,),
-			'ctBytesInUse': self.userSpaceUsed( email ),
+			'ctBytesInUse': u.bytesused,
 			'maxBytesPerUser': 20 * 1024*1024,	# max 20M per user
 			'weblogUpdates': {
 				'server': self.set.ServerHostname(),
@@ -474,7 +465,7 @@ class xmlStorageSystem_handler:
 				'port': u.clientPort,
 				'ctBytesUpstreamed': u.bytesupstreamed,
 				'userAgent': "don't know",
-				'ctBytesInUse': self.userSpaceUsed( u.usernum ),
+				'ctBytesInUse': u.bytesused,
 				'whenLastSignOff': u.lastsignoff,
 				'messageOfTheDay': '',
 				'whenLastSignOn': u.lastsignon,
@@ -544,52 +535,8 @@ class xmlStorageSystem_handler:
 
 
 
-	def userSpaceUsed( self, email ):
-		return usedBytes( self.userLocalFolder( email ) )
-
-
-	def userLocalFolder( self, email ):
-		safeEmail = self.usernumMunge( email )
-		return pycs_paths.WEBDIR + "/users/%s/" % (safeEmail,)
-
-
-
 	def userFolder( self, email ):
 		return self.set.UserFolder( email )
 
 
 
-	def usernumMunge( self, name ):
-		# We have to zero pad everything properly, so this is a bit
-		# more work that normal filename munging (see below)
-		
-		# If we've been given a string, turn it into a number
-		if type(name) == type(''):
-			name = int(name)
-			
-		# Now turn the number into a zero-padded string
-		if type(name) == type(123):
-			name = '%07d' % (name,)
-			
-		# Fail if it's something we don't understand now
-		if type(name) != type(''):
-			raise Exception("Usernum must be a string or a number")
-		return self.munge( name )
-
-
-
-	def munge( self, name ):
-		# Make sure we don't have any '..'s
-		if name.find( '..' ) != -1:
-			raise Exception("Security warning: '..' found in filename")
-
-		# Get rid of odd chars		
-		safeName = ""
-		r = re.compile( '[A-Za-z0-9\_\-\.\/]' )
-		for c in name:
-			if r.search( c ):
-				safeName += c
-			else:
-				safeName += "@%02X" % (ord(c),)
-
-		return safeName

@@ -27,6 +27,7 @@
 import re
 import string
 import http_server
+import time
 from copy import copy
 
 # This patches a set_header method into the http_request objects. This is
@@ -88,8 +89,8 @@ class pycs_rewrite_handler:
 			redirect = None
 			if regex.match( oldUrl ):
 				if not quiet:
-						print "rewriting " + oldUrl + " (with rule '" + logName + "', flags '" + flags + "')"
-						print "       to " + fullUrl
+						print "%s: rewriting %s (with rule '%s', flags '%s')" % (time.ctime(), oldUrl, logName, flags)
+						print "       to %s" % fullUrl
 				
 				# Parse flags - see if we need to redirect or something
 				flagList = re.split( ',', flags )
@@ -146,19 +147,16 @@ class pycs_rewrite_handler:
 		host = http_server.get_header_match( HOST, request.header )
 		if host:
 			if hasattr( request, 'host' ):
-				print "request already has 'host' property!"
-				print request.host
+				print "request already has 'host' property! -->", request.host
 			request.host = host.groups()[0]
-			print "host",request.host
 		else:
 			request.host = self.set.ServerHostname()
 
 		# Make a URL out of it, rewrite as required, then unpack the URL
-		
-		fullUrl = 'http://%s%s' % ( request.host, path )
 
+		fullUrl = 'http://%s%s' % ( request.host, path )
 		fullUrl = self.rewriteUrl(fullUrl, request=request)
-								
+		
 		newHost, newPath = REQSPLITTER.search( fullUrl ).groups()
 
 		#print "new host",newHost,"and path",newPath
