@@ -56,7 +56,7 @@ if not( passwords.has_key( url ) ):
 		pwfile.write( '%s = %s\n' % ( u, passwords[u] ) )
 	pwfile.close()
 
-server = xmlrpclib.ServerProxy(url)
+server = xmlrpclib.Server(url)
 
 if verbose:
 	print "== get challenge"
