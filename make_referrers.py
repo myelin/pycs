@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # Python Community Server
 #
@@ -59,9 +59,11 @@ if __name__ == '__main__':
 			outputroot = sys.argv[3]
 
 	# read in referer log blacklist
-	badRefs = [ line.rstrip() for line in open(
-		os.path.join( os.path.abspath( os.path.split( sys.argv[0] )[0] ), 'refererBlacklist.txt' )
-	).readlines() if line.rstrip ]
+	blacklistFn = os.path.join( os.path.abspath( os.path.split( sys.argv[0] )[0] ), 'refererBlacklist.txt' )
+	if os.path.isfile( blacklistFn ):
+		badRefs = [ line.rstrip() for line in open( blacklistFn ).readlines() if line.rstrip() ]
+	else:
+		badRefs = []
 	#print "bad refs:",badRefs
 		
 	#db = metakit.storage( DBFILE, 1 )
