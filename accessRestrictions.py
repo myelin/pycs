@@ -83,7 +83,7 @@ class accessRestrictions_handler:
 								if not(quiet): print "user %s valid for location %s" % (user, location.locname)
 								matched = 1
 				if not(matched):
-					if not(quiet): print "location %s had no user %s" % (group.name, user)
+					if not(quiet): print "location %s had no user %s" % (location.locname, user)
 					return 0
 		return 1
 		

@@ -31,8 +31,8 @@
 ' at %I:%M:%S %p on %B %d, %Y'::=' um %H:%M:%S am %d.%m.%Y'
 
 # strings from comments/html.py
-'You are commenting on the following link:<br><a href="%s" target="_blank">%s</a>'::='Sie kommentieren den folgenden Link:<br><a href="%s" target="_blank">%s</a>'
-'<tr><td class="cmt"><strong>No comments yet</strong></td></tr>'::='<tr><td class="cmt"><strong>Bis jetzt noch keine Kommentare</strong></td></tr>'
+'You are commenting on the following link:<br /><a href="%s" target="_blank">%s</a>'::='Kommentare zu:<br /><a href="%s" target="_blank">%s</a>'
+'<div class="cmt"><strong>No comments yet</strong></li>'::='<div class="cmt"><strong>Bisher keine Kommentare</strong></li>'
 'Add a new comment:'::='Kommentar abgeben:'
 'Name'::='Name'
 'Email'::='Email'
@@ -100,8 +100,8 @@
 'Send message'::='Mitteilung senden'
 
 # strings from modules/system/newuser.py
-'New User (comment hosting)'::='Neuer Benutzer (für Commentarfunktionen)'
-'Enter your name, e-mail address and your password (twice) to create an account.  <b><i>Note: If you are using Radio, PyDS or bzero to host a weblog on this server, DO NOT create an account this way.  Your blogging tool will do it for you.  You should only be creating an account this way if you want to only host comments on this server.</i></b>'::='Gib deinen Namen, deine eMail-Adresse und dein Passwort (zweimal) ein um einen Benutzer anzulegen. <b><i>Hinweis: Wenn Du Radio, PyDS oder bzero benutzt um ein Weblog hier zu veröffentlichen, benutze die Weblogsoftware für die Anlage des Benutzers, NICHT DIESES FORMULAR!</i></b>'
+'New User (comment hosting)'::='Neuer Benutzer (f\xfcr Commentarfunktionen)'
+'Enter your name, e-mail address and your password (twice) to create an account.  <b><i>Note: If you are using Radio, PyDS or bzero to host a weblog on this server, DO NOT create an account this way.  Your blogging tool will do it for you.  You should only be creating an account this way if you want to only host comments on this server.</i></b>'::='Gib deinen Namen, deine eMail-Adresse und dein Passwort (zweimal) ein um einen Benutzer anzulegen. <b><i>Hinweis: Wenn Du Radio, PyDS oder bzero benutzt um ein Weblog hier zu ver\xf6ffentlichen, benutze die Weblogsoftware f\xfcr die Anlage des Benutzers, NICHT DIESES FORMULAR!</i></b>'
 # already defined: "Name"
 # already defined: "E-mail address"
 # already defined: "Password"
