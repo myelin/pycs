@@ -85,6 +85,7 @@ for title,section in ( ("hits today",todayRanks), ("all-time hits",alltimeRanks)
 s += """
 </tr>
 </table>
+<p>See also: <a href="weblogUpdates.py">weblogs updated today</a>.</p>
 """
 
 # Dump it all out

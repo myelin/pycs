@@ -74,6 +74,7 @@ else:
 		
 s += """
 </table>
+<p>See also: <a href="rankings.py">most popular weblogs, ranked by page views</a>.</p>
 """
 
 # Dump it all out
