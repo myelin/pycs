@@ -256,6 +256,8 @@ def main():
 	if idx == -1:
 		return _("Usernum %s has not submitted any posts to be indexed (so you can't search his/her weblog yet).") % usernum
 	posts_t = set.mirrored_posts[idx].posts
+	#posts_t = posts_t.sortrev((posts_t.date,),(posts_t.date,))
+	posts_t = posts_t.sort(posts_t.date)
 
 	search_terms = query.get('q', query.get('words', ''))
 	try:
