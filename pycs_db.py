@@ -25,7 +25,7 @@ def pyto8601(ts, has_am=1):
     return time.strftime("%Y%m%dT%H:%M:%S", t)
 
 class DB:
-    def __init__(self, set, host, db, user, pwd):
+    def __init__(self, set, host, db, user, pwd, noupgrade=0):
         self.set = set
         self.dbhost = host
         self.dbname = db
@@ -34,7 +34,10 @@ class DB:
 
         self.connect()
 
-        self.update_schema()
+        if noupgrade:
+            print "WARNING: not upgrading database schema.  Stuff might not work if you run this straight after a code update but before restarting PyCS."
+        else:
+            self.update_schema()
 
     def connect(self):
         print "Connecting to PostgreSQL database"
