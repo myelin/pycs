@@ -78,7 +78,7 @@ else:
 		url = set.UserFolder( usernum )
 		usernum = user.usernum
 		
-		s += _('<h2>Search results for <strong>%s</strong><h2>') % term
+		s += _('<h2>Search results for <strong>%s</strong></h2>') % term
 		s += _('<p>Here are all search results while searching for <strong>%s</strong> on the weblog of <a href="%s">%s</a>.') % (
 			term,
 			url,
@@ -111,7 +111,7 @@ else:
 					if path[:len(lpath)] == lpath:
 						path = path[len(lpath):]
 	
-				resurl = url + path
+				resurl = url + path[1:]
 				
 				s += '<td>%s</td>' % rank
 				s += '<td>'
