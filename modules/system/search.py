@@ -13,7 +13,7 @@
 # 	or the GNU Public License version 2 or later
 # 	<http://www.gnu.org/copyleft/gpl.html>
 #
-# 	$Id: search.py,v 1.1 2003/03/31 09:43:28 myelin Exp $
+# 	$Id: search.py,v 1.2 2003/03/31 10:05:34 myelin Exp $
 #
 # So I guess if you use search.py, your copy of PyCS falls under the GPL.
 # Don't install htsearch to keep it under the MIT license.  Your call :-)
@@ -196,7 +196,7 @@ def search(words):
 	conf = set.conf['htsearchconf']
 	return pycs_htsearch(qs, exclude_url_callback, conf)
 
-if set.conf['enablehtdig'] != 'yes':
+if set.conf.get('enablehtdig', 'no') != 'yes':
 
 	s += """<p>Searching has not been enabled by your administrator.</p>
 	<p>(The <code>enablehtdig</code> variable in <code>pycs.conf</code>
