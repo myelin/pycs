@@ -127,7 +127,7 @@ else:
 		s += '</rss>\n'
 	else:
 		s += _('<p>This is a list of all users registered on this server:</p>')
-		s += '<p><a href="users.py?format=rss">RSS</a> | <a href="users.py?sort=usernum">sort by usernum</a> | <a href="users.py?sort=space">sort by space used</a></p>'
+		s += '<p><a href="users.py?format=rss">RSS</a> | <a href="users.py?sort=usernum">%s</a> | <a href="users.py?sort=space">%s</a></p>' % (_('sort by usernum'), _('sort by space used'))
 		s += '<ul>'
 		users = []
 		for user in set.users:

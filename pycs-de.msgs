@@ -123,9 +123,9 @@
 'Searching weblog for usernum <b>%s</b>:'::='Durchsuche Weblog von Benutzer <b>%s</b>:'
 'Search:'::='Suche:'
 'Show previous %s'::='Zeige vorige %s'
-'Show next %d'::='Zeige nächste %d'
+'Show next %d'::='Zeige n\xe4chste %d'
 '<p>Showing hits %d-%d out of of %d. %s</p>'::='<p>Zeige Treffer %d-%d von %d. %s</p>'
-"Usernum %s has not submitted any posts to be indexed (so you can't search his/her weblog yet)."::="Benutzer %s hat bisher keine Beiträge zur Suche bereitgestellt, daher kann noch nicht in dem Weblog gesucht werden."
+"Usernum %s has not submitted any posts to be indexed (so you can't search his/her weblog yet)."::='Benutzer %s hat bisher keine Beitr\xe4ge zur Suche bereitgestellt, daher kann noch nicht in dem Weblog gesucht werden.'
 
 # strings from modules/system/searches.py
 'Search term rankings'::='Suchbegriffsliste'
@@ -164,7 +164,9 @@
 # already defined: '<p>Sorry, user %s not found!</p>'
 'RSS feed of users'::='RSS Feed f\xfcr Benutzer'
 'RSS feed of all blogs and users registered on this community server'::='RSS Feed f\xfcr alle Blogs und Benutzer die hier registriert sind'
-'<p>This is a list of all users registered on this server:'::='<p>Hier eine Liste aller auf diesem Server registrierten Benutzer:'
+'<p>This is a list of all users registered on this server:</p>'::='<p>Hier eine Liste aller auf diesem Server registrierten Benutzer und Blogs:</p>'
+'sort by usernum'::='Sortiere Benutzernummer'
+'sort by space used'::='Sortiere Plattenplatz'
 'Information for user'::='Information f\xfcr Benutzer'
 
 # strings from modules/system/weblogUpdates.py
