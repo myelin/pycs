@@ -65,7 +65,7 @@ class pycs_xmlrpc_handler( xmlrpc_handler.xmlrpc_handler ):
 		qualifiedName = string.split( method, '.' )
 				
 		if len( qualifiedName ) == 0:
-			raise "Namespace required"
+			raise "Namespace required for method '%s'" % ( qualifiedName, )
 		
 		# Root namespaces that we can handle
 		
@@ -94,19 +94,13 @@ class pycs_xmlrpc_handler( xmlrpc_handler.xmlrpc_handler ):
 				exec 'import __main__; __main__.xmlFuncRet = __main__.xmlFunc()'
 				return __main__.xmlFuncRet
 			except:
-				try:
-					exception, detail, traceback = sys.exc_info()
-					print "--- EXCEPTION %s: %s ---" % (exception, detail)
-					sys.excepthook( exception, detail, traceback )
-				finally:
-					del exception
-					del detail
-					del traceback
-				
+				print "--- EXCEPTION %s: %s ---" % sys.exc_info()[:2]
+				import traceback
+				traceback.print_exc()
 				raise
 		
 		# Couldn't match method
-		raise "Namespace not found"
+		raise "Namespace '%s' not found" % ( base, )
 
 
 

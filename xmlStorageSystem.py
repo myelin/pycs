@@ -84,7 +84,7 @@ class xmlStorageSystem_handler:
 		if handlers.has_key( base ):
 			return handlers[base]( method[1:], params )
 		
-		raise "xmlStorageSystem method not found"
+		raise "xmlStorageSystem method '%s' not found" % ( method, )
 
 
 
