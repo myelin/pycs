@@ -25,6 +25,11 @@ servermailto = python-community-server-mailto@myelin.co.nz
 # to restart after changing this.
 #adminpassword = XXXXX
 
+# Change these two to change the appearance of the dynamically-generated
+# pages - e.g. the updates, rankings, referrers and mailto pages
+longtitle = Python Community Server
+shorttitle = PyCS
+
 [aliases]
 
 # Put aliases here; the server will send these back as 'official URLs' for the 

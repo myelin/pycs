@@ -119,11 +119,20 @@ class Settings:
 	def ServerPort( self ):
 		return int( self.conf['serverport'] )
 
-	def ServerMailTo( self ):
-		if self.conf.has_key('servermailto'):
-			return self.conf['servermailto']
+	def DefaultConfigValue( key, value ):
+		if self.conf.has_key( key ):
+			return self.conf[key]
 		else:
-			return 'python-community-server-mailto@myelin.co.nz'
+			return value
+
+	def ServerMailTo( self ):
+		return self.DefaultConfigValue( 'servermailto', 'python-community-server-mailto@myelin.co.nz' )
+
+	def LongTitle( self ):
+		return self.DefaultConfigValue( 'longtitle', 'Python Community Server' )
+
+	def ShortTitle( self ):
+		return self.DefaultConfigValue( 'shorttitle', 'PyCS' )
 
 	def GetDate( self ):
 		(y, m, d, hh, mm, ss, wday, jday, dst) = time.localtime()
@@ -337,17 +346,17 @@ class Settings:
 		
 		out = """<html>
 	<head>
-		<title>Python Community Server: %s</title>
+		<title>%s: %s</title>
 		<link rel="stylesheet" href="%s/pycs.css" type="text/css" />
 	</head>
 	<body>
-		<h1>PyCS: <strong>%s</strong></h1>
+		<h1>%s: <strong>%s</strong></h1>
 		<div class="margins">
 		%s
 		</div>
 	</body>
-	</html>""" % ( data['title'], self.ServerUrl(),
-			data['title'], data['body'] )
+	</html>""" % ( self.LongTitle(), data['title'], self.ServerUrl(),
+			self.ShortTitle(), data['title'], data['body'] )
 	
 		return out
 
