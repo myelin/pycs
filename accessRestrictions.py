@@ -53,7 +53,7 @@ class accessRestrictions_handler:
 			"arlocations[blogid:S,locname:S,regexp:S,group[name:S]]"
 		).ordered(2)
 		self.groups = self.set.db.getas(
-			"argroups[blogid:S,name:S,user[name:S]"
+			"argroups[blogid:S,name:S,user[name:S]]"
 		).ordered(2)
 		self.users = self.set.db.getas(
 			"arusers[blogid:S,name:S,password:S]"
