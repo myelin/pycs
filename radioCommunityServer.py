@@ -67,6 +67,7 @@ class radioCommunityServer_handler:
 		# Start with just commentsPageUrl
 		resources = {
 			'commentsPageUrl': self.set.ServerUrl() + '/system/comments.py',
+			'trackbackPageUrl': self.set.ServerUrl() + '/system/trackback.py',
 			}
 
 		# Scan the initialResources directory and link to any OPML files in there
