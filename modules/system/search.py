@@ -302,9 +302,14 @@ def main():
 
 page['body'] = main()
 
-usernum = query.get('u')
-u = set.User(usernum)
-s = set.Render( page, usernum=u.usernum )
+usernum = query.get('u', None)
+try:
+	int(usernum)
+	u = set.User(usernum)
+	usernum = u.usernum
+except TypeError:
+	usernum = 0
+s = set.Render( page, usernum=usernum )
 
 request['Content-Length'] = len(s)
 request.push( s )

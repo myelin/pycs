@@ -69,11 +69,15 @@ if form.has_key('email') and form.has_key('password'):
 
 	try:
 		pwHash = md5.md5( form['password'] ).hexdigest()
-		
-		user = set.FindUserByEmail(
-			form['email'], 
-			pwHash,
-			)
+
+		email = form['email']
+		try:
+			# treat 'email' as a usernum
+			user = set.FindUser(email, pwHash)
+		except:
+			# either we failed to parse it, or that usernum
+			# doesn't exist - treat it as an e-mail address.
+			user = set.FindUserByEmail(email, pwHash)
 		
 		fLoggedIn = 1
 		
