@@ -36,6 +36,10 @@ page = {
 	}
 
 s = """
+
+<p>(This isn't a very reliable updates page; you probably want the <a 
+href="weblogUpdates.py">weblogUpdates page</a> - it's much better!)</p>
+
 <table width="100%%" cellspacing="0" cellpadding="2"><tr><td class="black">
 <table width="100%%" cellspacing="0" cellpadding="2">
 """

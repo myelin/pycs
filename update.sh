@@ -2,4 +2,4 @@
 
 killall /usr/bin/python
 make install
-/home/www-radio/startserver.sh
+/usr/lib/pycs/startserver.sh

@@ -40,7 +40,7 @@ import sys
 import os
 import StringIO
 import pycs_http_util
-
+import pycs_paths
 
 
 
@@ -140,7 +140,7 @@ class pycs_module_handler:
 			[path, params, query, fragment] = request.split_uri()
 			#print "path to module:",path
 			
-			realPath = 'modules' + path
+			realPath = pycs_paths.MODDIR + path
 			if re.compile( "\.\." ).search( realPath ):
 				raise "Security error: '..' found in path"
 			#print "real path:",realPath

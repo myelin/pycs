@@ -27,6 +27,7 @@
 import metakit
 import time
 import ConfigParser
+import pycs_paths
 
 
 class Error:
@@ -45,9 +46,9 @@ class Settings:
 
 	def __init__( self ):
 
-		self.db = metakit.storage( "conf/settings.dat", 1 )
+		self.db = metakit.storage( pycs_paths.DATADIR + "/settings.dat", 1 )
 		cp = ConfigParser.ConfigParser()
-		cp.read( "pycs.conf" )
+		cp.read( pycs_paths.CONFDIR + "/pycs.conf" )
 
 		# Read in general config		
 		self.conf = self.readAllOptions( cp, "main" )
@@ -116,7 +117,7 @@ class Settings:
 		if hh == 0: hh = 12
 		elif hh > 12: hh -= 12
 		
-		return '%04d-%02d-%02d %02d:%02d %s' % (y, m, d, hh, mm, pm)
+		return '%04d-%02d-%02d %02d:%02d:%02d %s' % (y, m, d, hh, mm, ss, pm)
 
 	def AddUpdate( self, usernum ):
 		theTime = self.GetTime()
@@ -184,7 +185,7 @@ class Settings:
 		row = self.users.select( { 'usernum': self.FormatUsernum( no ) } )
 		
 		if len(row) == 0:
-			print "User not found (%s) !" % (no,)
+			print "User not found (%s)!" % (no,)
 			raise NoSuchUser
 			
 		return row[0]
@@ -220,6 +221,11 @@ class Settings:
 	def NewUser( self, email, password, name ):
 		# Prepare new row
 		user = User()
+
+		# Make sure we're not full already
+		if self.conf.has_key( 'maxusernum' ):
+			if int( self.meta[0].nextUserNum ) >= int( self.conf['maxusernum'] ):
+				raise "Sorry; we're full!  We can't take any more users"
 		
 		while 1:
 			# Assign a usernum and keep incrementing until we get

@@ -26,6 +26,14 @@
 
 print "[Loading server]"
 
+# Get the path right
+import os
+import sys
+scriptDir = os.path.abspath( os.path.dirname( sys.argv[0] ) )
+sys.path += [ scriptDir, scriptDir + '/medusa', scriptDir + '/metakit' ]
+
+import pycs_paths
+
 # System & web server modules
 import asyncore
 import http_server
@@ -34,7 +42,7 @@ import re
 
 # Internal modules
 import pycs_settings
-import pycs_comments # OBSOLETE - WILL BE REMOVED SOON
+#import pycs_comments # OBSOLETE - WILL BE REMOVED SOON
 
 # HTTP handlers
 import default_handler
@@ -47,6 +55,9 @@ import xmlStorageSystem
 import radioCommunityServer
 import weblogUpdates
 
+# Logging
+import logger
+import status_handler
 
 
 
@@ -60,12 +71,12 @@ if __name__ == '__main__':
 
 	# Make URL rewriter
 	rewriteMap = []
-	execfile( 'rewrite.conf' )
+	execfile( pycs_paths.CONFDIR + '/rewrite.conf' )
 	
 	rw_h = pycs_rewrite_handler.pycs_rewrite_handler( set, rewriteMap )
 
 	# Make GET handler	
-	fs = filesys.os_filesystem( "./www" )
+	fs = filesys.os_filesystem( pycs_paths.WEBDIR )
 	default_h = default_handler.default_handler( fs )
 	
 	# Make XML-RPC handler
@@ -87,20 +98,37 @@ if __name__ == '__main__':
 	# Make handler for /comments
 	#
 	# OBSOLETE BUT MAYBE STILL USED ON rcs.myelin.cjb.net - REMOVE LATER
-	comment_h = pycs_comments.comment_handler()
+	#comment_h = pycs_comments.comment_handler()
 	#
 	######
 	
 	# Make handler for /system
 	mod_h = pycs_module_handler.pycs_module_handler( set )
 	
+	# become the PyCS user
+	if os.name == 'posix':
+		if hasattr( os, 'seteuid' ):
+			# look in ~medusa/patches for {set,get}euid.
+			import pwd
+			[uid, gid] = pwd.getpwnam( set.conf['serveruser'] )[2:4]
+			os.setegid (gid)
+			os.seteuid (uid)
+		else:
+			print "WARNING: Can't reduce privileges; server is running as the superuser"
+	
+	# Make logger
+	accessLog = logger.rotating_file_logger( pycs_paths.ACCESSLOG, None, 100*1024 )
+	print "logging to",pycs_paths.ACCESSLOG
+	logger = status_handler.logger_for_status( accessLog )
+	
 	# Make web server
-	hs = http_server.http_server( '', set.ServerPort() )
+	hs = http_server.http_server( '', set.ServerPort(), None, logger )
 	hs.install_handler( default_h )
-	hs.install_handler( comment_h )
+	#hs.install_handler( comment_h )
 	hs.install_handler( mod_h )
 	hs.install_handler( rpc_h )
 	hs.install_handler( rw_h )
+	#hs.install_handler( log_h )
 	
 	print "[Server started]"
 	asyncore.loop()

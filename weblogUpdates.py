@@ -85,15 +85,24 @@ class weblogUpdates_handler:
 		if method != []: raise "Namespace not found"
 
 		print "params:",params		
-		blogName, blogUrl = params
+		blogName = params[0]
+		blogUrl = params[1]
+		if len( params ) > 2:
+			print "got extra params:",params[2:]
 		
 		print "got a ping from '%s' at '%s'" % ( blogName, blogUrl )
 		
-		# Don't actually do it yet - we have to change a table
-		#self.set.AddUpdate( blogName, blogUrl )
+		import updatesDb
+		updatesDb.updatesDb( self.set ).Update( blogName, blogUrl )
 		
 		return {
 			'flError': xmlrpclib.False,
 			'message': 'Thanks for the ping!',
 			}
 		
+
+if __name__=='__main__':
+	# Testing
+	s = xmlrpclib.Server( 'http://www.pycs.net/RPC2' )
+	print s.weblogUpdates.ping( 'Test blog', 'http://www.pycs.net/' )
+	

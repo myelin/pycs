@@ -23,6 +23,9 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import pycs_paths
+import re
+import os
 
 """radioCommunityServer XML-RPC Handler
 
@@ -53,14 +56,33 @@ class radioCommunityServer_handler:
 		if handlers.has_key( base ):
 			return handlers[base]( method[1:], params )
 		
-		raise "radioCommunityServer method not found"
+		raise "radioCommunityServer method '%s' not found" % ( method )
 
 
 
 	def getInitialResources( self, method, params ):
 		if method != []: raise "Namespace not found"
 		if params != (): raise "Too many parameters"
-	
-		return {
+
+		# Start with just commentsPageUrl
+		resources = {
 			'commentsPageUrl': self.set.ServerUrl() + '/system/comments.py',
 			}
+
+		# Scan the initialResources directory and link to any OPML files in there
+		urlBase = self.set.ServerUrl() + '/initialResources/'
+		op = re.compile( r'^(.*)\.opml$' )
+		for f in os.listdir( pycs_paths.WEBDIR + '/initialResources' ):
+			m = op.search( f )
+			if m:
+				leaf = m.group( 1 )
+				resources[ leaf ] = urlBase + f
+				
+		# Send back to client
+		return resources
+
+if __name__ == '__main__':
+	import xmlrpclib
+	s = xmlrpclib.Server( 'http://www.pycs.net/RPC2' )
+	print s.radioCommunityServer.getInitialResources()
+	

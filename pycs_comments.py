@@ -32,6 +32,7 @@ import urllib
 import string
 
 import pycs_http_util
+import pycs_paths
 
 def split_query( q ):
 	d = {}
@@ -105,7 +106,7 @@ class comment_handler:
 
 	def __init__( self ):
 		print "[comment handler]"
-		self.db = metakit.storage( 'conf/comments.dat', 1 )
+		self.db = metakit.storage( pycs_paths.DATADIR + '/comments.dat', 1 )
 		
 		# order by user & paragraph
 		self.comments = self.db.getas(

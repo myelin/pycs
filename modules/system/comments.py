@@ -192,7 +192,7 @@ else:
 			'name': formatter.storedName,
 			'url': formatter.storedUrl,
 			'comment': form['comment'],
-			'date': time.strftime( STANDARDDATEFORMAT ),
+			'date': time.strftime( comments.STANDARDDATEFORMAT ),
 			}
 		
 		nComments += 1
@@ -204,13 +204,13 @@ else:
 			
 			# Make a row in 'comments' for this paragraph
 			commentTable.append( {
-				'user': u,
-				'paragraph': p,
+				'user': formatter.u,
+				'paragraph': formatter.p,
 				'notes': notes,
 				} )
 			
 			# Pull the row out again
-			vw = commentTable.select( { 'user': u, 'paragraph': p } )
+			vw = commentTable.select( { 'user': formatter.u, 'paragraph': formatter.p } )
 			notes = vw[0].notes
 			
 			# ... and add this particular comment in

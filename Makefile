@@ -24,29 +24,74 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-U = www-radio
-D = /home/$(U)
+USER = www-pycs
 
-F = *.py *.pyc *.sh *.pl *.conf
-FILES = $(addprefix $(D)/, $(F))
+#F = *.py *.pyc *.sh *.pl *.conf
+#FILES = $(addprefix $(D)/, $(F))
 SUBDIRS = www conf modules comments
-DIRS = $(addprefix $(D)/, $(SUBDIRS))
-PYCSFILES = README LICENSE Makefile mkidx.pl \
-	pycs.py \
+#DIRS = $(addprefix $(D)/, $(SUBDIRS))
+
+NOTEFILES = README LICENSE
+INSTFILES = Makefile mkidx.pl make_readme.pl 
+CODEFILES = pycs.py \
 	pycs_settings.py pycs_comments.py pycs_module_handler.py pycs_xmlrpc_handler.py pycs_rewrite_handler.py \
 	pycs_http_util.py html_cleaner.py strptime.py \
-	xmlStorageSystem.py radioCommunityServer.py weblogUpdates.py \
-	startserver.sh update.sh startserver.bat \
-	test_server.py test_settings.py \
-	analyse_logs.py \
-	pycs.conf rewrite.conf
+	xmlStorageSystem.py radioCommunityServer.py weblogUpdates.py pycs_paths.py updatesDb.py
+TESTFILES = test_server.py test_settings.py
+CONFFILES = pycs.conf rewrite.conf
+MISCFILES = startserver.sh update.sh startserver.bat analyse_logs.py
+MEDUSAFILES = medusa/*.py
+METAKITFILES = metakit.py Mk4py.so
+
+# Directories
+# Read-only stuff
+NOTEDIR = /usr/lib/pycs
+CODEDIR = $(NOTEDIR)/bin
+MEDUSADIR = $(CODEDIR)/medusa
+METAKITDIR = $(CODEDIR)/metakit
+COMMENTDIR = $(CODEDIR)/comments
+# Config
+CONFDIR = /etc/pycs
+# Runtime data
+VARDIR = /var/lib/pycs
+DATADIR = $(VARDIR)/data
+WEBDIR = $(VARDIR)/www
+RESDIR = $(VARDIR)/www/initialResources
+MODDIR = $(VARDIR)/modules
+# Logging
+LOGDIR = /var/log/pycs
+
+# All files (well, most files), for 'make dist'
+PYCSFILES = $(NOTEFILES) $(INSTFILES) $(CODEFILES) \
+	$(MISCFILES) \
+	$(TESTFILES) \
+	$(CONFFILES)
+
 COMMENTFILES = __init__.py rss.py html.py
 PYCSMODFILES = updates.py mailto.py users.py comments.py login.py
-WEBFILES = index.html history.html
+WEBFILES = index.html history.html readme.html
+RESFILES = defaultFeeds.opml defaultCategories.opml
 SPECIFICS = $(PYCSFILES) medusa/*.py metakit.py Mk4py.so
-VER = 0.04
+VER = 0.06
 DISTFN = pycs-$(VER)-src
 LATESTFN = pycs-latest-src
+
+INSTALL = /usr/bin/install
+
+INSTALL_USER = $(INSTALL) -g $(USER) -o $(USER)
+INSTALL_ROOT = $(INSTALL) -g root -o root
+
+# Logs and config files - visible only to root
+INSTALL_MKDIR_PRIV = $(INSTALL_ROOT) -D -m 700 -d
+INSTALL_PRIV = $(INSTALL_ROOT) -D -m 600
+
+# Code and invariant stuff - visible to all, writeable only by root
+INSTALL_MKDIR_RW = $(INSTALL_USER) -m 700
+INSTALL_RW = $(INSTALL_USER) -D -m 400
+
+# Data files - visible & writeable to server user (but nobody else)
+INSTALL_MKDIR_RO = $(INSTALL_ROOT) -m 755
+INSTALL_RO = $(INSTALL_ROOT) -D -m 644
 
 .PHONY: check install all
 
@@ -56,26 +101,56 @@ all: check install
 check:
 	export PYTHONPATH=medusa && pychecker pycs.py
 
-install: scripts
-	cp -af $(SPECIFICS) $(D)/
-	#chmod -R 644 $(D)/*
-	chmod 755 $(FILES)
-	mkdir -p $(DIRS)
-	chown $(U).$(U) $(DIRS)
-	chmod 744 $(DIRS)
-
+install: user scripts
+	# Config files go in /etc/pycs
+	$(INSTALL_MKDIR_PRIV) $(CONFDIR)
+	for f in $(CONFFILES); do \
+		if [ ! -f $(CONFDIR)/$$f ]; then \
+			$(INSTALL_PRIV) $$f $(CONFDIR)/$$f; \
+		fi; \
+	done
+	
+	# Variant stuff (see below for details - data, web, etc)
+	$(INSTALL_MKDIR_RW) -d $(VARDIR)
+	
+	# Data files go in /var/lib/pycs/data
+	$(INSTALL_MKDIR_RW) -d $(DATADIR)
+	
+	# Web files go in /var/lib/pycs/www
+	$(INSTALL_MKDIR_RW) -d $(WEBDIR)
+	
+	# Notes go in /usr/lib/pycs
+	$(INSTALL_MKDIR_RO) -d $(NOTEDIR)
+	$(INSTALL_RO) $(NOTEFILES) $(NOTEDIR)/
+	
+	# Executables go in /usr/lib/pycs/bin
+	$(INSTALL_MKDIR_RO) -d $(CODEDIR)
+	$(INSTALL_RO) $(CODEFILES) $(CODEDIR)/
+	
+	# Medusa goes in /usr/lib/pycs/bin/medusa
+	$(INSTALL_MKDIR_RO) -d $(MEDUSADIR)
+	$(INSTALL_RO) $(MEDUSAFILES) $(MEDUSADIR)/
+	
+	# Likewise for Metakit
+	$(INSTALL_MKDIR_RO) -d $(METAKITDIR)
+	$(INSTALL_RO) $(METAKITFILES) $(METAKITDIR)/
+	
+	# Log files go in /var/log
+	$(INSTALL_MKDIR_RW) -d $(LOGDIR)
+	
+	$(INSTALL_ROOT) -m 755 startserver.sh $(NOTEDIR)/startserver.sh
+	
 scripts:
-	for f in `cd modules && find | grep -E "\.py$$" && cd ..`; do cp modules/$$f $(D)/modules/$$f; done
-	chown root.root $(D)/modules -R
-	chmod 755 $(D)/modules -R
+	$(INSTALL_MKDIR_RO) -d $(MODDIR)
+	for f in `cd modules && find | grep -E "\.py$$" && cd ..`; do $(INSTALL_RO) modules/$$f $(MODDIR)/$$f; done
+
+	$(INSTALL_MKDIR_RO) -d $(COMMENTDIR)
+	$(INSTALL_RO) $(addprefix comments/, $(COMMENTFILES)) $(COMMENTDIR)/
+
+	/usr/bin/perl -w make_readme.pl < README > www/readme.html
+	$(INSTALL_RO) $(addprefix www/, $(WEBFILES)) $(WEBDIR)/
 	
-	cp -af comments $(D)/
-	chmod 755 $(D)/comments -R
-	
-	cp $(addprefix www/, $(WEBFILES)) $(D)/www/
-	chown root.root $(D)/www/index.html
-	chmod 644 $(D)/www/index.html
-	perl -w make_readme.pl < README > $(D)/www/readme.html
+	$(INSTALL_RO) $(addprefix www/initialResources/, $(RESFILES)) $(RESDIR)/
 
 dist:
 	rm -rf $(DISTFN)/
@@ -89,14 +164,23 @@ dist:
 	cp $(addprefix modules/system/, $(PYCSMODFILES)) $(DISTFN)/modules/system/
 	
 	mkdir -p $(DISTFN)/www
-	cp www/dist_index.html $(DISTFN)/www/index.html
+	cp $(addprefix www/, $(WEBFILES)) $(DISTFN)/www/
+	
+	mkdir -p $(DISTFN)/www/initialResources
+	cp $(addprefix www/initialResources/, $(RESFILES)) $(DISTFN)/www/initialResources
 	
 	mkdir -p $(DISTFN)/comments
 	cp $(addprefix comments/, $(COMMENTFILES)) $(DISTFN)/comments/
 	
 	tar -czf $(DISTFN).tar.gz $(DISTFN)/*
 	rm -rf $(DISTFN)/
-	cp $(DISTFN).tar.gz $(D)/www/
-	chmod 644 $(D)/www/$(DISTFN).tar.gz
-	rm -f $(D)/www/$(LATESTFN).tar.gz
-	ln -s $(D)/www/$(DISTFN).tar.gz $(D)/www/$(LATESTFN).tar.gz
+	cp $(DISTFN).tar.gz $(WEBDIR)/
+	chmod 644 $(WEBDIR)/$(DISTFN).tar.gz
+	rm -f $(WEBDIR)/$(LATESTFN).tar.gz
+	ln -s $(WEBDIR)/$(DISTFN).tar.gz $(WEBDIR)/$(LATESTFN).tar.gz
+
+user:
+	# Set up the www-pycs user, if it doesn't already exist
+	-groupadd $(USER)
+	-useradd -d $(VARDIR) -g $(USER) $(USER)
+	

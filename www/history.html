@@ -1,0 +1,83 @@
+<html>
+<head>
+	<title>Python Community Server: version history</title>
+	<link rel="stylesheet" href="http://www.myelin.co.nz/myelin.css" type="text/css">
+	<style type="text/css">
+	<!--
+		li {
+			margin-bottom: 1em;
+		}
+	-->
+	</style>
+</head>
+<body>
+
+	<div class="maintitle"><a href="http://www.pycs.net" style="color: 
+	black; text-decoration: none; font-weight: bold;">PyCS</a>: Version 
+	history</div>
+	
+	<p>This is a summary of the major changes that have occurred between 
+	versions of Python Community Server.</p>
+
+	<p>Some of these releases are available from the <a 
+	href="http://pycs.sourceforge.net/">project home page</a> at SourceForge 
+	and source archives are available from the links below.  Code usually 
+	goes into <a href="http://sourceforge.net/cvs/?group_id=51025">SF 
+	CVS</a> around the same time as it is posted on this page, .</p>
+	
+	<p>The version number is fairly ordinary; it has a major and a minor 
+	part.  So far it's not release quality, so the major number is zero. 
+	The minor number of the initial release was 1 (making v0.01 the first 
+	release) and this increments every time something interesting 
+	happens.</p>
+	
+	<p>Here are the details:</p>
+	
+	<ul>
+
+		<li><strong><a href="pycs-0.06-src.tar.gz">v0.06</a></strong> -
+		added the option to put a limit (config key 'maxusernum') on the 
+		number of users that are allowed on a server.  If you want to 
+		have a private server that only hosts a single blog, register 
+		your Radio with the server and then edit pycs.conf and set 
+		maxusernum=0.  Now, PyCS will not auto-create accounts for 
+		anybody else.<br /><br />
+		
+		Also got <a 
+		href="http://rcs.userland.com/initialResources">initial 
+		resources</a> going; you can, for example, put a 
+		'defaultFeeds.opml' file in /var/lib/pycs/www/initialResources 
+		and all your users will start off with the same feeds.</li>
+	
+		<li><strong><a href="pycs-0.05-src.tar.gz">v0.05</a></strong> -
+		Fixed up 'make install' so it actually puts things where you 
+		would expect them to go on a normal Unix system.  Also fixed 
+		some silly comment bugs that totally broke the comment system 
+		sometime since 0.04.</li>
+	
+		<li><strong><a href="pycs-0.04-src.tar.gz">v0.04</a></strong> -
+		Comment system made more flexible by the addition of <b>comment 
+		formatters</b> (see the <b>comments/</b> directory).  These 
+		allow you to present comments in a number of different formats. 
+		Currently HTML (default) and RSS (so you can subscribe to a 
+		popular comment page and see new comments in a news aggregator) 
+		are supported.</li>
+	
+		<li><strong><a href="pycs-0.03-src.tar.gz">v0.03</a></strong> -
+		URL rewriting (see <b>pycs_rewrite_handler.py</b>) and virtual 
+		hosting added.  This allows you to do more interesting things 
+		with your URLs by passing incoming HTTP requests through 
+		arbitrary regular expressions.  For example with this and a bit 
+		of symlinking, you can make a copy of PyCS behave like Manila 
+		and give each new user a subdomain.</li>
+	
+		<li><strong><a href="pycs-0.02-src.tar.gz">v0.02</a></strong> -
+		Bug fixes etc.</li>
+	
+		<li><strong><a href="pycs-0.01-src.tar.gz">v0.01</a></strong> -
+		Initial public release. </li>
+	
+	</ul>
+
+</body>
+</html>

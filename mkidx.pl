@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 # Python Community Server
 #
 #     mkidx.pl: Generator for www/users/index.html
@@ -21,13 +23,13 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-#!/usr/bin/perl -w
 use strict;
 
-my @dirs = `ls /home/www-radio/www/users/`;
+my $webDir = '/var/lib/pycs/www';
 
-open IDX, ">/home/www-radio/www/users/index.html";
+my @dirs = `ls $webDir/users/`;
+
+open IDX, ">$webDir/users/index.html";
 
 print IDX <<HTML;
 <html>

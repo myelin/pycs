@@ -36,6 +36,8 @@ import re
 import string
 
 import pycs_settings
+import pycs_paths
+
 import xmlrpclib
 
 
@@ -424,7 +426,7 @@ class xmlStorageSystem_handler:
 				'flSignedOn': xmlrpclib.True,
 				'usernum': 105256, 
 				'rssHotlistData': {
-					'f': './www/users/0105256/gems/mySubscriptions.opml', 
+					'f': self.userLocalFolder( u.usernum ) + '/gems/mySubscriptions.opml', 
 					'urls': {
 						'http://scriptingnews.userland.com/xml/scriptingNews2.xml': xmlrpclib.True,
 					},
@@ -448,14 +450,12 @@ class xmlStorageSystem_handler:
 
 	def userLocalFolder( self, email ):
 		safeEmail = self.usernumMunge( email )
-		return "www/users/%s/" % (safeEmail,)
+		return pycs_paths.WEBDIR + "/users/%s/" % (safeEmail,)
 
 
 
 	def userFolder( self, email ):
 		return self.set.UserFolder( email )
-		#safeEmail = self.usernumMunge( email )
-		#return self.set.ServerUrl() + ( "/users/%s/" % (safeEmail,) )
 
 
 
