@@ -125,6 +125,9 @@ class Settings:
 		else:
 			return value
 
+	def Language( self ):
+		return self.DefaultConfigValue( 'language', 'en' )
+
 	def ServerMailTo( self ):
 		return self.DefaultConfigValue( 'servermailto', 'python-community-server-mailto@myelin.co.nz' )
 

@@ -70,6 +70,9 @@ import pycsAdmin
 import logger
 import status_handler
 
+# Translation handling
+import pycs_translation
+
 def terminate (signal, param):
 	"""Signal handler for the pycs daemon.  Applicable
 	only to those systems implementing POSIX signals.
@@ -118,6 +121,8 @@ if __name__ == '__main__':
 
 	# Get config
 	set = pycs_settings.Settings()
+
+	pycs_translation.translation(set.Language()).install()
 
 	# Make URL rewriter
 	rewriteMap = []

@@ -28,17 +28,17 @@ import updatesDb
 request['Content-Type'] = 'text/html'
 
 page = {
-	'title': 'Recently updated weblogs',
+	'title': _('Recently updated weblogs'),
 	'body': """<p>Something went wrong; there should be some text here!</p>
 		<p><a href="mailto:pp@myelin.co.nz">Mail Phil</a> at 
 		<a href="http://www.myelin.co.nz/">Myelin</a> if you
 		think something is broken.</p>""",
 	}
 
-s = """
+s = _("""
 <p>Here are the weblogs that have updated in the last 24 hours.  Is yours in there?  ;-)</p>
 <table width="80%%" cellspacing="0" cellpadding="2">
-"""
+""")
 
 updates = updatesDb.updatesDb( set )
 tbl = updates.updatesTable
@@ -72,10 +72,10 @@ else:
 			)
 		nDispIndex += 1
 		
-s += """
+s += _("""
 </table>
 <p>See also: <a href="rankings.py">most popular weblogs, ranked by page views</a>.</p>
-"""
+""")
 
 # Dump it all out
 

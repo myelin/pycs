@@ -41,9 +41,17 @@ servermailto = python-community-server-mailto@myelin.co.nz
 #monitorpassword = YYYYY
 
 # Change these two to change the appearance of the dynamically-generated
-# pages - e.g. the updates, rankings, referrers and mailto pages
+# pages - e.g. the updates, rankings, referrers and mailto pages. longtitle
+# is used for the community name, too, so be warned that it will show up
+# in the users radio installation
 longtitle = Python Community Server
 shorttitle = PyCS
+
+# The following setting defines the servers language. 'en' is a dummy value
+# and the same as leaving it out, as the source is already in english. So to
+# activate translations, uncomment the following setting and set it to a
+# supported language (for example 'de')
+#language = en
 
 # set the default encoding. Usually this shouldn't be set, so that UTF-8
 # is used. But since Radio does some weird stuff with encodings and sometimes

@@ -34,7 +34,7 @@ query = util.SplitQuery( query )
 form = util.SplitQuery( input_data.read() )
 
 page = {
-	'title': 'Rankings',
+	'title': _('Rankings'),
 	'body': """<p>Something went wrong; there should be some text here!</p>
 		<p>Mail <a href="http://www.myelin.co.nz/phil/email.php">Phil</a> at 
 		<a href="http://www.myelin.co.nz/">Myelin</a> if you
@@ -60,21 +60,21 @@ s += """
 <tr>
 """
 
-for title,section in ( ("hits today",todayRanks), ("all-time hits",alltimeRanks) ):
+for title,section in ( (_("hits today"),todayRanks), (_("all-time hits"),alltimeRanks) ):
 	s += """
 	<td>
 	<table width="100%%" cellspacing="0" cellpadding="2">
 	<thead>
-		<tr><td>blog name</td><td>%s</td></tr>
+		<tr><td>""" + _("blog name") + """</td><td>%s</td></tr>
 	</thead>
 	<tbody>
 	""" % ( title, )
 
 	for hits,user in section:
 		if not hits: break
-		s += """
+		s += _("""
 		<tr><td><a href="%s">%s</a> (<a href="%s">link</a>)</td><td>%d</td></tr>
-		""" % ( "referers.py?usernum=%s&order=count" % ( user.usernum, ),
+		""") % ( "referers.py?usernum=%s&order=count" % ( user.usernum, ),
 			user.weblogTitle, set.UserFolder( user.usernum ), hits
 		)
 
@@ -87,8 +87,7 @@ for title,section in ( ("hits today",todayRanks), ("all-time hits",alltimeRanks)
 s += """
 </tr>
 </table>
-<p>See also: <a href="weblogUpdates.py">weblogs updated today</a>.</p>
-"""
+""" + _('<p>See also: <a href="weblogUpdates.py">weblogs updated today</a>.</p>\n')
 
 # Dump it all out
 

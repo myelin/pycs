@@ -65,7 +65,7 @@ query = util.SplitQuery( query )
 form = util.SplitQuery( input_data.read() )
 
 page = {
-	'title': 'Search term rankings',
+	'title': _('Search term rankings'),
 	'body': """<p>Something went wrong; there should be some text here!</p>
 		<p>Mail <a href="http://www.myelin.co.nz/phil/email.php">Phil</a> at 
 		<a href="http://www.myelin.co.nz/">Myelin</a> if you
@@ -97,31 +97,31 @@ else:
 		user = set.User( usernum )
 		usernum = user.usernum
 		
-		s += """
+		s += _("""
 		<h2>Search terms for <strong>%s</strong></h2>
 		<table width="80%%" cellspacing="5" cellpadding="2">
-		""" % (user.name,)
+		""") % (user.name,)
 
 		if order == 'time':
-			s += """
+			s += _("""
 			<tr><th align="left"><a href="%s">Search term</a></th>
 				<th align="left">Last hit</th>
 				<th align="right"><a href="%s">Count</a></th></tr>
-			""" % ( orderLink( usernum, group, 'referrer' ),
+			""") % ( orderLink( usernum, group, 'referrer' ),
 				orderLink( usernum, group, 'count' ) )
 		elif order == 'count':
-			s += """
+			s += _("""
 			<tr><th align="left"><a href="%s">Search term</a></th>
 				<th align="left"><a href="%s">Last hit</a></th>
 				<th align="right">Count</th></tr>
-			""" % (orderLink(usernum, group, 'referrer'),
+			""") % (orderLink(usernum, group, 'referrer'),
 				orderLink(usernum, group, 'time'))
 		else:
-			s += """
+			s += _("""
 			<tr><th align="left">Search term</th>
 				 <th align="left"><a href="%s">Last hit</a></th>
 				<th align="right"><a href="%s">Count</a></th></tr>
-			""" % (orderLink(usernum, group, 'time'),
+			""") % (orderLink(usernum, group, 'time'),
 				orderLink(usernum, group, 'count'))
 
 		referrerlist = []
@@ -150,13 +150,13 @@ else:
 				<td align="left"><pre>%s</pre></td><td align="right">%s</td></tr>
 				""" % (cgi.escape( row.referrer, 1 ), matched, term, row.time, row.count)
 
-		s += """
+		s += _("""
 		</table>
 		<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>
-		""" % (usernum, group, order)
+		""") % (usernum, group, order)
 
 	except pycs_settings.NoSuchUser:
-		s += '<p>Sorry, user %s not found!</p>' % (usernum,)
+		s += _('<p>Sorry, user %s not found!</p>') % (usernum,)
 	
 # Dump it all out
 
