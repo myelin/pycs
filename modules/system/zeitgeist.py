@@ -29,54 +29,57 @@ import string
 import pycs_settings
 import time
 
-from urllib import unquote
+from urllib import unquote, quote
 
+# format of the entries:
+#  first line is a pattern for the search engine to research
+#  second to last line are compiled regexps to match for search engines
 engines = {
-	'google': [
+	'google': [ 'http://google.com/search?q=%s',
 		re.compile(r'^http://.*\.google\..*[\?&]q=([^&]*).*$'),
 		re.compile(r'^http://.*\.google\..*[\?&]as_q=([^&]*).*$'),
 		],
-	'alltheweb': [
+	'alltheweb': [ 'http://www.alltheweb.com/search?q=%s',
 		re.compile(r'^http://.*\.alltheweb\..*[\?&]q=([^&]*).*$'),
 		],
-	'feedster': [
+	'feedster': [ 'http://www.feedster.com/search.php?q=%s',
 		re.compile(r'^http://.*\.feedster\..*[\?&]q=([^&]*).*$'),
 		],
-	'freshmeat': [
+	'freshmeat': [ 'http://freshmeat.net/search/?q=%s',
 		re.compile(r'^http://freshmeat\..*[\?&]q=([^&]*).*$'),
 		],
-	'daypop': [
+	'daypop': [ 'http://www.daypop.com/search?q=%s',
 		re.compile(r'^http://.*\.daypop\..*[\?&]q=([^&]*).*$'),
 		],
-	'geourl': [
+	'geourl': [ 'http://www.geourl.com/near/?p=%s',
 		re.compile(r'^http://geourl\..*[\?&]p=([^&]*).*$'),
 		],
-	'yahoo': [
+	'yahoo': [ 'http://search.yahoo.com/search?p=%s',
 		re.compile(r'^http://.*\.yahoo\..*[\?&]p=([^&]*).*$'),
 		],
-	'altavista': [
+	'altavista': [ 'http://www.altavista.com/web/results?q=%s',
 		re.compile(r'^http://.*\.altavista\..*[\?&]q=([^&]*).*$'),
 		],
-	'msn': [
+	'msn': [ 'http://search.msn.com/results.aspx?q=%s',
 		re.compile(r'^http://search\.msn\..*[\?&]q=([^&]*).*$'),
 		],
-	'blo.gs': [
+	'blo.gs': [ 'http://blo.gs/?q=%s',
 		re.compile(r'^http://blo\.gs\/\?q=([^&]*).*$'),
 		],
-	'lycos': [
+	'lycos': [ 'http://hotbot.lycos.com/?query=%s',
 		re.compile(r'^http://.*\.lycos\..*[\?&]query=([^&]*).*$'),
 		],
-	'aol': [
+	'aol': [ 'http://search.aol.com/aolcom/search?query=%s',
 		re.compile(r'^http://.*\.aol\..*search.jsp\?q=([^&]*).*$'),
 		re.compile(r'^http://.*\.aol\..*[\?&]query=([^&]*).*$'),
 		],
-	't-online': [
+	't-online': [ 'http://brisbane.t-online.de/fast-cgi/tsc?q=%s',
 		re.compile(r'^http://.*\.t-online\..*tsc\?q=([^&]*).*$'),
 		],
-	'Virgilio': [
+	'Virgilio': [ 'http://search.virgilio.it/search/cgi/search.cgi?qs=%s',
 		re.compile(r'^http://.*\.virgilio\..*search\.cgi\?qs=([^&]*).*$'),
 		],
-	'mysearch': [
+	'mysearch': [ 'http://www.mysearch.com/jsp/AWmain.jsp?searchfor=%s',
 		re.compile(r'^http://.*\.mysearch\..*[\?&]searchfor=([^&]*).*$'),
 	],
 	}
@@ -134,25 +137,41 @@ else:
 		referrerlist.sort(sortISOTime)
 
 		searchterms = []
-		counts = {}
+		searchtuples = {}
 		for row in referrerlist:
 			matched = None
 			term = None
 			for engine in engines.keys():
-				for termre in engines[engine]:
+				for termre in engines[engine][1:]:
 					m = termre.match(row.referrer)
 					if m:
 						matched = engine
 						term = m.group(1)
+						while term.find('%') >= 0:
+							t = unquote(term)
+							if t == term:
+								term = t.replace('%', '')
+							else:
+								term = t
 						try:
 							term = term.decode('utf-8').encode('iso-8859-1')
 						except: pass
 			if matched:
-				searchterms.append((term, row.referrer, row.count))
-				if counts.has_key(row.count):
-					counts[row.count] += 1
+				url = row.referrer
+				if engines[matched][0]:
+					url = engines[matched][0] % quote(term)
+				idx = searchtuples.get(url, -1)
+				if idx >= 0:
+					searchterms[idx][3] += row.count
 				else:
-					counts[row.count] = 1
+					searchtuples[url] = len(searchterms)
+					searchterms.append([term, matched, url, row.count])
+		counts = {}
+		for (term, engine, url, count) in searchterms:
+			if counts.has_key(count):
+				counts[count] += 1
+			else:
+				counts[count] = 1
 		countcounts = counts.keys()
 		countcounts.sort()
 		sizes = {}
@@ -165,15 +184,13 @@ else:
 				i += 4
 			elif i < 36:
 				i += 6
-			elif i < 72:
-				i += 12
 
 		s += '<p>'
 		colnr = 0
 		color = ('#006666', '#333366', '#669900', '#663399', '#999933', '#009966', '#996699', '#999933', '#669900', '#660033', '#666600', '#336633', '#663333', '#663399', '#990000', '#999966', '#336600', '#660000', '#663333', '#990066', '#339933', '#000033', '#003366', '#666600', '#996633', '#339966', '#990099')
 		i = 0
 		maxi = len(searchterms) - 1
-		for (term, url, count) in searchterms:
+		for (term, engine, url, count) in searchterms:
 			s += '<a style="text-decoration: none; font-size: %dpx; color: %s" href="%s" title="%s">' % ( sizes[count], color[colnr], url, _('accessed %d times') % count )
 			s += unquote( term )
 			s += '</a>'
