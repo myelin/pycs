@@ -29,6 +29,8 @@ import string
 import pycs_settings
 import time
 
+from urllib import unquote
+
 engines = {
 	'google': [
 		re.compile(r'^http://.*\.google\..*[\?&]q=([^&]*).*$'),
@@ -164,7 +166,7 @@ else:
 		maxi = len(searchterms) - 1
 		for (term, url, count) in searchterms:
 			s += '<a style="text-decoration: none; font-size: %dpx; color: %s" href="%s" title="%s">' % ( sizes[count], color[colnr], url, _('accessed %d times') % count )
-			s += term
+			s += unquote( term )
 			s += '</a>'
 			colnr += 1
 			if colnr >= len(color):
