@@ -125,7 +125,7 @@ def classify_file( path, query ):
 		if folder == '':
 			print "root folder; public"
 			filetype = PUBLIC_FILE
-		elif folder == 'initialResources':
+		elif folder == '/initialResources':
 			print "initialResources folder; rpc"
 			filetype = RPC_FILE
 		else:
