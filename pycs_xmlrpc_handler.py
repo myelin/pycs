@@ -47,7 +47,13 @@ class pycs_xmlrpc_handler( xmlrpc_handler.xmlrpc_handler ):
 		self.set = set
 		self.namespaces = {}
 		
-		
+
+	# a hack to introduce a default encoding, if one is set in the
+	# server to circumvent encoding problems introduced by Radio
+	def continue_request( self, data, request ):
+		data = self.set.PatchEncodingHeader( data )
+		xmlrpc_handler.xmlrpc_handler.continue_request( self, data, request )
+
 		
 	def AddNamespace( self, name, handler ):
 	

@@ -252,6 +252,14 @@ class Settings:
 		else:
 			# convert to a string
 			return "%07d" % (usernum,)
+
+	def PatchEncodingHeader( self, str ):
+		"Patches the default encoding into a <?xml ...?> header"
+		if self.conf.has_key('defaultEncoding'):
+			return str.replace("<?xml version='1.0'?>",
+				"<?xml version='1.0' encoding=%s?>" % self.conf['defaultEncoding'], 1 )
+		else:
+			return str
 	
 	def User( self, usernum ):
 	
