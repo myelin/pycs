@@ -13,7 +13,7 @@
 # 	or the GNU Public License version 2 or later
 # 	<http://www.gnu.org/copyleft/gpl.html>
 #
-# 	$Id: search.py,v 1.4 2003/04/09 14:08:53 myelin Exp $
+# 	$Id: search.py,v 1.5 2003/05/15 13:10:31 gbhugo Exp $
 #
 # So I guess if you use search.py, your copy of PyCS falls under the GPL.
 # Don't install htsearch to keep it under the MIT license.  Your call :-)
@@ -125,9 +125,24 @@ def authorize(url):
 	except ValueError:
 		return 0
 	return set.authorizer.authorize(path, query, ai, quiet=1)
+
+URLUSER = re.compile(r'/users/(\d+)(/.*)$')
+
+def webauthorize(url):
+	url = set.rewrite_h.rewriteUrl(url, quiet=1)
+	upm = URLUSER.match(url)
+	auth_info = (,)
+	if ai:
+		auth_info = ai
+	if upm:
+		if set.ar_h.checkUrlAccess(upm.group(1), upm.group(2), auth_info[0], auth_info[1]) == 0:
+			return 0
+	return 1
 	
 def exclude_url_callback(url):
 	"url exclusion callback; checks a url and returns 1 if it should show in the search results"
+	if webauthorize(url) == 0:
+		return 0
 	if set.authorizer is not None:
 		# we've got an authorizer; refuse access to the file if the current
 		# auth settings won't let the user see it.

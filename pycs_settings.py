@@ -49,6 +49,7 @@ class Settings:
 	def __init__( self, quiet=0, authorizer=None ):
 		self.authorizer = authorizer
 		self.rewrite_h = None
+		self.ar_h = None
 		
 		storFn = pycs_paths.DATADIR + "/settings.dat"
 		if not quiet:
@@ -435,3 +436,7 @@ class Settings:
 
 	def SetRewriteHandler(self, rw_h):
 		self.rewrite_h = rw_h
+
+	def SetAccessRestrictionsHandler(self, ar_h):
+		self.ar_h = ar_h
+

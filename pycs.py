@@ -58,12 +58,14 @@ import pycs_block_handler
 import pycs_module_handler
 import pycs_xmlrpc_handler
 import pycs_auth_handler
+import pycs_webauth_handler
 
 # XML-RPC handlers
 import xmlStorageSystem
 import radioCommunityServer
 import weblogUpdates
 import pycsAdmin
+import accessRestrictions
 
 # Logging
 import logger
@@ -183,7 +185,7 @@ if __name__ == '__main__':
 	if set.authorizer is not None:
 		# Add auth wrapper
 		default_h = pycs_auth_handler.pycs_auth_handler( set, default_h, set.authorizer )
-	
+
 	# Make XML-RPC handler
 	rpc_h = pycs_xmlrpc_handler.pycs_xmlrpc_handler( set )
 	
@@ -202,6 +204,11 @@ if __name__ == '__main__':
 	# Make pycsAdmin XML-RPC handler
 	rpc_padm_h = pycsAdmin.pycsAdmin_handler( set )
 	rpc_h.AddNamespace( 'pycsAdmin', rpc_padm_h )
+
+	# Make accessRestrictions XML-RPC handler
+	rpc_ar_h = accessRestrictions.accessRestrictions_handler( set )
+	rpc_h.AddNamespace( 'accessRestrictions', rpc_ar_h )
+	set.SetAccessRestrictionsHandler(rpc_ar_h)
 	
 	# Make handler for /system
 	mod_h = pycs_module_handler.pycs_module_handler( set )
@@ -209,6 +216,9 @@ if __name__ == '__main__':
 		# Add auth wrapper
 		mod_h = pycs_auth_handler.pycs_auth_handler( set, mod_h, set.authorizer )
 	
+	# add the webauth wrapper (handles accessRestriction restrictions)
+	default_h = pycs_webauth_handler.pycs_webauth_handler( set, default_h, rpc_ar_h )
+
 	# Make logger
 	accessLog = logger.rotating_file_logger( pycs_paths.ACCESSLOG, None, 1024*1024 )
 	print "logging to",pycs_paths.ACCESSLOG

@@ -316,6 +316,7 @@ class xmlStorageSystem_handler:
 			'community': {
 				'flCanHostComments': xmlrpclib.True,
 				'flCanHostTrackback': xmlrpclib.True,
+				'flCanHostAccessRestrictions': xmlrpclib.True,
 				'name': self.set.LongTitle(),
 				'discussionGroupUrl': 'http://radio.userland.com/discuss/',
 				'domainName': self.set.ServerUrl(),
