@@ -1,6 +1,6 @@
 Python Community Server
 =======================
-         --> alpha test v0.09
+         --> alpha test v0.10
          
  -^--------^--      
 /   \      /  \    -----------
@@ -52,20 +52,10 @@ NOTES
 
 	Installation:
 	
-		To install, first edit pycs.conf and change the settings to ones 
-		that make sense for you.  'serverhostname' should be your host, 
-		and 'serverport' should be the port you want to run on.  The 
-		server runs on port 5445 by default - change this to 80 if you 
-		don't have another server running on the same machine.
-
-		Now type:
-
-			make install
-
-		You'll need to be root as this will create a new user and copy some
-		files into /etc/pycs, /usr/lib/pycs and /var/lib/pycs.
-
-		To start the server, run /usr/lib/pycs/startserver.sh.
+		See the file INSTALL for details on installation, or check out 
+		the PyCS page on the Community Server Wiki:
+		
+			http://www.myelin.co.nz/cgi-bin/wcswiki.pl?PythonCommunityServer
 		
 	
 	Virtual Hosting:
