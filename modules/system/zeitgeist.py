@@ -39,6 +39,9 @@ engines = {
 	'alltheweb': [
 		re.compile(r'^http://.*\.alltheweb\..*[\?&]q=([^&]*).*$'),
 		],
+	'feedster': [
+		re.compile(r'^http://.*\.feedster\..*[\?&]q=([^&]*).*$'),
+		],
 	'freshmeat': [
 		re.compile(r'^http://freshmeat\..*[\?&]q=([^&]*).*$'),
 		],
