@@ -23,8 +23,11 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
+# The user PyCS will be running as
 USER = www-pycs
+# If you don't have root access to the system PyCS will be running on, change
+# this to 'ROOT = www-pycs'.
+ROOT = root
 
 #F = *.py *.pyc *.sh *.pl *.conf
 #FILES = $(addprefix $(D)/, $(F))
@@ -79,7 +82,7 @@ LATESTFN = pycs-latest-src
 INSTALL = /usr/bin/install
 
 INSTALL_USER = $(INSTALL) -g $(USER) -o $(USER)
-INSTALL_ROOT = $(INSTALL) -g root -o root
+INSTALL_ROOT = $(INSTALL) -g $(ROOT) -o $(ROOT)
 
 # Logs and config files - visible only to root
 INSTALL_MKDIR_PRIV = $(INSTALL_ROOT) -D -m 700 -d
@@ -149,6 +152,9 @@ scripts:
 
 	/usr/bin/perl -w make_readme.pl < README > www/readme.html
 	$(INSTALL_RO) $(addprefix www/, $(WEBFILES)) $(WEBDIR)/
+	if [ -f www/local.css ]; then \
+		$(INSTALL_RO) www/local.css $(WEBDIR)/; \
+	fi
 	if [ -f www/local_index.html ]; then \
 		$(INSTALL_RO) www/local_index.html $(WEBDIR)/index.html; \
 	fi
