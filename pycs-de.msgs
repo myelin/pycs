@@ -31,6 +31,7 @@
 ' at %I:%M:%S %p on %B %d, %Y'::=' um %H:%M:%S am %d.%m.%Y'
 
 # strings from comments/html.py
+'You are commenting on the following link:<br><a href="%s" target="_blank">%s</a>'::='Sie kommentieren den folgenden Link:<br><a href="%s" target="_blank">%s</a>'
 '<tr><td class="cmt"><strong>No comments yet</strong></td></tr>'::='<tr><td class="cmt"><strong>Bis jetzt noch keine Kommentare</strong></td></tr>'
 'Add a new comment:'::='Kommentar abgeben:'
 'Name'::='Name'

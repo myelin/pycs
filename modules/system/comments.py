@@ -87,6 +87,8 @@ if format == 'rss':
 elif format == 'html':
 	import comments.html
 	formatter = comments.html.formatter( set, loggedInUser )
+	if query.has_key('link'):
+		formatter.link = query['link']
 
 request['Content-Type'] = formatter.contentType()
 

@@ -62,6 +62,14 @@ class formatter( defaultFormatter.defaultFormatter ):
 				self.note,
 				'</td></tr>'
 			]
+
+		if hasattr( self, 'link' ):
+			if self.link:
+				ret += [
+					'<tr><td style="border: solid; border-color: black; border-width: 5px; font-weight: bold;">',
+					_('You are commenting on the following link:<br><a href="%s" target="_blank">%s</a>') % (self.link, self.link),
+					'</td></tr>'
+				]
 			
 		return ''.join( ret )
 		
