@@ -6,7 +6,7 @@
 <div style="margin-top: 0px; border: solid; border-color: green; background-color: white; padding-left: 3em; align: center; font-size: 1em;"><pre>
 Python Community Server
 =======================
-         --> alpha test v0.10
+         --> alpha test v0.11
          
  -^--------^--      
 /   \      /  \    -----------
@@ -20,11 +20,15 @@ Python Community Server
  \__  ____  __/
     vv    vv
 
-PyCS is still unstable.  It's suitable for running a web server on - it's 
-running http://www.pycs.net/ quite happily - but it may require some hacking to 
-get it to work on your system.
+PyCS is still "unstable".  That means it's perfectly suitable to use for your 
+weblog community server (it's been running http://www.pycs.net/ and some others 
+quite happily for a fair while now) but it may require some hacking to get it to 
+work on your system.
 
-Here are some notes to get you going.
+Here are some notes to get you going.  First, you'll want to read the setup howto:
+
+	http://www.myelin.co.nz/cgi-bin/wcswiki.pl?PythonCommunityServer
+
 
 
 DEPENDENCIES
@@ -45,21 +49,14 @@ DEPENDENCIES
 	
 		Install this as usual.  Put Mk4py.so and metakit.py into your 
 		PyCS dir if it doesn't work.
-	
-	
-	xmlrpclib - http://www.pythonware.com/products/xmlrpc/
-	
-		Just install this as you usually would.  It should be installed
-		by default with Python 2.2.  If it's not there, make sure you
-		have the newest version of Python you can find.
 
 
 NOTES
 
 	Installation:
 	
-		See the file INSTALL for details on installation, or check out 
-		the PyCS page on the Community Server Wiki:
+		The PyCS page on the Community Server Wiki has the most up-to-
+		date information here.  See also the linked setup HOWTO.
 		
 			http://www.myelin.co.nz/cgi-bin/wcswiki.pl?PythonCommunityServer
 		
@@ -103,22 +100,28 @@ NOTES
 	
 	Security:
 	
-		You'll want to run PyCS as an unprivileged user.  'make install'
-		will create the user account for you and put everything in the
+		You'll want to run PyCS as an unprivileged user.  'make install' 
+		will create a www-pycs account for you and put everything in the 
 		right places.
 
-		Once you've started the server, run 'ps auxf' and check that
-		/usr/bin/python /var/lib/pycs/bin/pycs.py is not running as
-		root.  It should be something like 'www-pycs'.
+		Once you've started the server, run 'ps auxf' and check that 
+		/usr/bin/python /var/lib/pycs/bin/pycs.py is not running as 
+		root.  It should be 'www-pycs' or the user you specified on 
+		installation.
 	
 
 	Logging:
 	
-		It writes three log files: access.log, etc.log and error.log. 
-		etc.log logs everything written to stdout and error.log logs 
-		everything written to stderr, while access.log logs hits and 
-		stuff - what you might expect to see from a basic Apache 
-		access.log.
+		It writes three log files in /var/log/pycs: access.log, etc.log 
+		and error.log. etc.log logs everything written to stdout and 
+		error.log logs everything written to stderr, while access.log 
+		logs hits and stuff - what you might expect to see from a basic 
+		Apache access.log.
+		
+		The referrer tracking code writes a log file per blog in the 
+		same directory to track the hits in the last 24 hours.  The 
+		format here is slightly different; see /system/count.py and 
+		/system/referers.py for more information.
 
 
 CONCLUSION
@@ -135,6 +138,8 @@ CONCLUSION
 	Cheers,
 		Phil <pp@myelin.co.nz>
 
+
+
 OFFICIAL WEB PAGES
 
 	Project:
@@ -146,15 +151,33 @@ OFFICIAL WEB PAGES
 
 		http://www.myelin.co.nz/cgi-bin/wcswiki.pl
 
-	Author:
 
-		http://www.myelin.co.nz/
-		http://dev.myelin.co.nz/
-		http://blogs.salon.com/0000002/
+CREDITS
+
+	Most code:
+	
+		Phillip Pearson, pp at myelin dot co dot nz
+
 		http://www.pycs.net/devlog/
-		http://www.pycs.net/notes/
+		http://blogs.salon.com/0000002/
+		http://www.myelin.co.nz/
+	
+	Referrer tracking and hit counting:
+	
+		Georg Bauer, gb at murphy dot bofh dot ms
 		
-
+		http://hugo.muensterland.org/
+		http://muensterland.org/
+	
+	Daemonizing:
+	
+		Michael Hay, Michael dot Hay at hds dot com
+	
+	Password changing:
+	
+		Scott Lewis, scott at bandwidthcoop dot org
+		
+		http://www.pycs.net/scott/
 </pre></div>
 </body>
 </html>
