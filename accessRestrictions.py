@@ -734,7 +734,7 @@ class accessRestrictions_handler:
 		for loc in self.locations.select({'blogid':u.usernum}):
 			grouplist = []
 			for group in loc.group:
-				grouplist.append(group.name)
+				grouplist.append({'name':group.name})
 			loclist.append({
 				'name':loc.locname,
 				'regexp':loc.regexp,
