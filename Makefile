@@ -38,6 +38,7 @@ NOTEFILES = README LICENSE
 INSTFILES = Makefile mkidx.pl make_readme.pl 
 CODEFILES = pycs.py \
 	pycs_settings.py pycs_comments.py pycs_module_handler.py pycs_xmlrpc_handler.py pycs_rewrite_handler.py \
+	pycs_auth_handler.py authorizer.py \
 	pycs_http_util.py html_cleaner.py strptime.py \
 	xmlStorageSystem.py radioCommunityServer.py weblogUpdates.py pycs_paths.py updatesDb.py
 TESTFILES = test_server.py test_settings.py

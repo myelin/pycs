@@ -49,6 +49,7 @@ import default_handler
 import pycs_rewrite_handler
 import pycs_module_handler
 import pycs_xmlrpc_handler
+import pycs_auth_handler
 
 # XML-RPC handlers
 import xmlStorageSystem
@@ -62,8 +63,6 @@ import status_handler
 
 
 print "[Loaded]"
-
-# Make sure we can be imported (need this for pychecker)
 
 if __name__ == '__main__':
 	# Get config
@@ -84,6 +83,9 @@ if __name__ == '__main__':
 	# Make GET handler	
 	fs = filesys.os_filesystem( pycs_paths.WEBDIR )
 	default_h = default_handler.default_handler( fs )
+	if os.path.isfile( os.path.join( pycs_paths.CONFDIR, 'users.conf' ) ):
+		# Add auth wrapper
+		default_h = pycs_auth_handler.pycs_auth_handler( set, default_h )
 	
 	# Make XML-RPC handler
 	rpc_h = pycs_xmlrpc_handler.pycs_xmlrpc_handler( set )
@@ -100,16 +102,11 @@ if __name__ == '__main__':
 	rpc_wu_h = weblogUpdates.weblogUpdates_handler( set )
 	rpc_h.AddNamespace( 'weblogUpdates', rpc_wu_h )
 	
-	######
-	# Make handler for /comments
-	#
-	# OBSOLETE BUT MAYBE STILL USED ON rcs.myelin.cjb.net - REMOVE LATER
-	#comment_h = pycs_comments.comment_handler()
-	#
-	######
-	
 	# Make handler for /system
 	mod_h = pycs_module_handler.pycs_module_handler( set )
+	if os.path.isfile( os.path.join( pycs_paths.CONFDIR, 'users.conf' ) ):
+		# Add auth wrapper
+		mod_h = pycs_auth_handler.pycs_auth_handler( set, mod_h )
 	
 	# become the PyCS user
 	if os.name == 'posix':
@@ -132,7 +129,6 @@ if __name__ == '__main__':
 	hs.server_name = set.conf['serverhostname']
 	
 	hs.install_handler( default_h )
-	#hs.install_handler( comment_h )
 	hs.install_handler( mod_h )
 	hs.install_handler( rpc_h )
 	hs.install_handler( rw_h )
