@@ -39,41 +39,40 @@ s = """
 <table width="80%%" cellspacing="0" cellpadding="2">
 """
 
-if 0:
-	updates = updatesDb.updatesDb( set )
-	tbl = updates.updatesTable
-	
-	if len( tbl ) == 0:
-		s += '<tr><td>(none)</td></tr>'
-	else:
-		# Run through all updates and make a row for each ('1. | My blog | 2002-03-22 03:30 AM')
-		blogs = []
-		for nIndex in range( len( tbl ), 0, -1 ):
-			u = tbl[nIndex - 1]
-			if type( u.updateTime ) == type( 1 ):
-				blogs.append( ( u.updateTime, u ) )
-			else:
-				blogs.append( ( 0, None ) )
-		blogs.sort()
-		blogs.reverse()
-		nDispIndex = 1
-		for blog in blogs:
-			tm, u = blog
-			s += """
-			<tr>
-			<td>%d.</td>
-			<td><strong><a href="%s">%s</a></strong></td>
-			<td><strong>%s</strong></td>
-			</tr>
-			""" % ( nDispIndex, u.blogUrl, u.blogName,
-				time.strftime( '%Y-%m-%d %I:%M %p', time.localtime( u.updateTime ) )
-				)
-			nDispIndex += 1
-			
-	s += """
-	</table>
-	"""
-	
+updates = updatesDb.updatesDb( set )
+tbl = updates.updatesTable
+
+if len( tbl ) == 0:
+	s += '<tr><td>(none)</td></tr>'
+else:
+	# Run through all updates and make a row for each ('1. | My blog | 2002-03-22 03:30 AM')
+	blogs = []
+	for nIndex in range( len( tbl ), 0, -1 ):
+		u = tbl[nIndex - 1]
+		if type( u.updateTime ) == type( 1 ):
+			blogs.append( ( u.updateTime, u ) )
+		else:
+			blogs.append( ( 0, None ) )
+	blogs.sort()
+	blogs.reverse()
+	nDispIndex = 1
+	for blog in blogs:
+		tm, u = blog
+		s += """
+		<tr>
+		<td>%d.</td>
+		<td><strong><a href="%s">%s</a></strong></td>
+		<td><strong>%s</strong></td>
+		</tr>
+		""" % ( nDispIndex, u.blogUrl, u.blogName,
+			time.strftime( '%Y-%m-%d %I:%M %p', time.localtime( u.updateTime ) )
+			)
+		nDispIndex += 1
+		
+s += """
+</table>
+"""
+
 # Dump it all out
 
 page['body'] = s
