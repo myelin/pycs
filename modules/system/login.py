@@ -35,7 +35,7 @@ query = util.SplitQuery( query )
 form = util.SplitQuery( input_data.read() )
 
 page = {
-	'title': 'Login',
+	'title': _('Login'),
 	'body': """<p>Something went wrong; there should be some text here!</p>
 		<p>Mail <a href="mailto:pp@myelin.co.nz">Phil</a> at 
 		<a href="http://www.myelin.co.nz/">Myelin</a> if you
@@ -55,13 +55,13 @@ cookies = util.IndexCookies( headers )
 if cookies.has_key( 'userInfo' ):
 	u, p = re.search( '"(.*?)_(.*?)"', cookies['userInfo'] ).groups()
 	u = binascii.unhexlify( u )
-	s += "usernum %s, pass %s<br>" % ( u, p )
+	#s += "usernum %s, pass %s<br>" % ( u, p )
 	try:
 		user = set.FindUser( u, p )
 	except set.PasswordIncorrect:
-		s += "(password incorrect)"
+		s += _("(password incorrect)")
 		
-	s += "user already logged in: " + user.usernum
+	s += _("user already logged in: ") + user.usernum
 	s += "<br>"
 
 # Have we been POSTed to?
@@ -82,43 +82,43 @@ if form.has_key('email') and form.has_key('password'):
 			pwHash,
 			)
 		
-		s += """<p>You are now logged in as user <b>%s</b> (<b>%s</b>)</p>""" % ( user.usernum, user.name )
+		s += _("<p>You are now logged in as user <b>%s</b> (<b>%s</b>)</p>") % ( user.usernum, user.name )
 	
 	except pycs_settings.NoSuchUser:
-		s += '<p>Sorry, email address <b>%s</b> not found!</p>' % (form['email'],)
+		s += _('<p>Sorry, email address <b>%s</b> not found!</p>') % (form['email'],)
 	
 	except pycs_settings.PasswordIncorrect:
-		s += '<p>Sorry, the passsword was incorrect.  Please try again.</p>'
+		s += _('<p>Sorry, the passsword was incorrect.  Please try again.</p>')
 
 if not fLoggedIn:
 	s += """
-	<p>Enter your e-mail address and your password to log in.  If you have more than
-	one weblog hosted here, make sure you enter the e-mail address for the right
-	blog.</p>
+	<p>%s</p>
 	
 	<table align="center" width="100%%" cellspacing="2" cellpadding="2">
 	<form method="post" action="login.py">
 	<table>
 		<tr>
-			<td>E-mail address</td>
+			<td>%s</td>
 			<td><input type="text" name="email" size="60" /></td>
 		</tr>
 		<tr>
-			<td>Password</td>
+			<td>%s</td>
 			<td><input type="password" name="password" size="60" /></td>
 		</tr>
 		<tr>
 			<td></td>
-			<td><input type="submit" value="Log in" /></td>
+			<td><input type="submit" value="%s" /></td>
 		</tr>
 	</form>
 	</table>
 	
-	"""
+	""" % (	_("Enter your e-mail address and your password to log in. If you have more than one weblog hosted here, make sure you enter the e-mail address for the right blog."),
+		_("E-mail address"),
+		_("Password"),
+		_("Log in"),
+	)
 else:
-	s += """
-	<p>Now you should see 'delete' buttons next to comments for <a href="%s">your weblog</a>.</p>
-	""" % ( set.UserFolder( user.usernum ), )
+	s += _("""<p>Now you should see 'delete' buttons next to comments for <a href="%s">your weblog</a>.</p>""") % ( set.UserFolder( user.usernum ), )
 
 
 

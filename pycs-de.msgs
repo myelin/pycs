@@ -9,11 +9,24 @@
 'Cancel'::='Abbrechen'
 'Note'::='Achtung'
 "'http://...' will be converted into links. HTML other than &lt;a href&gt;, &lt;b&gt;, &lt;i&gt;, &lt;s&gt; and &lt;tt&gt; will be stripped."::="'http://...' wird in einen Link umgesetzt. Anderes HTML als &lt;a href&gt;, &lt;b&gt;, &lt;i&gt;, &lt;s&gt; und &lt;tt&gt; wird entfernt."
-'Subscribe to an RSS feed of this comment thread:'::='Abonniere einen Newsfeed für diese Kommmentare:'
-'Subscribe to this comment thread in Radio UserLand'::='Abonniere einen Newsfeed für diese Kommentare mit Radio UserLand'
-'Link to the RSS (XML) feed for this comment thread'::='Link auf das RSS (XML) für diese Kommentare'
+'Subscribe to an RSS feed of this comment thread:'::='Abonniere einen Newsfeed f\xfcr diese Kommmentare:'
+'Subscribe to this comment thread in Radio UserLand'::='Abonniere einen Newsfeed f\xfcr diese Kommentare mit Radio UserLand'
+'Link to the RSS (XML) feed for this comment thread'::='Link auf das RSS (XML) f\xfcr diese Kommentare'
 'posted by'::='gepostet von'
-'Delete comment'::='Kommentar löschen'
+'Delete comment'::='Kommentar l\xf6schen'
+
+# strings from modules/system/login.py
+'<p>Now you should see \'delete\' buttons next to comments for <a href="%s">your weblog</a>.</p>'::='<p>Jetzt solltest du \'Löschen\'-Schaltflächen neben Kommentaren zu <a href="%s">deinem Weblog</a> sehen.</p>'
+'Login'::='Anmeldung'
+'<p>Sorry, email address <b>%s</b> not found!</p>'::='<p>Sorry, die Mailadresse <b>%s</b> wurde nicht gefunden!</p>'
+'<p>Sorry, the passsword was incorrect.  Please try again.</p>'::='<p>Sorry, das Passwort ist falsch. Bitte versuche es nochmal.</p>'
+'(password incorrect)'::='(falsches Passwort)'
+'user already logged in: '::='Benutzer schon angemeldet: '
+'<p>You are now logged in as user <b>%s</b> (<b>%s</b>)</p>'::='<p>Du bist jetzt als Benutzer <b>%s</b> (<b>%s</b>) angemeldet</p>'
+'Enter your e-mail address and your password to log in. If you have more than one weblog hosted here, make sure you enter the e-mail address for the right blog.'::='Gib deine Mailadresse und dein Passwort ein um dich anzumelden. Wenn du mehr als ein Weblog hier angemeldet hast, benutze die richtige Mailadresse f\xfcr das gew\xfcnschte Weblog'
+'E-mail address'::='Mailadresse'
+'Password'::='Passwort'
+'Log in'::='Anmelden'
 
 # strings from modules/system/mailto.py
 '\n\t\t<h2>Message sent OK; <a href="%s">click here to go back</a>.</h2>\n\t\t'::='\n\t\t<h2>Die Mitteilung wurde versendet; <a href="%s">Hier klicken um zum Blog zur\xfcckzukehren</a>.</h2>\n\t\t'
@@ -60,6 +73,11 @@
 # already defined: "Count"
 # already defined: "Last hit"
 # already defined: "Count"
+
+# strings from modules/system/users.py
+'User info'::='Benutzerinfo'
+# already defined: '<p>Sorry, user %s not found!</p>'
+'Information for user'::='Information f\xfcr Benutzer'
 
 # strings from modules/system/weblogUpdates.py
 'Recently updated weblogs'::='K\xfcrzlich aktualisierte Weblogs'

@@ -33,7 +33,7 @@ query = util.SplitQuery( query )
 form = util.SplitQuery( input_data.read() )
 
 page = {
-	'title': 'User info',
+	'title': _('User info'),
 	'body': """<p>Something went wrong; there should be some text here!</p>
 		<p>Mail <a href="mailto:pp@myelin.co.nz">Phil</a> at 
 		<a href="http://www.myelin.co.nz/">Myelin</a> if you
@@ -51,9 +51,9 @@ if query.has_key('usernum'):
 		user = set.User( usernum )
 		
 		s += """
-		<h2>Information for user #<strong>%s</strong></h2>
+		<h2>%s #<strong>%s</strong></h2>
 		<table width="80%%" cellspacing="0" cellpadding="2">
-		""" % (usernum,)
+		""" % ( _("Information for user"), usernum,)
 		
 		cols = {}
 		
@@ -82,7 +82,7 @@ if query.has_key('usernum'):
 		"""
 	
 	except pycs_settings.NoSuchUser:
-		s += '<p>Sorry, user %s not found!</p>' % (usernum,)
+		s += _('<p>Sorry, user %s not found!</p>') % (usernum,)
 	
 # Dump it all out
 
