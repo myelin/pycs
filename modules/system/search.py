@@ -13,7 +13,7 @@
 # 	or the GNU Public License version 2 or later
 # 	<http://www.gnu.org/copyleft/gpl.html>
 #
-# 	$Id: search.py,v 1.2 2003/03/31 10:05:34 myelin Exp $
+# 	$Id: search.py,v 1.3 2003/04/09 13:59:37 myelin Exp $
 #
 # So I guess if you use search.py, your copy of PyCS falls under the GPL.
 # Don't install htsearch to keep it under the MIT license.  Your call :-)
@@ -170,9 +170,12 @@ def pycs_htsearch(qs, cb, conf):
 	pid = os.fork()
 	if pid:
 		# we are the parent
+		print "fork()ed and created pid %d" % pid
 		os.close(w)
 		r = os.fdopen(r)
 		txt = r.read()
+		os.waitpid(pid)
+		print "pid %d is finished; displaying results" % pid
 	else:
 		# we are the child
 		try:
@@ -213,7 +216,7 @@ elif not set.conf.has_key('htsearchconf'):
         <p>(The administrator needs to set the <code>htsearchconf</code> variable in <code>pycs.conf</code>.)</p>"""
 
 else:
-	search_terms = query.get('q', '')
+	search_terms = query.get('q', query.get('words', ''))
 
 	s += """<form method="GET">
 	Search: <input type="text" size="80" name="q" value="%s" />
