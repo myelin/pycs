@@ -217,6 +217,9 @@
 '%d files have been saved for you, %s'::='%d Dateien wurden f\xfcr dich gespeichert, %s'
 '%d files have been deleted for you, %s'::='%d Dateien wurden f\xfcr dich gel\xf6scht, %s'
 'Hello, %s, from the Python Community Server!'::='Hallo, %s, Willkommen beim Python Community Server!'
+'%d posts updated and %d posts added to the database for you (usernum %s).  Now you have %d posts'::='%d Artike aktualisiert und %d Artikel zur Datenbank zugefügt. Sie (usernum %s) haben jetzt %d Artikel.'
+'%d posts deleted from the database for you (usernum %s).  Now you have %d posts'::='%d Artikel aus der Datenbank gelöscht. Sie (usernum %s) haben jetzt %d Artikel.'
 # already defined: "Password incorrect"
 # already defined: "User not found"
+"You (usernum %s) don't have any postings stored, yet."::="Sie (usernum %s) haben keine Artikel in der Datenbank bis jetzt."
 
