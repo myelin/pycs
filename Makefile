@@ -113,37 +113,37 @@ install: user scripts
 			$(INSTALL_PRIV) $$f $(CONFDIR)/$$f; \
 		fi; \
 	done
-	
+
 	# Variant stuff (see below for details - data, web, etc)
 	$(INSTALL_MKDIR_RW) -d $(VARDIR)
-	
+
 	# Data files go in /var/lib/pycs/data
 	$(INSTALL_MKDIR_RW) -d $(DATADIR)
-	
+
 	# Web files go in /var/lib/pycs/www
 	$(INSTALL_MKDIR_RW) -d $(WEBDIR)
-	
+
 	# Notes go in /usr/lib/pycs
 	$(INSTALL_MKDIR_RO) -d $(NOTEDIR)
 	$(INSTALL_RO) $(NOTEFILES) $(NOTEDIR)/
-	
+
 	# Executables go in /usr/lib/pycs/bin
 	$(INSTALL_MKDIR_RO) -d $(CODEDIR)
 	$(INSTALL_RO) $(CODEFILES) $(CODEDIR)/
-	
+
 	# Medusa goes in /usr/lib/pycs/bin/medusa
 	$(INSTALL_MKDIR_RO) -d $(MEDUSADIR)
 	$(INSTALL_RO) $(MEDUSAFILES) $(MEDUSADIR)/
-	
+
 	# Likewise for Metakit
 	$(INSTALL_MKDIR_RO) -d $(METAKITDIR)
 	$(INSTALL_RO) $(METAKITFILES) $(METAKITDIR)/
-	
+
 	# Log files go in /var/log
 	$(INSTALL_MKDIR_RW) -d $(LOGDIR)
-	
+
 	$(INSTALL_ROOT) -m 755 startserver.sh $(NOTEDIR)/startserver.sh
-	
+
 scripts:
 	$(INSTALL_MKDIR_RO) -d $(MODDIR)
         $(INSTALL_MKDIR_RO) -d $(MODDIR)/system
@@ -161,7 +161,7 @@ scripts:
 	if [ -f www/local_index.html ]; then \
 		$(INSTALL_RO) www/local_index.html $(WEBDIR)/index.html; \
 	fi
-	
+
         $(INSTALL_MKDIR_RO) -d $(RESDIR)
 	$(INSTALL_RO) $(addprefix www/initialResources/, $(RESFILES)) $(RESDIR)/
 
@@ -172,20 +172,20 @@ dist:
 	cp $(PYCSFILES) $(DISTFN)/
 	perl -w extract_pycs_net.pl < pycs.conf > $(DISTFN)/pycs.conf
 	perl -w extract_pycs_net.pl < rewrite.conf > $(DISTFN)/rewrite.conf
-	
+
 	mkdir -p $(DISTFN)/modules/system
 	cp $(addprefix modules/system/, $(PYCSMODFILES)) $(DISTFN)/modules/system/
-	
+
 	mkdir -p $(DISTFN)/www
 	cp $(addprefix www/, $(WEBFILES)) $(DISTFN)/www/
 	if [ -f www/dist_index.html ]; then cp -f www/dist_index.html $(DISTFN)/www/index.html; fi
-	
+
 	mkdir -p $(DISTFN)/www/initialResources
 	cp $(addprefix www/initialResources/, $(RESFILES)) $(DISTFN)/www/initialResources
-	
+
 	mkdir -p $(DISTFN)/comments
 	cp $(addprefix comments/, $(COMMENTFILES)) $(DISTFN)/comments/
-	
+
 	tar -czf $(DISTFN).tar.gz $(DISTFN)/*
 	rm -rf $(DISTFN)/
 	cp $(DISTFN).tar.gz $(WEBDIR)/
@@ -197,4 +197,3 @@ user:
 	# Set up the www-pycs user, if it doesn't already exist
 	-groupadd $(USER)
 	-useradd -d $(VARDIR) -g $(USER) $(USER)
-	
