@@ -131,6 +131,7 @@
 # already defined: 'Search results'
 'Searching weblog for usernum <b>%s</b>:'::='Durchsuche Weblog von Benutzer <b>%s</b>:'
 'Search:'::='Suche:'
+'<p>No posts found.</p>'::='<p>Keine Beiträge gefunden.</p>'
 'Show previous %s'::='Zeige vorige %s'
 'Show next %d'::='Zeige n\xe4chste %d'
 '<p>Showing hits %d-%d out of %d. %s</p>'::='<p>Zeige Treffer %d-%d von %d. %s</p>'
