@@ -1,5 +1,5 @@
 #!/bin/bash
 
-kill `ps ax | grep "pycs.py" | grep -v "grep" | perl -pe 's/(\d+).*/\1/'`
+kill `cat /home/www-pycs/var/run/pycs/pycs.pid`
 make install
-/usr/lib/pycs/startserver.sh
+python /home/www-pycs/usr/lib/pycs/bin/pycs.py

@@ -78,7 +78,7 @@ class Settings:
 		# User info - one row per user
 		self.users = self.db.getas(
 			"users[usernum:S,email:S,password:S,name:S,weblogTitle:S,serialNumber:S,organization:S," +
-			"flBehindFirewall:I]"
+			"flBehindFirewall:I,hitstoday:I,hitsyesterday:I,hitsalltime:I]"
 			).ordered()
 			
 		if len(self.users) == 0:

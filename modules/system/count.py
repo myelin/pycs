@@ -42,7 +42,10 @@ if query.has_key('usernum'):
 		group = query['group']
 		referer = query['referer']
 		time = time.strftime('%d/%b/%Y:%H:%M:%S %Z',time.localtime(time.time()))
-		usernum = getattr(user,'usernum')
+		usernum = user.usernum
+		user.hitstoday += 1
+		user.hitsalltime += 1
+		set.Commit()
 		log = open(os.path.join(pycs_paths.LOGDIR, '%s-referer.log' % usernum), 'a')
 		log.write('%s\t%s\t%s\t%s\n' % (time, usernum, group, referer))
 		log.close()
