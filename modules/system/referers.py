@@ -29,8 +29,11 @@ import pycs_settings
 import time
 from search_engines import checkUrlForSearchEngine
 
-def orderLink(username,group,order):
-	return set.ServerUrl() + '/system/referers.py?usernum=%s&group=%s&order=%s' % (usernum, group, order)
+def orderLink(username,group,order,full):
+	if full:
+		return set.ServerUrl() + '/system/referers.py?usernum=%s&group=%s&order=%s&full=1' % (usernum, group, order)
+	else:
+		return set.ServerUrl() + '/system/referers.py?usernum=%s&group=%s&order=%s' % (usernum, group, order)
 
 def sortISOTime(timea,timeb):
 	ta = time.strptime(timea.time,'%Y-%m-%d %I:%M:%S %p')
@@ -72,33 +75,68 @@ else:
 
 		group = query.get('group','default')
 		order = query.get('order','time')
+		full = query.get('full', '')
+		if full: full = 1
+		else: full = 0
 		
 		user = set.User( usernum )
 		usernum = user.usernum
 		
-		s += """
-		<h2>%s <strong>%s</strong></h2>
-		<table width="80%%" cellspacing="5" cellpadding="2">
-		""" % (_('Referrers for'), user.name,)
+		referrerlist = []
+		searchlist = []
+		fulllist = []
+		data = set.referrers.select( { 'usernum': usernum, 'group': group } )
+		for row in data:
+			(matched, term) = checkUrlForSearchEngine(row.referrer)
+			if not(matched) or not(term):
+				referrerlist.append(row)
+			else:
+				searchlist.append(row)
+			fulllist.append(row)
+
+		if len(fulllist) < 100:
+			referrerlist = fulllist
+			full = 1
+		elif len(searchlist) < 30 or len(referrerlist) < 30:
+			referrerlist = fulllist
+			full = 1
+
+		if order == 'time':
+			referrerlist.sort(sortISOTime)
+		elif order == 'count':
+			referrerlist.sort(lambda a,b: -1*cmp(a.count,b.count))
+		else:
+			referrerlist.sort(lambda a,b: -1*cmp(a.referrer,b.referrer))
+
+		s += "<h2>%s <strong>%s</strong></h2>" % (
+			_('Referrers for'),
+			user.name,
+		)
+		if full:
+			s += _("<p>This page shows you all referrers - including search engine hits -  to your page.")
+		else:
+			s += _("<p>This page shows you only those referrers to your page, that are not comming from search engines.")
+			s += _(' To see all referrers, <a href="referers.py?usernum=%s&group=%s&order=%s&full=1">click here</a>.') % (usernum, group, order)
+		s += '<p><table width="80%%" cellspacing="5" cellpadding="2">'
 
 		if order == 'time':
 			s += """
 			<tr><th align="left"><a href="%s">%s</a></th>
 				<th align="left">%s</th>
 				<th align="right"><a href="%s">%s</a></th></tr>
-			""" % ( orderLink( usernum, group, 'referrer' ),
+			""" % ( orderLink( usernum, group, 'referrer', full ),
 			        _('Referrer'),
 				_('Last hit'),
-				orderLink( usernum, group, 'count' ),
+				orderLink( usernum, group, 'count', full ),
 				_('Count') )
 		elif order == 'count':
 			s += """
 			<tr><th align="left"><a href="%s">%s</a></th>
 				<th align="left"><a href="%s">%s</a></th>
 				<th align="right">%s</th></tr>
-			""" % ( orderLink(usernum, group, 'referrer'),
+			""" % ( orderLink(usernum, group, 'referrer', full),
 			        _('Referrer'),
-				orderLink(usernum, group, 'time'),
+				orderLink(usernum, group, 'time', full),
 				_('Last hit'),
 				_('Count') )
 		else:
@@ -107,23 +145,10 @@ else:
 				 <th align="left"><a href="%s">%s</a></th>
 				<th align="right"><a href="%s">%s</a></th></tr>
 			""" % ( _('Referrer'),
-			        orderLink(usernum, group, 'time'),
+			        orderLink(usernum, group, 'time', full),
 				_('Last hit'),
-				orderLink(usernum, group, 'count'),
+				orderLink(usernum, group, 'count', full),
 				_('Count') )
-
-		referrerlist = []
-		for row in set.referrers.select( { 'usernum': usernum, 'group': group } ):
-			(matched, term) = checkUrlForSearchEngine(row.referrer)
-			if not(matched) or not(term):
-				referrerlist.append(row)
-
-		if order == 'time':
-			referrerlist.sort(sortISOTime)
-		elif order == 'count':
-			referrerlist.sort(lambda a,b: -1*cmp(a.count,b.count))
-		else:
-			referrerlist.sort(lambda a,b: -1*cmp(a.referrer,b.referrer))
 
 		for row in referrerlist:
 			referrer = cgi.escape( row.referrer, 1 )

@@ -25,8 +25,9 @@ import re
 
 engines = {
 	'google': [
-		re.compile(r'^http://.*\.google\..*[\?&]q=([^&]*).*$'),
-		re.compile(r'^http://.*\.google\..*[\?&]as_q=([^&]*).*$'),
+		re.compile(r'^http://.*\.google\..*[\?&]q=([^&]+).*$'),
+		re.compile(r'^http://.*\.google\..*[\?&]as_q=([^&]+).*$'),
+		re.compile(r'^http://.*\.google\..*[\?&]as_epq=([^&]+).*$'),
 		],
 	'alltheweb': [
 		re.compile(r'^http://.*\.alltheweb\..*[\?&]q=([^&]*).*$'),
@@ -45,6 +46,7 @@ engines = {
 		],
 	'yahoo': [
 		re.compile(r'^http://.*\.yahoo\..*[\?&]p=([^&]*).*$'),
+		re.compile(r'^http://.*\.yahoo\..*[\?&]va=([^&]*).*$'),
 		],
 	'altavista': [
 		re.compile(r'^http://.*\.altavista\..*[\?&]q=([^&]*).*$'),
@@ -53,23 +55,61 @@ engines = {
 		re.compile(r'^http://search\.msn\..*[\?&]q=([^&]*).*$'),
 		],
 	'blo.gs': [
-		re.compile(r'^http://blo\.gs\/\?q=([^&]*).*$'),
+		re.compile(r'^http://.*blo\.gs\/\?q=([^&]*).*$'),
 		],
 	'lycos': [
 		re.compile(r'^http://.*\.lycos\..*[\?&]query=([^&]*).*$'),
 		],
 	'aol': [
-		re.compile(r'^http://.*\.aol\..*search.jsp\?q=([^&]*).*$'),
+		re.compile(r'^http://.*\.aol\..*search.jsp.*[\?&]q=([^&]*).*$'),
 		re.compile(r'^http://.*\.aol\..*[\?&]query=([^&]*).*$'),
 		],
 	't-online': [
-		re.compile(r'^http://.*\.t-online\..*tsc\?q=([^&]*).*$'),
+		re.compile(r'^http://.*\.t-online\..*tsc.*[\?&]q=([^&]*).*$'),
 		],
 	'Virgilio': [
 		re.compile(r'^http://.*\.virgilio\..*search\.cgi\?qs=([^&]*).*$'),
 		],
 	'mysearch': [
 		re.compile(r'^http://.*\.mysearch\..*[\?&]searchfor=([^&]*).*$'),
+		re.compile(r'^http://mysearch\..*[\?&]searchfor=([^&]*).*$'),
+	],
+	'Parnassus': [
+		re.compile(r'^http://py.vaults.ca/apyllo.py.*[\?&]find=([^&]*).*$'),
+		re.compile(r'^http://www.vex.net/parnassus/apyllo.py.*[\?&]find=([^&]*).*$'),
+	],
+	'eniro': [
+		re.compile(r'^.*\.eniro\.se/query\?.*&q=([^&]*).*$'),
+	],
+	'netfind': [
+		re.compile(r'^.*\.netfind\.de/suche/search.jsp\?q=([^&]*).*$'),
+	],
+	'naver': [
+		re.compile(r'^http://search.naver.com/search.naver.*[\?&]query=([^&]*).*$'),
+	],
+	'fireball': [
+		re.compile(r'^http://suche.fireball.de/suche.csp.*[\?&]q=([^&]*).*$'),
+	],
+	'blogshares': [
+		re.compile(r'^http://blogshares.com/blogs.php\?blog=([^&]*).*$'),
+	],
+	'technorati': [
+		re.compile(r'^http://.*technorati\.com/cosmos/links.html.*[\?&]url=([^&]*).*$'),
+	],
+	'web.de': [
+		re.compile(r'^http://suche.*web.de/search/.*[\?&]su=([^&]*).*$'),
+	],
+	'rss-search': [
+		re.compile(r'^http://.*rss\-search.com/index.cgi/SearchResult\?.*&IR_FreeText=([^&]*).*$'),
+	],
+	'hotbot': [
+		re.compile(r'^http://.*hotbot.com/default.asp.*[\?&]query=([^&]*).*$'),
+	],
+	'netscape': [
+		re.compile(r'^http://.*netscape.*search.jsp.*[\?&]q=([^&]*).*$'),
+	],
+	'bbc': [
+		re.compile(r'^http://.*bbc.co.uk.*results.pl.*[\?&]q=([^&]*).*$'),
 	],
 	}
 
