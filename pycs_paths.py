@@ -5,22 +5,26 @@
 #
 # Please tell me if they don't ;-)
 
+# The root of it all (no trailing '/').  If you want to install PyCS
+# in a user directory, set this to '/home/foo'.
+ROOTDIR = ''
+
 
 # Config files
-CONFDIR = '/etc/pycs'
+CONFDIR = ROOTDIR + '/etc/pycs'
 
 
 # Read-only stuff
-RODIR = '/usr/lib/pycs'
+RODIR = ROOTDIR + '/usr/lib/pycs'
 
 
 # Logging
-LOGDIR = '/var/log/pycs'
+LOGDIR = ROOTDIR + '/var/log/pycs'
 ACCESSLOG = LOGDIR + '/access.log'
 
 
 # Writeable area for us to store web pages, comments etc
-VARDIR = '/var/lib/pycs'
+VARDIR = ROOTDIR + '/var/lib/pycs'
 
 # Persistent data store (DB)
 DATADIR = VARDIR + '/data'
