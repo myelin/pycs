@@ -14,7 +14,6 @@ headerString = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 <style type="text/css">
 <!--
 body { font-family: verdana, sans-serif; }
-textarea { width: 100%% }
 .black { background-color: black; }
 td { background-color:  lightgrey; }
 .cmt { background-color: #eeeeee; }
@@ -92,7 +91,7 @@ class formatter( defaultFormatter.defaultFormatter ):
 		<tr><td><label for="name">%s</label></td><td width="99%%"><input type="text" size="50" name="name" value="%s"/></td></tr>
 		<tr><td><label for="email">%s</label></td><td><input type="text" size="50" name="email" value="%s"/></td></tr>
 		<tr><td><label for="url">%s</label></td><td><input type="text" size="50" name="url" value="%s"/></td></tr>
-		<tr><td><label for="comment">%s</label></td><td><textarea name="comment" width="100%%" cols="50" rows="10"></textarea></td></tr>
+		<tr><td><label for="comment">%s</label></td><td><textarea name="comment" cols="50" rows="10"></textarea></td></tr>
 		<tr><td></td><td><input type="submit" value="%s" />
 			<input type="button" value="%s" onclick="javascript:window.close()" /></td></tr>
 		<tr><td></td><td><strong>%s</strong>: %s</td></tr>
