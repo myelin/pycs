@@ -94,6 +94,34 @@ def install_handlers ():
 
 print "[Loaded]"
 
+# a really ugly hack to patch my own log version into the http_request :-)
+# this is done so that we can produce a combined log instead of the common
+# log. This gives referrer and user agent information. It's ugly, as we patch
+# the method definition instead of overloading the classes, but since medusa
+# doesn't give us an easy way to specify the class used for http_requests, it's
+# better than the alternative. Don't do things like this at home, kids!
+def mylog (self, bytes):
+	self.channel.server.logger.log (
+		self.get_header('X-Request-For') or self.channel.addr[0],
+		'- - [%s] "%s" %d %d "%s" "%s"\n' % (
+			self.log_date_string (time.time()),
+			self.request,
+			self.reply_code,
+			bytes,
+			self.get_header('referer') or '-',
+			self.get_header('user-agent') or '-'
+		)
+	)
+
+setattr(http_server.http_request, 'log', mylog)
+
+# this patches the unresolved_logger class to don't log the stupid ':', because
+# combined logs don't log the port, only the IP of the remote host
+def log_unresolved (self, ip, message):
+	self.logger.log ('%s %s' % (ip, message))
+
+setattr(logger.unresolving_logger, 'log', log_unresolved)
+
 if __name__ == '__main__':
 
 	# Become a daemon if we're running on a POSIX platform.

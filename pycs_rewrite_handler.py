@@ -25,8 +25,32 @@
 
 
 import re
+import string
 import http_server
 from copy import copy
+
+# This patches a set_header method into the http_request objects. This is
+# butt-ugly code, but medusa doesn't allow a nice way to change what class
+# to be used for http_request, so we better patch it than build our own
+# full hierarchy of classes, just to overload some stuff. This method needs
+# internal knowledge about http_request objects (it needs to know instance
+# variables), and so this is bound to break sometime in the future!
+def set_http_header( request, header, value ):
+	request._header_cache[ string.lower( header ) ] = value
+	h = header + ': '
+	newheader = []
+	found = 0
+	for line in request.header:
+		if line[ :len(h) ] == h:
+			newheader.append( '%s: %s' % ( header, value ) )
+			found = 1
+		else:
+			newheader.append( line )
+	if not( found ):
+		newheader.append( '%s: %s' % ( header, value ) )
+	request.header = newheader
+
+setattr( http_server.http_request, 'set_header', set_http_header )
 
 HOST = re.compile(
 	'Host: (.*)',
@@ -112,6 +136,12 @@ class pycs_rewrite_handler:
 					elif f == 'P':
 						print "proxy"
 						raise "Can't proxy, sorry!"
+					elif f == 'H':
+						m = re.compile( 'H(.*?)=(.*)' ).match( flag )
+						if m:
+							value = regex.sub( m.group(2), oldUrl )
+							print "patch header %s to %s" % ( m.group(1), value )
+							request.set_header( m.group(1), value )
 					else:
 						raise "Unknown flag '%s' in list '%s'" % ( flag, flags )
 			
