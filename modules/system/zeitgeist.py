@@ -34,6 +34,9 @@ engines = {
 		re.compile(r'^http://.*\.google\..*\?q=([^&]*).*$'),
 		re.compile(r'^http://.*\.google\..*\?as_q=([^&]*).*$'),
 		],
+	'freshmeat': [
+		re.compile(r'^http://freshmeat\..*\?q=([^&]*).*$'),
+		],
 	'daypop': [
 		re.compile(r'^http://.*\.daypop\..*\?q=([^&]*).*$'),
 		],
