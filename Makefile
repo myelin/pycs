@@ -47,22 +47,23 @@ MEDUSAFILES = medusa/*.py
 METAKITFILES = metakit.py Mk4py.so
 
 # Directories
+PREFIX = /
 # Read-only stuff
-NOTEDIR = /usr/lib/pycs
+NOTEDIR = $(PREFIX)/usr/lib/pycs
 CODEDIR = $(NOTEDIR)/bin
 MEDUSADIR = $(CODEDIR)/medusa
 METAKITDIR = $(CODEDIR)/metakit
 COMMENTDIR = $(CODEDIR)/comments
 # Config
-CONFDIR = /etc/pycs
+CONFDIR = $(PREFIX)/etc/pycs
 # Runtime data
-VARDIR = /var/lib/pycs
+VARDIR = $(PREFIX)/var/lib/pycs
 DATADIR = $(VARDIR)/data
 WEBDIR = $(VARDIR)/www
 RESDIR = $(VARDIR)/www/initialResources
 MODDIR = $(VARDIR)/modules
 # Logging
-LOGDIR = /var/log/pycs
+LOGDIR = $(PREFIX)/var/log/pycs
 
 # All files (well, most files), for 'make dist'
 PYCSFILES = $(NOTEFILES) $(INSTFILES) $(CODEFILES) \
@@ -85,16 +86,16 @@ INSTALL_USER = $(INSTALL) -g $(USER) -o $(USER)
 INSTALL_ROOT = $(INSTALL) -g $(ROOT) -o $(ROOT)
 
 # Logs and config files - visible only to root
-INSTALL_MKDIR_PRIV = $(INSTALL_ROOT) -D -m 700 -d
-INSTALL_PRIV = $(INSTALL_ROOT) -D -m 600
+INSTALL_MKDIR_PRIV = $(INSTALL_ROOT) -d -m 700
+INSTALL_PRIV = $(INSTALL_ROOT) -m 600
 
 # Code and invariant stuff - visible to all, writeable only by root
 INSTALL_MKDIR_RW = $(INSTALL_USER) -m 700
-INSTALL_RW = $(INSTALL_USER) -D -m 400
+INSTALL_RW = $(INSTALL_USER) -m 400
 
 # Data files - visible & writeable to server user (but nobody else)
-INSTALL_MKDIR_RO = $(INSTALL_ROOT) -m 755
-INSTALL_RO = $(INSTALL_ROOT) -D -m 644
+INSTALL_MKDIR_RO = $(INSTALL_ROOT) -d -m 755
+INSTALL_RO = $(INSTALL_ROOT) -m 644
 
 .PHONY: check install all
 
@@ -145,12 +146,14 @@ install: user scripts
 	
 scripts:
 	$(INSTALL_MKDIR_RO) -d $(MODDIR)
-	for f in `cd modules && find | grep -E "\.py$$" && cd ..`; do $(INSTALL_RO) modules/$$f $(MODDIR)/$$f; done
+        $(INSTALL_MKDIR_RO) -d $(MODDIR)/system
+	for f in `cd modules && find * | grep -E "\.py$$" && cd ..`; do $(INSTALL_RO) modules/$$f $(MODDIR)/$$f; done
 
 	$(INSTALL_MKDIR_RO) -d $(COMMENTDIR)
 	$(INSTALL_RO) $(addprefix comments/, $(COMMENTFILES)) $(COMMENTDIR)/
 
 	/usr/bin/perl -w make_readme.pl < README > www/readme.html
+        $(INSTALL_MKDIR_RO) -d $(WEBDIR)
 	$(INSTALL_RO) $(addprefix www/, $(WEBFILES)) $(WEBDIR)/
 	if [ -f www/local.css ]; then \
 		$(INSTALL_RO) www/local.css $(WEBDIR)/; \
@@ -159,6 +162,7 @@ scripts:
 		$(INSTALL_RO) www/local_index.html $(WEBDIR)/index.html; \
 	fi
 	
+        $(INSTALL_MKDIR_RO) -d $(RESDIR)
 	$(INSTALL_RO) $(addprefix www/initialResources/, $(RESFILES)) $(RESDIR)/
 
 dist:
