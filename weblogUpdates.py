@@ -87,8 +87,16 @@ class weblogUpdates_handler:
 		print "params:",params		
 		blogName = params[0]
 		blogUrl = params[1]
+		category = 'none'
 		if len( params ) > 2:
 			print "got extra params:",params[2:]
+			if len( params ) > 3:
+				category = params[3]
+				if category != 'none':
+					return {
+						'flError': xmlrpclib.True,
+						'message': 'Sorry, "%s" isn\'t an allowed category name' % ( category, ),
+					}
 		
 		print "got a ping from '%s' at '%s'" % ( blogName, blogUrl )
 		
