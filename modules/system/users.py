@@ -104,6 +104,7 @@ else:
 				int(user.usernum)
 			)
 			s += '<link>%s</link>' % url
+			s += '<description>%s</description>' % esc(user.weblogTitle)
 			s += '</item>'
 		s += '</rss>'
 	else:
@@ -111,10 +112,11 @@ else:
 		s += '<ul>'
 		for user in set.users:
 			url = set.UserFolder( user.usernum )
-			s += '<li><strong>%d</strong> <a href="%s">%s</a></li>' % (
+			s += '<li><strong>%d</strong> <a href="%s">%s</a> - %s</li>' % (
 				int(user.usernum),
 				url,
-				user.name
+				user.name,
+				user.weblogTitle
 			)
 		s += '</ul>'
 
