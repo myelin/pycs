@@ -21,7 +21,10 @@ class formatter( rss.formatter ):
 		self.set = set
 
 	def header( self ):
-		user = self.set.User( self.u )
+		try:
+			user = self.set.User( self.u )
+		except pycs_settings.NoSuchUser:
+			user = None
 		s = """	<channel>
 		<title>%s %s</title>
 		<link>%s</link>
@@ -30,14 +33,14 @@ class formatter( rss.formatter ):
 		<managingEditor>%s</managingEditor>
 		<webMaster>%s</webMaster>
 """ % (
-		user.weblogTitle,
+		user and user.weblogTitle or '',
 		_("(comments on weblog)"),
-		self.set.UserFolder( user.usernum ),
+		user and self.set.UserFolder( user.usernum ) or '',
 		_("Comments for a weblog, ordered by date (newest first)"),
 		_("Copyright"),
-		user.name,
-		user.email,
-		user.email,
+		user and user.name or '',
+		user and user.email or '',
+		user and user.email or '',
 	)
 
 		return headerString + s
