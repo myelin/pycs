@@ -169,11 +169,14 @@ else:
 		usernum = user.usernum
 		
 		s += _('<h2>Zeitgeist overview for <strong><a href="%s">%s</a></strong></h2>') % (url, user.name)
-		s += _('<p>Here are all search terms which people followed here, sorted by last hit. The larger the font, the more often the term was searched for. The more to the top, the more current was the access.')
+		s += _('<p>Here are all search terms which people followed here in the last 30 days, sorted by last hit. The larger the font, the more often the term was searched for. The more to the top, the more current was the access.')
 
 		referrerlist = []
+		now = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+		then = time.strftime('%Y-%m-%d', time.localtime(time.time()-30*24*3600))
 		for row in set.referrers.select( { 'usernum': usernum, 'group': group } ):
-			referrerlist.append(row)
+			if row.time >= then:
+				referrerlist.append(row)
 		referrerlist.sort(sortISOTime)
 
 		searchterms = []
