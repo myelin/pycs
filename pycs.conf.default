@@ -68,6 +68,13 @@ shorttitle = PyCS
 # and your server will not be happy.
 #enablehtdig = yes
 
+# Path to the _htsearch.so file
+#htsearchpath = /usr/local/cgi-bin
+
+# Path to your htdig.conf file (it might make more sense to put this in the
+# same directory as pycs.conf)
+#htsearchconf = /usr/local/etc/htdig.pycs.conf
+
 [aliases]
 
 # Put aliases here; the server will send these back as 'official URLs' for the 

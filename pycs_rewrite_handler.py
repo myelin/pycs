@@ -79,7 +79,7 @@ class pycs_rewrite_handler:
 		if rewriteMap:
 			self.rewriteMap.extend( rewriteMap )
 
-	def rewriteUrl(self, fullUrl, quiet=0):
+	def rewriteUrl(self, fullUrl, quiet=0, request=None):
 		lastOne = 0
 		for rw in self.rewriteMap:
 			logName, regex, repl, flags = rw
@@ -157,7 +157,7 @@ class pycs_rewrite_handler:
 		
 		fullUrl = 'http://%s%s' % ( request.host, path )
 
-		fullUrl = self.rewriteUrl(fullUrl)
+		fullUrl = self.rewriteUrl(fullUrl, request=request)
 								
 		newHost, newPath = REQSPLITTER.search( fullUrl ).groups()
 
