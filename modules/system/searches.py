@@ -120,14 +120,14 @@ else:
 		else:
 			order_criteria = 'referrer'
 
-		for hit_time, full_referrer, hit_count in set.pdb.execute("SELECT hit_time, referrer, hit_count FROM pycs_referrers WHERE usernum=%d AND usergroup=%s AND is_search_engine='t' ORDER BY "+order_criteria+" DESC LIMIT 100", (usernum, group)):
+		for hit_time, full_referrer, hit_count, engine, term in set.pdb.execute("SELECT hit_time, referrer, hit_count, search_engine, search_term FROM pycs_referrers WHERE usernum=%d AND usergroup=%s AND is_search_engine='t' ORDER BY "+order_criteria+" DESC LIMIT 100", (usernum, group)):
 			try:
 				term = term.decode('utf-8').encode('iso-8859-1')
 			except: pass
 			s += """
 			<tr><td align="left"><a target="_new" href="%s">%s: <b>%s</b></a></td>
 			<td align="left"><pre>%s</pre></td><td align="right">%s</td></tr>
-			""" % ( row.referrer.replace('"','%22'), matched, unquote( term ), row.time, row.count)
+			""" % ( full_referrer.replace('"','%22'), engine, unquote( term ), hit_time, hit_count)
 
 		s += "</table>\n"
 		s += _('<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>') % (usernum, group, order)

@@ -84,7 +84,8 @@ else:
 		usernum = int(user.usernum)
 		
 		# include search engine hits if there aren't too many
-		for ct,se in set.pdb.execute("SELECT COUNT(*), is_search_engine FROM pycs_referrers WHERE usernum=%d AND usergroup=%s GROUP BY is_search_engine", (usernum, group)):
+		for row in set.pdb.execute("SELECT COUNT(*), is_search_engine FROM pycs_referrers WHERE usernum=%d AND usergroup=%s GROUP BY is_search_engine", (usernum, group)):
+			ct, se = row
 			if ct < 30: full = 1
 
 		# build sql
