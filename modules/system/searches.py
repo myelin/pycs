@@ -69,6 +69,9 @@ engines = {
 	'Virgilio': [
 		re.compile(r'^http://.*\.virgilio\..*search\.cgi\?qs=([^&]*).*$'),
 		],
+	'mysearch': [
+		re.compile(r'^http://.*\.mysearch\..*[\?&]searchfor=([^&]*).*$'),
+	],
 	}
 
 def orderLink(username,group,order):
