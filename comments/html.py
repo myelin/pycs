@@ -82,7 +82,7 @@ class formatter( defaultFormatter.defaultFormatter ):
 
 		if hasattr( self, 'link' ):
 			if self.link:
-				ret += notediv(_('You are commenting on the following link:<br><a href="%s" target="_blank">%s</a>') % (self.link, self.link))
+				ret += notediv(_('You are commenting on the following link:<br /><a href="%s" target="_blank">%s</a>') % (self.link, self.link))
 
 		ret.append(startTableString)
 		return ''.join( ret )
@@ -93,21 +93,21 @@ class formatter( defaultFormatter.defaultFormatter ):
 		if self.nComments == 0:
 			ret.append( _('<div class="cmt"><strong>No comments yet</strong></li>') )
 
+		ret.append( endTableString )
 		ret.append( """
-		</ol>
 		<div style="border: solid 1px black; padding: 1em; background-color: lightgrey; ">
-		<form method="post" action="comments.py?u=%s&p=%s">
+		<form method="post" action="comments.py?u=%s&amp;p=%s">
 		""" % ( self.u, self.p ) )
 		if hasattr(self, 'link'):
 			if self.link:
-				ret.append( '<input type="hidden" name="link" value="%s">' % self.link )
+				ret.append( '<input type="hidden" name="link" value="%s" />' % self.link )
 		ret.append( """
 		<table width="100%%" cellspacing="0" cellpadding="2">
 		<tr><td></td><td><strong>%s</strong></td></tr>
-		<tr><td><label for="name">%s</label></td><td width="99%%"><input type="text" size="50" name="name" value="%s"/></td></tr>
-		<tr><td><label for="email">%s</label></td><td><input type="text" size="50" name="email" value="%s"/></td></tr>
-		<tr><td><label for="url">%s</label></td><td><input type="text" size="50" name="url" value="%s"/></td></tr>
-		<tr><td><label for="comment">%s</label></td><td><textarea name="comment" cols="50" rows="10"></textarea></td></tr>
+		<tr><td><label for="name">%s</label></td><td width="99%%"><input type="text" size="50" name="name" id="name" value="%s"/></td></tr>
+		<tr><td><label for="email">%s</label></td><td><input type="text" size="50" name="email" id="email" value="%s"/></td></tr>
+		<tr><td><label for="url">%s</label></td><td><input type="text" size="50" name="url" id="url" value="%s"/></td></tr>
+		<tr><td><label for="comment">%s</label></td><td><textarea name="comment" id="comment" cols="50" rows="10"></textarea></td></tr>
 		<tr><td></td><td><input type="submit" value="%s" />
 			<input type="button" value="%s" onclick="javascript:window.close()" /></td></tr>
 		<tr><td></td><td><strong>%s</strong>: %s</td></tr>
@@ -132,13 +132,11 @@ class formatter( defaultFormatter.defaultFormatter ):
 			_("Note"),
 			_("'http://...' will be converted into links. HTML other than &lt;a href&gt;, &lt;b&gt;, &lt;i&gt;, &lt;s&gt; and &lt;tt&gt; will be stripped."),
 			_("Subscribe to an RSS feed of this comment thread:"),
-			urllib.quote( self.xmlFeedLink ), self.set.ServerUrl(),
+			urllib.quote( cgi.escape(self.xmlFeedLink, 1) ), self.set.ServerUrl(),
 			_("Subscribe to this comment thread in Radio UserLand"),
-			self.xmlFeedLink, self.set.ServerUrl(),
+			cgi.escape(self.xmlFeedLink, 1), self.set.ServerUrl(),
 			_("Link to the RSS (XML) feed for this comment thread"),
 		) )
-
-		ret.append( endTableString )
 		
 		return ''.join( ret )
 
@@ -163,7 +161,7 @@ class formatter( defaultFormatter.defaultFormatter ):
 			) or ( u == int( self.user.usernum ) ):
 				#ret += "logged in user: %s; this comment user: %s<br />" % ( self.user.usernum, self.u )
 				ret += """
-				<div><form method="post" action="comments.py?u=%s&p=%s">
+				<div><form method="post" action="comments.py?u=%s&amp;p=%s">
 				<input type="hidden" name="delete" value="%s" />
 				<input type="submit" value="%s" />
 				</form></div>
