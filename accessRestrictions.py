@@ -152,7 +152,7 @@ class accessRestrictions_handler:
 		
 		return {
 			'flError': xmlrpclib.False,
-			'message': _("user %s added" % username)
+			'message': _("user %s added") % username
 			}
 		
 	def delUser( self, method, params ):
@@ -180,18 +180,18 @@ class accessRestrictions_handler:
 				ures = group.user.select({'name':username})
 				if len(ures):
 					return { 'flError': xmlrpclib.True,
-						'message': _("user %s is in group %s" % (username, group.name))
+						'message': _("user %s is in group %s") % (username, group.name)
 					}
 			self.users.delete(idx)
 			self.set.Commit()
 		else:
 			return { 'flError': xmlrpclib.True,
-				'message': _("user %s not found" % username),
+				'message': _("user %s not found") % username,
 			}
 
 		return {
 			'flError': xmlrpclib.False,
-			'message': _("user %s deleted" % username)
+			'message': _("user %s deleted") % username
 			}
 		
 	def getUserList( self, method, params ):
@@ -254,7 +254,7 @@ class accessRestrictions_handler:
 		
 		return {
 			'flError': xmlrpclib.False,
-			'message': _("group %s added" % groupname)
+			'message': _("group %s added") % groupname
 			}
 		
 	def addUserToGroup( self, method, params ):
@@ -281,7 +281,7 @@ class accessRestrictions_handler:
 		if len(res) == 0:
 			return {
 				'flError': xmlrpclib.True,
-				'message': _("user %s not found" % username)
+				'message': _("user %s not found") % username
 				}
 
 		res = self.groups.select({'blogid':u.usernum, 'name':groupname})
@@ -292,17 +292,17 @@ class accessRestrictions_handler:
 				self.set.Commit()
 				return {
 					'flError': xmlrpclib.False,
-					'message': _("user %s added to group %s" % (username, groupname))
+					'message': _("user %s added to group %s") % (username, groupname)
 					}
 			else:
 				return {
 					'flError': xmlrpclib.True,
-					'message': _("user %s already in group %s" % (username, groupname))
+					'message': _("user %s already in group %s") % (username, groupname)
 					}
 		else:
 			return {
 				'flError': xmlrpclib.True,
-				'message': _("group %s not found" % groupname)
+				'message': _("group %s not found") % groupname
 				}
 		
 	def delUserFromGroup( self, method, params ):
@@ -329,7 +329,7 @@ class accessRestrictions_handler:
 		if len(res) == 0:
 			return {
 				'flError': xmlrpclib.True,
-				'message': _("user %s not found" % username)
+				'message': _("user %s not found") % username
 				}
 
 		res = self.groups.select({'blogid':u.usernum, 'name':groupname})
@@ -340,17 +340,17 @@ class accessRestrictions_handler:
 				self.set.Commit()
 				return {
 					'flError': xmlrpclib.False,
-					'message': _("user %s deleted from group %s" % (username, groupname))
+					'message': _("user %s deleted from group %s") % (username, groupname)
 					}
 			else:
 				return {
 					'flError': xmlrpclib.True,
-					'message': _("user %s not found in groupo %s" % (username, groupname))
+					'message': _("user %s not found in group %s") % (username, groupname)
 					}
 		else:
 			return {
 				'flError': xmlrpclib.True,
-				'message': _("group %s not found" % groupname)
+				'message': _("group %s not found") % groupname
 				}
 		
 	def getUserListForGroup( self, method, params ):
@@ -380,12 +380,12 @@ class accessRestrictions_handler:
 					'name':user.name,
 				})
 			return { 'flError': xmlrpclib.False,
-				'message': _("userlist for group %s returned" % groupname),
+				'message': _("userlist for group %s returned") % groupname,
 				'userlist': userlist,
 			}
 		else:
 			return { 'flError': xmlrpclib.True,
-				'message': _("group %s not found" % groupname),
+				'message': _("group %s not found") % groupname,
 			}
 
 		
@@ -414,18 +414,18 @@ class accessRestrictions_handler:
 				ures = location.group.select({'name':groupname})
 				if len(ures):
 					return { 'flError': xmlrpclib.True,
-						'message': _("group %s is in location %s" % (groupname, location.locname))
+						'message': _("group %s is in location %s") % (groupname, location.locname)
 					}
 			self.groups.delete(idx)
 			self.set.Commit()
 		else:
 			return { 'flError': xmlrpclib.True,
-				'message': _("group %s not found" % groupname),
+				'message': _("group %s not found") % groupname,
 			}
 
 		return {
 			'flError': xmlrpclib.False,
-			'message': _("group %s deleted" % groupname)
+			'message': _("group %s deleted") % groupname
 			}
 		
 	def getGroupList( self, method, params ):
@@ -498,7 +498,7 @@ class accessRestrictions_handler:
 		
 		return {
 			'flError': xmlrpclib.False,
-			'message': _("location %s added" % locname)
+			'message': _("location %s added") % locname
 			}
 		
 	def addGroupToLocation( self, method, params ):
@@ -525,7 +525,7 @@ class accessRestrictions_handler:
 		if len(res) == 0:
 			return {
 				'flError': xmlrpclib.True,
-				'message': _("group %s not found" % groupname)
+				'message': _("group %s not found") % groupname
 				}
 
 		res = self.locations.select({'blogid':u.usernum, 'locname':locname})
@@ -536,17 +536,17 @@ class accessRestrictions_handler:
 				self.set.Commit()
 				return {
 					'flError': xmlrpclib.False,
-					'message': _("group %s added to location %s" % (groupname, locname))
+					'message': _("group %s added to location %s") % (groupname, locname)
 					}
 			else:
 				return {
 					'flError': xmlrpclib.True,
-					'message': _("group %s already in location %s" % (groupname, locname))
+					'message': _("group %s already in location %s") % (groupname, locname)
 					}
 		else:
 			return {
 				'flError': xmlrpclib.True,
-				'message': _("location %s not found" % locname)
+				'message': _("location %s not found") % locname
 				}
 		
 	def delGroupFromLocation( self, method, params ):
@@ -573,7 +573,7 @@ class accessRestrictions_handler:
 		if len(res) == 0:
 			return {
 				'flError': xmlrpclib.True,
-				'message': _("group %s not found" % groupname)
+				'message': _("group %s not found") % groupname
 				}
 
 		res = self.locations.select({'blogid':u.usernum, 'locname':locname})
@@ -584,17 +584,17 @@ class accessRestrictions_handler:
 				self.set.Commit()
 				return {
 					'flError': xmlrpclib.False,
-					'message': _("group %s deleted from location %s" % (groupname, locname))
+					'message': _("group %s deleted from location %s") % (groupname, locname)
 					}
 			else:
 				return {
 					'flError': xmlrpclib.True,
-					'message': _("group %s not found in location %s" % (groupname, locname))
+					'message': _("group %s not found in location %s") % (groupname, locname)
 					}
 		else:
 			return {
 				'flError': xmlrpclib.True,
-				'message': _("location %s not found" % locname)
+				'message': _("location %s not found") % locname
 				}
 		
 	def getGroupListForLocation( self, method, params ):
@@ -631,12 +631,12 @@ class accessRestrictions_handler:
 					'userlist':userlist,
 				})
 			return { 'flError': xmlrpclib.False,
-				'message': _("grouplist for location %s returned" % locname),
+				'message': _("grouplist for location %s returned") % locname,
 				'grouplist': grouplist,
 			}
 		else:
 			return { 'flError': xmlrpclib.True,
-				'message': _("location %s not found" % locname),
+				'message': _("location %s not found") % locname,
 			}
 		
 	def getUserListForLocation( self, method, params ):
@@ -671,12 +671,12 @@ class accessRestrictions_handler:
 								'name':user.name
 							})
 			return { 'flError': xmlrpclib.False,
-				'message': _("userlist for location %s returned" % locname),
+				'message': _("userlist for location %s returned") % locname,
 				'userlist': userlist,
 			}
 		else:
 			return { 'flError': xmlrpclib.True,
-				'message': _("location %s not found" % locname),
+				'message': _("location %s not found") % locname,
 			}
 
 	def delLocation( self, method, params ):
@@ -704,12 +704,12 @@ class accessRestrictions_handler:
 			self.set.Commit()
 		else:
 			return { 'flError': xmlrpclib.True,
-				'message': _("location %s not found" % locname),
+				'message': _("location %s not found") % locname,
 			}
 
 		return {
 			'flError': xmlrpclib.False,
-			'message': _("location %s deleted" % locname)
+			'message': _("location %s deleted") % locname
 			}
 		
 	def getLocationList( self, method, params ):

@@ -1,3 +1,32 @@
+# strings from accessRestrictions.py
+'Password incorrect'::='Passwort falsch'
+'User not found'::='Benutzerkennung nicht gefunden'
+'user %s added'::='Benutzer %s zugefügt'
+'user %s is in group %s'::='Benutzer %s ist in Gruppe %s'
+'user %s not found'::='Benutzer %s nicht gefunden'
+'user %s deleted'::='Benutzer %s gelöscht'
+'userlist returned'::='Benutzerliste generiert'
+'group %s added'::='Gruppe %s zugefügt'
+'user %s added to group %s'::='Benutzer %s zu Gruppe %s zugefügt'
+'user %s already in group %s'::='Benutzer %s ist schon in Gruppe %s'
+'group %s not found'::='Gruppe %s nicht gefunden'
+'user %s deleted from group %s'::='Benutzer %s aus Gruppe %s gelöscht'
+'user %s not found in group %s'::='Benutzer %s nicht in Gruppe %s gefunden'
+'userlist for group %s returned'::='Benutzerliste für Gruppe %s generiert'
+'group %s is in location %s'::='Gruppe %s ist in Regel %s'
+'group %s deleted'::='Gruppe %s gelöscht'
+'grouplist returned'::='Gruppenliste generiert'
+'location %s added'::='Regel %s zugefügt'
+'group %s added to location %s'::='Gruppe %s zu Regel %s zugefügt'
+'group %s already in location %s'::='Gruppe %s hängt schon an Regel %s'
+'location %s not found'::='Regel %s nicht gefunden'
+'group %s deleted from location %s'::='Gruppe %s aus Regel %s gelöscht'
+'group %s not found in location %s'::='Gruppe %s nicht an Regel %s gefunden'
+'grouplist for location %s returned'::='Gruppenliste für Regel %s generiert'
+'userlist for location %s returned'::='Benutzerliste für Regel %s generiert'
+'location %s deleted'::='Regel %s gelöscht'
+'locationlist returned'::='Liste aller Regeln generiert'
+
 # strings from comments/__init__.py
 ' at %I:%M:%S %p on %B %d, %Y'::=' um %H:%M:%S am %d.%m.%Y'
 
@@ -112,7 +141,7 @@
 # already defined: '<p>Sorry, user %s not found!</p>'
 
 # strings from modules/system/trackback.py
-'The trackback URL for this posting is:<br><br><span style="font-size: 10px">%s</span>'::='Die Trackback-URL für diesen Beitrag ist:<br><br><span style="font-size: 10px">%s</span>'
+'The trackback URL for this posting is:<br><br><span style="font-size: 10px">%s</span>'::='Die Trackback-URL f\xfcr diesen Beitrag ist:<br><br><span style="font-size: 10px">%s</span>'
 'an untitled posting'::='ein Beitrag ohne Titel'
 'an anonymous blog'::='ein Blog ohne Name'
 # already defined: "Comment deleted."
@@ -171,6 +200,15 @@
 '%d files have been saved for you, %s'::='%d Dateien wurden f\xfcr dich gespeichert, %s'
 '%d files have been deleted for you, %s'::='%d Dateien wurden f\xfcr dich gel\xf6scht, %s'
 'Hello, %s, from the Python Community Server!'::='Hallo, %s, Willkommen beim Python Community Server!'
-'Password incorrect'::='Passwort falsch'
-'User not found'::='Benutzerkennung nicht gefunden'
+# already defined: "Password incorrect"
+# already defined: "Password incorrect"
+# already defined: "User not found"
+# already defined: "Password incorrect"
+# already defined: "User not found"
+# already defined: "Password incorrect"
+# already defined: "User not found"
+# already defined: "Password incorrect"
+# already defined: "User not found"
+# already defined: "Password incorrect"
+# already defined: "User not found"
 
