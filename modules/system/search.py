@@ -29,6 +29,8 @@ import sys
 import binascii
 import base64
 
+from html_cleaner import cleanHtml
+
 # See pycs_module_handler.py for info on how modules work
 
 # We should be able to get at the following globals:
@@ -237,7 +239,12 @@ def search(usernum, posts_t, query, skip_hits):
 				lastdate = hitdate
 				add('<h2>%s-%s-%s</h2>' % (lastdate[:4], lastdate[4:6], lastdate[6:]))
 			add('<div class="searchhit"><h3><a href="%s">%s</a></h3>' % (esc(post.url), esc(post.title)))
-			add('<div class="searchpost">%s</div></div>' % post.description)
+			desc = cleanHtml(post.description)
+			if len(desc) > 400:
+				desc = desc[:400]
+				desc = cleanHtml(desc)
+				desc += ' ...'
+			add('<div class="searchpost">%s</div></div>' % desc)
 	html = ''
 	for block in ret:
 		if type(block) == type(u''):
