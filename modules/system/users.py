@@ -22,6 +22,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+import string
 import md5
 import pycs_settings
 
@@ -64,9 +65,11 @@ if query.has_key('usernum'):
 		del cols['serialNumber']
 		
 		url = set.UserFolder( usernum )
-		cols['url'] = '<a href="%s">%s</a>' % (url, url)
+		cols['url'] = '<a href="%s">%s</a>' % ( url, url )
 		
-		cols['email'] = '<a href="mailto.py?usernum=%s">%s</a>' % (cols['usernum'], cols['email'])
+		localpart, domain = string.split( cols['email'], '@' )
+		nospamemail = '%s at %s' % ( localpart, domain )
+		cols['email'] = '<a href="mailto.py?usernum=%s">%s</a>' % ( cols['usernum'], nospamemail )
 		
 		for col in cols.keys():
 			
