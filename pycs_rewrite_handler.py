@@ -136,6 +136,15 @@ class pycs_rewrite_handler:
 		request._split_uri = [newPath] + [ x for x in request._split_uri[1:] ]
 		# xmlrpc_handler looks at uri
 		request.uri = newPath
+
+		# logging looks at the request - this should be patched, so
+		# we log the actual requests and not the untranslated uris,
+		# those should be better logged in a special rewrite.log!
+		request.request = '%s %s HTTP/%s' % (
+			request.command,
+			request.uri,
+			request.version
+		)
 		
 		# And tell the HTTP server to continue as usual (with the newly rewritten path etc)
 		
