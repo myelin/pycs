@@ -8,7 +8,7 @@ The format of translation files
 -------------------------------
 
 The format is quite simple. Lines starting with # are comments. Lines with
-the following format are translations:
+the following format are translations (lines can not be broken, you have to put all in _one_ consecutive line!):
 
 '......'::='......'
 

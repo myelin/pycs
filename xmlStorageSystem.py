@@ -72,6 +72,7 @@ class xmlStorageSystem_handler:
 			'getMyDirectory': self.getMyDirectory,
 			'mailPasswordToUser': self.mailPasswordToUser,
 			'pleaseNotify': self.pleaseNotify,
+			'requestNotification': self.requestNotification,
 			'ping': self.ping,
 			}
 		
@@ -385,6 +386,19 @@ class xmlStorageSystem_handler:
 		
 		raise "Not implemented"
 
+
+	def requestNotification( self, method, params ):
+		if method != []: raise "Namespace not found"
+		
+		notifyProcedure, port, path, protocol, urlList, userInfo = params
+		print "notifyProcedure", notifyProcedure
+		print "port", port
+		print "path", path
+		print "protocol", protocol
+		print "urlList", urlList
+		print "userInfo", userInfo
+		
+		raise "Not implemented"
 
 
 	def ping( self, method, params ):
