@@ -73,9 +73,10 @@ class pycs_xmlrpc_handler( xmlrpc_handler.xmlrpc_handler ):
 		if self.set.conf.has_key('defaultencoding'):
 			encoding = self.set.conf['defaultencoding']
 			new = self.set.PatchEncodingHeader( data )
-			xmlrpclib.OriginalUnmarshaller = xmlrpclib.Unmarshaller
+			OriginalUnmarshaller = xmlrpclib.Unmarshaller
 			xmlrpclib.Unmarshaller = Unmarshaller
 			p, u = xmlrpclib.getparser()
+			xmlrpclib.Unmarshaller = OriginalUnmarshaller
 			u.set_resultencoding( encoding )
 			p.feed( new )
 			p.close()
