@@ -25,6 +25,11 @@ servermailto = python-community-server-mailto@myelin.co.nz
 # to restart after changing this.
 #adminpassword = XXXXX
 
+# if you want to let one user delete comments on all blogs, uncomment
+# the next option and set it to the usernum of the aforementioned
+# user.
+#adminusernum = 0000001
+
 # the following two settings should be uncommented if you want to use the
 # medusa monitor server to debug the installed system. This is mostly usefull
 # for developers. The monitor client is in the medusa subdirectory of your

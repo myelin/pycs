@@ -177,7 +177,10 @@ else:
 		if form.has_key( 'delete' ):
 			# it's a DELETE command
 			
-			if int( formatter.u ) != int( loggedInUser.usernum ):
+			u = int( formatter.u )
+			if ( ( not set.conf.has_key( 'adminusernum' ) ) or
+				( u != int( set.conf['adminusernum'] ) )
+			) and ( u != int( loggedInUser.usernum ) ):
 				raise "Unauthorised attempt to delete comment"
 				
 			delIdx = form['delete']

@@ -119,7 +119,10 @@ class formatter( defaultFormatter.defaultFormatter ):
 		)
 		
 		if self.user:
-			if int( self.user.usernum ) == int( self.u ):
+			u = int( self.u )
+			if ( set.conf.has_key( 'adminusernum' ) and
+				( u == int( set.conf['adminusernum'] ) )
+			) or ( u == int( self.user.usernum ) ):
 				#ret += "logged in user: %s; this comment user: %s<br />" % ( self.user.usernum, self.u )
 				ret += """
 				<div><form method="post" action="comments.py?u=%s&p=%s">
