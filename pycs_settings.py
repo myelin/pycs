@@ -384,6 +384,12 @@ class Settings:
 		u.flManila = flManila
 		self.Commit()
 
+	def Password( self, usernum, password ):
+		formattedUsernum = self.FormatUsernum( usernum )
+		u = self.User( usernum )
+		u.password = password
+		self.Commit()
+
 	def UserFolder( self, usernum ):
 		formattedUsernum = self.FormatUsernum( usernum )
 		#print "find user folder: usernum =", usernum, " formatted usernum =",formattedUsernum

@@ -35,6 +35,7 @@ Kind of like http://www.weblogs.com/RPC2 and RCS
 import os
 import sys
 import re
+import md5
 import random
 import string
 import xmlrpclib
@@ -101,6 +102,7 @@ class pycsAdmin_handler:
 			'list': [ self.list, 'List objects (users, etc.)' ],
 			'shuffle': [ self.shuffle, 'Shuffle hit counters' ],
 			'alias': [ self.alias, 'Set alias for usernum' ],
+			'password': [ self.password, 'Set password for usernum' ],
 		}
 		
 		
@@ -319,6 +321,31 @@ class pycsAdmin_handler:
 				'flError': xmlrpclib.True,
 				'message': 'Unknown alias subcommand %s' % params[0],
 				}
+
+		self.set.Commit()
+
+		return {
+			'flError': xmlrpclib.False,
+			'message': 'Done!',
+			}
+
+
+	def password( self, params ):
+		if len(params) != 2:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'Wrong number of parameters!',
+				}
+		try:
+			user = self.set.User( params[0] )
+		except:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'User %s not found' % params[1],
+				}
+
+		pwhash = md5.md5( params[1] ).hexdigest()
+		self.set.Password( params[0], pwhash )
 
 		self.set.Commit()
 
