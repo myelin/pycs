@@ -31,32 +31,32 @@ import time
 
 engines = {
 	'google': [
-		re.compile(r'^http://.*\.google\..*\?q=([^&]*).*$'),
-		re.compile(r'^http://.*\.google\..*\?as_q=([^&]*).*$'),
+		re.compile(r'^http://.*\.google\..*[\?&]q=([^&]*).*$'),
+		re.compile(r'^http://.*\.google\..*[\?&]as_q=([^&]*).*$'),
 		],
 	'freshmeat': [
-		re.compile(r'^http://freshmeat\..*\?q=([^&]*).*$'),
+		re.compile(r'^http://freshmeat\..*[\?&]q=([^&]*).*$'),
 		],
 	'daypop': [
-		re.compile(r'^http://.*\.daypop\..*\?q=([^&]*).*$'),
+		re.compile(r'^http://.*\.daypop\..*[\?&]q=([^&]*).*$'),
 		],
 	'geourl': [
-		re.compile(r'^http://geourl\..*\?p=([^&]*).*$'),
+		re.compile(r'^http://geourl\..*[\?&]p=([^&]*).*$'),
 		],
 	'yahoo': [
-		re.compile(r'^http://.*\.yahoo\..*\?p=([^&]*).*$'),
+		re.compile(r'^http://.*\.yahoo\..*[\?&]p=([^&]*).*$'),
 		],
 	'altavista': [
-		re.compile(r'^http://.*\.altavista\..*\?q=([^&]*).*$'),
+		re.compile(r'^http://.*\.altavista\..*[\?&]q=([^&]*).*$'),
 		],
 	'msn': [
-		re.compile(r'^http://search\.msn\..*\?q=([^&]*).*$'),
+		re.compile(r'^http://search\.msn\..*[\?&]q=([^&]*).*$'),
 		],
 	'blo.gs': [
 		re.compile(r'^http://blo\.gs\/\?q=([^&]*).*$'),
 		],
 	'lycos': [
-		re.compile(r'^http://.*\.lycos\..*\?query=([^&]*).*$'),
+		re.compile(r'^http://.*\.lycos\..*[\?&]query=([^&]*).*$'),
 		],
 	'aol': [
 		re.compile(r'^http://.*\.aol\..*search.jsp\?q=([^&]*).*$'),
