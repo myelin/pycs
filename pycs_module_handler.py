@@ -38,6 +38,7 @@ it.
 import re
 import sys
 import os
+import time
 import StringIO
 import pycs_http_util
 import pycs_paths
@@ -135,6 +136,7 @@ class pycs_module_handler:
 			self.continue_request (request, StringIO.StringIO())
 
 	def continue_request( self, request, input_data ):
+		start_time = time.time()
 		try:
 			# try to find module
 			[path, params, query, fragment] = request.split_uri()
@@ -169,12 +171,15 @@ class pycs_module_handler:
 				return
 			
 			# call module
-			return mod.Call( {
+			ret = mod.Call( {
 				'request': request,
 				'input_data': input_data,
 				'set': self.set,
 				'util': pycs_http_util,
 				} )
+
+			print "call to %s took %.1f s" % (realPath, time.time() - start_time)
+			return ret
 		except SystemExit:
 			raise
 		except:
