@@ -37,7 +37,16 @@
 	<ul>
 	
 		<li><strong><a href="pycs-0.09-src.tar.gz">v0.09</a></strong> -
-		More minor changes.  The time format for the weblog updates page 
+		Added in support for basic HTTP authentication, using 'users.conf'
+		to store passwords (same path as pycs.conf and rewrite.conf).
+		Details of file format in authorizer.py.<br/><br/>
+
+		Added in some prefix variables so you can install somewhere
+		other than /.  Edit the Makefile and pycs_paths.py and you can
+		install in a user dir and not need to be root to run 'make
+		install'.<br/><br/>
+
+		The time format for the weblog updates page 
 		has been changed, meaning that updates show up in the right 
 		order now and can be cleared after 24 hours.</li>
 

@@ -49,14 +49,20 @@ def removeSessId( s ):
 	return re.sub( 'PHPSESSID\=[a-z0-9]*', 'PHPSESSID=(censored)', s )
 
 if __name__ == '__main__':
+	LOGFILE = "/var/log/apache/rcs-access.log"
+	rooturl = 'http://www.pycs.net'
+	outputroot = '/var/lib/pycs/www/'
 	if len( sys.argv ) > 1:
 		LOGFILE = sys.argv[1]
 		rooturl = sys.argv[2]
-	else:
-		LOGFILE = "/var/log/apache/rcs-access.log"
-		rooturl = 'http://www.pycs.net'
-		outputroot = '/var/lib/pycs/www/'
-	#DBFILE = "analysed_logs.db"
+		if len( sys.argv ) > 2:
+			outputroot = sys.argv[3]
+
+	# read in referer log blacklist
+	badRefs = [ line.rstrip() for line in open(
+		os.path.join( os.path.abspath( os.path.split( sys.argv[0] )[0] ), 'refererBlacklist.txt' )
+	).readlines() if line.rstrip ]
+	#print "bad refs:",badRefs
 		
 	#db = metakit.storage( DBFILE, 1 )
 	
@@ -159,6 +165,16 @@ if __name__ == '__main__':
 			sys.stderr.write( "exception thrown while trying to split a line!\n" )
 			sys.stderr.write( "line: " + s + "\n" )
 			continue
+
+                gotBad = 0
+                for bad in badRefs:
+                        pos = ref.find( bad )
+			if pos != -1 and pos == len( ref ) - len( bad ):
+                                #sys.stderr.write( "found bad referrer: " + ref + " (" + bad + ")\n" )
+                                gotBad = 1
+                                break
+                if gotBad:
+                        continue
 	
 		try:		
 			method, page, proto = req_splitter.search( req ).groups()
