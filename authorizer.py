@@ -8,13 +8,15 @@
 #	+--- system - various scripts; some odd restrictions are required here
 #	|	|
 #	|	+--- comments.py [?(...)u=(usernum)(...)]
-#	|	|	Must be restricted alongside the /users/(usernum) dir
+#	|	+--- mailto.py [?(...)usernum=(usernum)(...)]
+#	|	+--- count.py
+#	|	|	Restricted alongside the /users/(usernum) dir
 #	|	|
 #	|	+--- weblogUpdates.py
-#	|	|	Can be arbitrarily restricted
+#	|	|	Public
 #	|	|
-#	|	+--- count.py
-#	|		Can be left open to everybody, or restricted as with comments.py
+#	|	+--- users.py
+#	|		Sysadmins only
 #	|
 #	+--- users
 #		|
@@ -39,10 +41,25 @@
 
 # 'hashed password' is the password as returned by md5.md5( password ).hexdigest()
 
-# 'visible pages' is a comma-separated list of usernums that are to be visible.
-# You can also use 'unknown' to mean the user can see any file on the server that doesn't
-# fit neatly into the diagram above, 'sys' to mean anything in /system (except /system/comments.py, which
-# is covered by the usernum visibility rules) and 'user' to mean *all* user blogs.
+# 'visible pages' is a comma-separated list of usernums that are to be
+# visible.  You can also use the following:
+
+# * 'public' to mean the front page (everything in the web root) and
+# the /system/weblogUpdates.py (weblog updates) page.
+
+# * 'unknown' to mean any file on the server that doesn't fit neatly
+# into the diagram above
+
+# * 'sys' to mean the sysadmin stuff in /system (not
+# /system/comments.py and /system/mailto.py; those are is covered by
+# the usernum visibility rules)
+
+# * 'user' to mean *all* user blogs
+
+# Typically a sysadmin should have 'all', a normal user should have
+# 'public,123,456' (where the user is permitted to see usernums
+# 0000123 and 0000456) and a 'can see everything' user should have
+# 'public,user'.
 
 # For example:
 
@@ -60,28 +77,46 @@ SYSTEM_FILE = 1
 USER_FILE = 2
 PUBLIC_FILE = 3
 
-def classify_file( url ):
+def classify_file( path, query ):
+	if not query: query = ''
+	print "classify",path,query
 	filetype = UNKNOWN_FILE
 	usernum = ''
 	
-	if url.startswith( '/system/comments.py' ):
-		m_usernum = re.findall( url, 'u=(\d+)' )
-		if m_usernum:
-			if len( m_usernum ) > 1:
-				# security error: more than one usernum passed
-				fail
-			# we are viewing a file associated with a usernum
-			usernum = m_usernum[0]
-			filetype = USER_FILE
-	elif url.startswith( '/users/' ):
-		m_usernum = re.match( '^/users/(\d+)', url )
+	if path.startswith( '/users/' ):
+		m_usernum = re.match( '^/users/0*(\d+)', path )
 		if m_usernum:
 			usernum = m_usernum.group( 1 )
 			filetype = USER_FILE
-	elif url.startswith( '/system' ):
+	elif path.startswith( '/system' ):
+		print "system file"
 		filetype = SYSTEM_FILE
+		if path.startswith( '/system/weblogUpdates.py' ):
+			print "blog updates"
+			filetype = PUBLIC_FILE
+		elif path.startswith( '/system/comments.py' ):
+			print "comments",query
+			m_usernum = re.findall( 'u=0*(\d+)', query )
+			if m_usernum:
+				if len( m_usernum ) > 1:
+					# security error: more than one usernum passed
+					print "too many usernums:",m_usernum
+					fail
+				# we are viewing a file associated with a usernum
+				usernum = m_usernum[0]
+				filetype = USER_FILE
+			print "blog comments:usernum",usernum
+		elif path.startswith( '/system/mailto.py' ) or path.startswith( '/system/count.py' ):
+			m_usernum = re.findall( 'usernum=0*(\d+)', query )
+			if m_usernum:
+				if len( m_usernum ) > 1:
+					# security error: more than one usernum passed
+					fail
+				# we are viewing a file associated with a usernum
+				usernum = m_usernum[0]
+				filetype = USER_FILE
 	else:
-		folder = re.match( r'(.*)\/', url ).group( 1 )
+		folder = re.match( r'(.*)\/', path ).group( 1 )
 		print "folder:",folder
 		if folder == '':
 			filetype = PUBLIC_FILE
@@ -92,17 +127,23 @@ def parse_users_conf( confFn ):
 	# parse users.conf and work out all the users
 	users = {}
 	for line in open( confFn, 'rt' ).readlines():
+		if line.startswith( '#' ): continue
+		if line.rstrip() == '': continue
 		groups = re.split( ':', line.rstrip() )
-		if not len( groups ) or not groups[0]: continue
 		print groups
 		username, password, visibilities = groups
+		if not password:
+			password = md5.md5( '' ).hexdigest()
 		can_see = {}
 		for visibility in re.split( ',', visibilities ):
 			if not visibility: continue
 			if visibility == 'all':
 				can_see[UNKNOWN_FILE] = 1
 				can_see[SYSTEM_FILE] = 1
+				can_see[PUBLIC_FILE] = 1
 				can_see[USER_FILE] = 1
+			elif visibility == 'public':
+				can_see[PUBLIC_FILE] = 1
 			elif visibility == 'etc':
 				can_see[UNKNOWN_FILE] = 1
 			elif visibility == 'sys':
@@ -110,7 +151,7 @@ def parse_users_conf( confFn ):
 			elif visibility == 'user':
 				can_see[USER_FILE] = 1
 			else:
-				usernum = '%07d' % ( int( visibility ), )
+				usernum = '%d' % ( int( visibility ), )
 				visible_users = can_see.setdefault( USER_FILE, {} )
 				if type( visible_users ) == type( {} ):
 					visible_users[ usernum ] = 1
@@ -150,12 +191,16 @@ class authorizer:
 	def __init__( self ):
 		self.users = parse_users_conf( os.path.join( pycs_paths.CONFDIR, 'users.conf' ) )
 		
-	def authorize( self, url, auth_info ):
+	def authorize( self, path, query, auth_info ):
+		if not auth_info:
+			# no login & password supplied
+			auth_info = ( '', '' )
+
 		# get username and password out of 'Authorization' HTTP header
 		username, password = auth_info
 
 		# something to keep the console happy
-		print "username",username,"attempting to access",url
+		print "username",username,"attempting to access",path
 
 		# fail auth if user doesn't exist
 		if not self.users.has_key( username ):
@@ -171,5 +216,5 @@ class authorizer:
 			return 0
 
 		# password ok; see if this user has access to the requested url
-		filetype, usernum = classify_file( url )
+		filetype, usernum = classify_file( path, query )
 		return check_permission( filetype, usernum, user )
