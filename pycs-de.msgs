@@ -99,6 +99,15 @@
 'Subject'::='Betreff'
 'Send message'::='Mitteilung senden'
 
+# strings from modules/system/newuser.py
+'New User (comment hosting)'::='Neuer Benutzer (für Commentarfunktionen)'
+'Enter your name, e-mail address and your password (twice) to create an account.  <b><i>Note: If you are using Radio, PyDS or bzero to host a weblog on this server, DO NOT create an account this way.  Your blogging tool will do it for you.  You should only be creating an account this way if you want to only host comments on this server.</i></b>'::='Gib deinen Namen, deine eMail-Adresse und dein Passwort (zweimal) ein um einen Benutzer anzulegen. <b><i>Hinweis: Wenn Du Radio, PyDS oder bzero benutzt um ein Weblog hier zu veröffentlichen, benutze die Weblogsoftware für die Anlage des Benutzers, NICHT DIESES FORMULAR!</i></b>'
+# already defined: "Name"
+# already defined: "E-mail address"
+# already defined: "Password"
+'Repeat password'::='Passwort wiederholen'
+'Create account'::='Benutzer anlegen'
+
 # strings from modules/system/rankings.py
 'Rankings'::='Hitliste'
 '<p>See also: <a href="weblogUpdates.py">weblogs updated today</a>.</p>\n'::='<p>Siehe auch: <a href="weblogUpdates.py">heute aktualisierte Weblogs</a>.</p>\n'
@@ -126,7 +135,7 @@
 'Show next %d'::='Zeige n\xe4chste %d'
 '<p>Showing hits %d-%d out of of %d. %s</p>'::='<p>Zeige Treffer %d-%d von %d. %s</p>'
 "Usernum %s has not submitted any posts to be indexed (so you can't search his/her weblog yet)."::='Benutzer %s hat bisher keine Beitr\xe4ge zur Suche bereitgestellt, daher kann noch nicht in dem Weblog gesucht werden.'
-"<p>You can search a blog with multiple words. The search syntax is as follows: a posting matches if at least one normal search term is in the postings text or title. If you prepend a + to a search word, this word is required. If you prepend a - to a search word, this word is forbiddend. Words don't need to be full word - actually a simple substring match is done.<p><b>foo bar +baz -booz</b><p>The above search terms would search for all posts where either <b>foo</b> or <b>bar</b> is found, <b>baz</b> is allways found and <b>booz</b> is never found."::="<p>Zur Suche können mehrere Suchbegriffe angegeben werden. Eine Suche ist wie folgt definiert: Ein Beitrag wird dann gefunden, wenn mindestens einer der normalen Suchbegriffe gefunden wird. Wenn ein Suchbegriff mit einem + beginnt ist dieser Suchbegriff zwingend. Wird ein - vor einen Suchbegriff gestellt, ist dieser Suchbegriff verboten. Suchbegriffe müssen keine vollen Wörter sein, es wird auch nach Wortteilen gesucht.<p><b>foo bar +baz -booz</b><p>Die obige Suche würde nach allen Beiträgen suchen, in denen <b>foo</b> oder <b>bar</b> gefunden wird, <b>baz</b> immer enthalten ist und <b>booz</b> nie enthalten ist."
+"<p>You can search a blog with multiple words. The search syntax is as follows: a posting matches if at least one normal search term is in the postings text or title. If you prepend a + to a search word, this word is required. If you prepend a - to a search word, this word is forbiddend. Words don't need to be full word - actually a simple substring match is done.<p><b>foo bar +baz -booz</b><p>The above search terms would search for all posts where either <b>foo</b> or <b>bar</b> is found, <b>baz</b> is allways found and <b>booz</b> is never found."::='<p>Zur Suche k\xf6nnen mehrere Suchbegriffe angegeben werden. Eine Suche ist wie folgt definiert: Ein Beitrag wird dann gefunden, wenn mindestens einer der normalen Suchbegriffe gefunden wird. Wenn ein Suchbegriff mit einem + beginnt ist dieser Suchbegriff zwingend. Wird ein - vor einen Suchbegriff gestellt, ist dieser Suchbegriff verboten. Suchbegriffe m\xfcssen keine vollen W\xf6rter sein, es wird auch nach Wortteilen gesucht.<p><b>foo bar +baz -booz</b><p>Die obige Suche w\xfcrde nach allen Beitr\xe4gen suchen, in denen <b>foo</b> oder <b>bar</b> gefunden wird, <b>baz</b> immer enthalten ist und <b>booz</b> nie enthalten ist.'
 
 # strings from modules/system/searches.py
 'Search term rankings'::='Suchbegriffsliste'
