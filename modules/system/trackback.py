@@ -150,6 +150,13 @@ else:
 		formatter.p = query['p']
 
 		formatter.xmlFeedLink = "%s%s?u=%s&p=%s&format=rss" % ( set.ServerUrl(), path, formatter.u, formatter.p )
+		formatter.trackbackLink = "%s%s?u=%s&p=%s" % ( set.ServerUrl(), path, formatter.u, formatter.p )
+		formatter.note = _('The trackback URL for this posting is:<br><br><span style="font-size: 10px">%s</span>') % (
+			'<a href="%s">%s</a>' % (
+				formatter.trackbackLink,
+				formatter.trackbackLink
+			)
+		)
 
 	s = formatter.header()
 

@@ -83,6 +83,9 @@
 '<p>See also: <a href="searches.py?usernum=%s&group=%s&order=%s">Search term rankings for this site</a>.</p>'::='<p>Siehe auch: <a href="searches.py?usernum=%s&group=%s&order=%s">Suchbegriffsliste f\xfcr dieses Weblog</a>.</p>'
 '<p>Sorry, user %s not found!</p>'::='<p>Sorry, Benutzer %s existiert nicht!</p>'
 
+# strings from modules/system/search.py
+'Search results'::='Suchergebnisse'
+
 # strings from modules/system/searches.py
 'Search term rankings'::='Suchbegriffsliste'
 '<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>'::='<p>Siehe auch: <a href="referers.py?usernum=%s&group=%s&order=%s">Verweisliste f\xfcr dieses Weblog</a>.</p>'
@@ -109,10 +112,11 @@
 # already defined: '<p>Sorry, user %s not found!</p>'
 
 # strings from modules/system/trackback.py
+'The trackback URL for this posting is:<br><br><span style="font-size: 10px">%s</span>'::='Die Trackback-URL für diesen Beitrag ist:<br><br><span style="font-size: 10px">%s</span>'
 'an untitled posting'::='ein Beitrag ohne Titel'
 'an anonymous blog'::='ein Blog ohne Name'
 # already defined: "Comment deleted."
-'New trackback added - thanks for participating!'::='Neuer Trackback zugefügt, danke für die Nutzung!'
+'New trackback added - thanks for participating!'::='Neuer Trackback zugef\xfcgt, danke f\xfcr die Nutzung!'
 
 # strings from modules/system/users.py
 'User info'::='Benutzerinfo'
@@ -140,11 +144,11 @@
 
 # strings from trackbacks/html.py
 '<tr><td class="cmt"><strong>No trackbacks yet</strong></td></tr>'::='<tr><td class="cmt"><strong>Bis jetzt keine Trackbacks</strong></td></tr>'
-'Subscribe to an RSS feed of this trackback thread:'::='Bestellen Sie einen RSS Feed für die Trackbacks auf diesen Beitrag:'
-'Subscribe to this trackback thread in Radio UserLand'::='Bestellen Sie den RSS Feed für die Beitragstrackbacks mit Radio UserLand'
-'Link to the RSS (XML) feed for this trackback thread'::='Verlinken Sie auf den RSS (XML) Feed für Trackbacks zu diesem Beitrag'
+'Subscribe to an RSS feed of this trackback thread:'::='Bestellen Sie einen RSS Feed f\xfcr die Trackbacks auf diesen Beitrag:'
+'Subscribe to this trackback thread in Radio UserLand'::='Bestellen Sie den RSS Feed f\xfcr die Beitragstrackbacks mit Radio UserLand'
+'Link to the RSS (XML) feed for this trackback thread'::='Verlinken Sie auf den RSS (XML) Feed f\xfcr Trackbacks zu diesem Beitrag'
 # already defined: "posted by"
-'Delete trackback'::='Trackback löschen'
+'Delete trackback'::='Trackback l\xf6schen'
 
 # strings from trackbacks/rss.py
 '(trackbacks on post %s)'::='(Trackbacks zu Beitrag %s)'
@@ -155,7 +159,7 @@
 
 # strings from trackbacks/rssfull.py
 '(trackbacks on weblog)'::='(Trackbacks zum Weblog)'
-'Trackbacks for a weblog, ordered by date (newest first)'::='Trackbacks für ein Weblog, nach Datum sortiert (neueste zuerst)'
+'Trackbacks for a weblog, ordered by date (newest first)'::='Trackbacks f\xfcr ein Weblog, nach Datum sortiert (neueste zuerst)'
 # already defined: "Copyright"
 # already defined: "Comment by"
 # already defined: " an anonymous blog"

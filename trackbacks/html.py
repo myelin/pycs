@@ -58,7 +58,7 @@ class formatter( defaultFormatter.defaultFormatter ):
 		
 		if hasattr( self, 'note' ):
 			ret += [
-				'<tr><td style="border: solid; border-color: black; border-width: 5px; font-weight: bold;">',
+				'<tr><td style="border: solid; border-color: black; border-width: 3px; font-weight: bold;">',
 				self.note,
 				'</td></tr>'
 			]
