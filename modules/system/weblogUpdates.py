@@ -63,7 +63,7 @@ else:
 			continue
 		# munge blog name to display properly in HTML
 		blogName = u.blogName.replace('&apos;', "'")
-		blogName = cgi.escape(re.sub(r'\<.*?\>', '', blogName), 1)
+		blogName = re.sub(r'\<.*?\>', '', blogName)
 		# display line
 		s += """
 		<tr>
