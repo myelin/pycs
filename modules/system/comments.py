@@ -37,6 +37,7 @@ import time
 import strptime
 import html_cleaner
 import comments
+import md5
 
 # order by user & paragraph
 commentTable = set.db.getas(
@@ -289,6 +290,7 @@ else:
 			if fullfeed < 3:
 				now = time.strftime( "%Y-%m-%d %H:%M:%S", time.gmtime( time.time() - 14*24*3600 ) )
 				notes = filter( lambda a: a[0].date >= now, notes )
+
 		for iCmt in range( len( notes ) ):
 			# a fullfeed has to pass in the paragraph to the
 			# formatter, while a paragraph related feed does
@@ -300,12 +302,25 @@ else:
 			else:
 				cmtObj = comments.comment( cmt, iCmt )
 				s += formatter.comment( cmtObj )
-
 	s += formatter.endTable()
 	
 	s += formatter.footer()
-	
-# Dump it all in the request object and send it off
-request['Content-Length'] = len(s)
-request.push( s )
-request.done()
+
+# check for headers for conditional GET
+etag = '"%s"' % md5.new(s).hexdigest()
+checktag = ''
+for header in request.header:
+	m = re.match(r'If-None-Match:\s+(.*)$', header)
+	if m:
+		checktag = m.group(1)
+
+if checktag and checktag == etag:
+	# Got an entitytag and no changes, report no changes
+	request.error( 304 )
+else:
+	# Dump it all in the request object and send it off
+	request['Content-Length'] = len(s)
+	request['ETag'] = etag
+	request.push( s )
+	request.done()
+
