@@ -40,6 +40,7 @@ print sys.path
 # patch new mimetypes
 import mimetypes
 mimetypes.types_map['.ico'] = 'image/x-icon'
+mimetypes.types_map['.dmg'] = 'application/octetstream'
 
 import pycs_paths
 
