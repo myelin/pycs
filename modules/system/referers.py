@@ -123,7 +123,7 @@ else:
 			referrerlist.sort(lambda a,b: -1*cmp(a.referrer,b.referrer))
 
 		for row in referrerlist:
-			referrer = row.referrer
+			referrer = cgi.escape( row.referrer, 1 )
 			if len(referrer) > 44:
 				referrer = referrer[:40] + ' [...]'
 			referrer = referrer.replace(' ','&nbsp;')
@@ -131,7 +131,7 @@ else:
 			s += """
 			<tr><td align="left"><a target="_new" href="%s">%s</a></td>
 			<td align="left"><pre>%s</pre></td><td align="right">%s</td></tr>
-			""" % (cgi.escape( row.referrer, 1 ), referrer, row.time, row.count)
+			""" % ( row.referrer, referrer, row.time, row.count)
 
 		s += "</table>\n"
 		s += _('<p>See also: <a href="searches.py?usernum=%s&group=%s&order=%s">Search term rankings for this site</a>.</p>') % (usernum, group, order)
