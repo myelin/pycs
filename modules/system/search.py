@@ -28,6 +28,7 @@ import os
 import sys
 import binascii
 import base64
+import urllib
 
 from html_cleaner import cleanHtml
 
@@ -219,13 +220,13 @@ def search(usernum, posts_t, query, skip_hits):
 	else:
 		first_hit = skip_hits
 		last_hit = skip_hits + len(hits)
-		extra_link = ' <a href="search.py?u=%s&q=%s&skip=%%d">%%s</a>.' % (usernum, query)
+		extra_link = ' <a href="search.py?u=%s&q=%%s&skip=%%d">%%s</a>.' % (usernum, query)
 		extra = ''
 		if first_hit > 1:
 			prev_avail = min(skip_hits, max_hits)
-			extra += extra_link % (first_hit-prev_avail, _("Show previous %s").decode(set.DocumentEncoding()) % prev_avail)
+			extra += extra_link % (urllib.quote(query.encode(set.DocumentEncoding())), first_hit-prev_avail, _("Show previous %s").decode(set.DocumentEncoding()) % prev_avail)
 		if last_hit < total_hits:
-			extra += extra_link % (last_hit, _("Show next %d").decode(set.DocumentEncoding()) % min(max_hits, total_hits - last_hit))
+			extra += extra_link % (urllib.quote(query.encode(set.DocumentEncoding())), last_hit, _("Show next %d").decode(set.DocumentEncoding()) % min(max_hits, total_hits - last_hit))
 		add(_("<p>Showing hits %d-%d out of of %d. %s</p>") % (
 			skip_hits + 1,
 			skip_hits + len(hits),
