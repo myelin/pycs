@@ -104,7 +104,7 @@ def mylog (self, bytes):
 	self.channel.server.logger.log (
 		self.get_header('X-Request-For') or self.channel.addr[0],
 		'- - [%s] "%s" %d %d "%s" "%s"\n' % (
-			self.log_date_string (time.time()),
+			time.strftime('%d/%b/%Y:%H:%M:%S %z'),
 			self.request,
 			self.reply_code,
 			bytes,
