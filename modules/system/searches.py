@@ -39,6 +39,9 @@ engines = {
 	'altavista': [
 		re.compile(r'^http://.*\.altavista\..*\?q=([^&]*).*$'),
 		],
+	'msn': [
+		re.compile(r'^http://search\.msn\..*\?q=([^&]*).*$'),
+		],
 	}
 
 def orderLink(username,group,order):
