@@ -129,5 +129,10 @@ class DB:
                         print (usernum, postid, postlink, date, name, email, url, comment)
                         raise
             self.set_db_version(2)
+
+        if self.db_id < 3:
+            self.execute("""ALTER TABLE pycs_comments ADD COLUMN is_spam INT""")
+            self.execute("""UPDATE pycs_comments SET is_spam=0""")
+            self.set_db_version(3)
         
         print "Finished updating schema"

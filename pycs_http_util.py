@@ -1,6 +1,10 @@
 import urllib
+import cgi
 import string
 import re
+
+def esc(s):
+	return cgi.escape(s, 1)
 
 def SplitQuery( q ):
 	d = {}

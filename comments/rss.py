@@ -50,14 +50,14 @@ class formatter( defaultFormatter.defaultFormatter ):
 
 	def comment( self, cmt, paragraph=None, level=0 ):
 		title = _("Comment by")
-		if cmt.cmt.name == '':
+		if cmt.name == '':
 			title += _(" an anonymous coward")
 		else:
-			title += " " + cmt.cmt.name
-		if cmt.cmt.url in [ '', 'http://' ]:
+			title += " " + cmt.name
+		if cmt.url in [ '', 'http://' ]:
 			link = self.set.ServerUrl()
 		else:
-			link = cmt.cmt.url
+			link = cmt.url
 		title += cmt.dateString
 		return """		<item>
 			<title>%s</title>

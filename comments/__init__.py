@@ -20,6 +20,7 @@ class comment:
 			self.name = 'an anonymous coward'
 		else:
 			self.name = name
+		self.url = url
 		if url in [ '', 'http://' ]:
 			self.nameString = '<span class="quietlink">%s</span>' % ( cgi.escape( self.name ), )
 		else:
