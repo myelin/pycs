@@ -211,13 +211,14 @@ else:
 		else:
 			notes = vw[0].notes
 			nComments = len(notes)
-	
-	if request.command.lower() in ('put', 'post'):
-	
+
+	# some trackback client (e.g. MovableType) send ping using GET method
+	if request.command.lower() in ('put', 'post') or (
+		request.command.lower() == 'get' and  query.has_key( 'url' )):
 		# We have a new trackback to add
 		mode = 'add'
 		
-		if form.has_key( 'delete' ):
+		if form.has_key( 'delete' ) and request.command.lower() in ( 'put', 'post' ):
 			# it's a DELETE command
 
 			mode = 'delete'
@@ -246,18 +247,31 @@ else:
 
 			dstEncoding = set.DocumentEncoding()
 
-			formatter.storedTitle = convertEncoding(util.MungeHTML( form.get( 'title', _('an untitled posting') ) ), srcEncoding, dstEncoding)
-			formatter.storedName = convertEncoding(util.MungeHTML( form.get( 'blog_name', _('an anonymous blog') ) ), srcEncoding, dstEncoding)
-			formatter.storedUrl = util.MungeHTML( form['url'] )
+			if request.command.lower() == 'get':
+				title = query.get('title', _('an untitled posting'))
+				blog_name = query.get('blog_name', _('an anonymous blog'))
+				url = query['url']
+				excerpt = query.get('excerpt', '')
+			else:
+				title = form.get('title', _('an untitled posting'))
+				blog_name = form.get('blog_name', _('an anonymous blog'))
+				url = form['url']
+				excerpt = form.get('excerpt', '')
+				
+			formatter.storedTitle = convertEncoding(
+				util.MungeHTML(title), srcEncoding, dstEncoding)
+			formatter.storedName = convertEncoding(
+				util.MungeHTML(blog_name), srcEncoding, dstEncoding)
+			formatter.storedUrl = util.MungeHTML(url)
 			
 			newTrackback = {
 				'title': formatter.storedTitle,
 				'name': formatter.storedName,
 				'url': formatter.storedUrl,
-				'excerpt': convertEncoding(form.get( 'excerpt', '' ), srcEncoding, dstEncoding),
+				'excerpt': convertEncoding(excerpt, srcEncoding, dstEncoding),
 				'date': time.strftime( trackbacks.STANDARDDATEFORMAT ),
 				}
-			
+
 			nComments += 1
 			
 			# If we don't have a row in for this user/paragraph, make one
