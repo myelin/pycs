@@ -33,6 +33,12 @@ engines = {
 	'google': [
 		re.compile(r'^http://.*\.google\..*\?q=([^&]*).*$'),
 		],
+	'daypop': [
+		re.compile(r'^http://.*\.daypop\..*\?q=([^&]*).*$'),
+		],
+	'geourl': [
+		re.compile(r'^http://geourl\..*\?p=([^&]*).*$'),
+		],
 	'yahoo': [
 		re.compile(r'^http://.*\.yahoo\..*\?p=([^&]*).*$'),
 		],
