@@ -73,19 +73,18 @@ class accessRestrictions_handler:
 		elif password:
 			if not(quiet): print "password for anonymous user given"
 			return 0
-		matched = 0
 		for location in self.locations.select({'blogid':usernum}):
 			if re.match(location.regexp, url):
+				matched = 0
 				for group in location.group:
 					for grec in self.groups.select({'blogid':usernum, 'name':group.name}):
-						found = 0
 						for urec in grec.user:
 							if urec.name == user:
 								if not(quiet): print "user %s valid for location %s" % (user, location.locname)
-								found = 1
-						if not(found):
-							if not(quiet): print "group %s did not match" % group.name
-							return 0
+								matched = 1
+				if not(matched):
+					if not(quiet): print "location %s had no user %s" % (group.name, user)
+					return 0
 		return 1
 		
 	def call( self, method, params ):
