@@ -40,7 +40,7 @@ PYCSFILES = README LICENSE Makefile mkidx.pl \
 	test_server.py test_settings.py \
 	analyse_logs.py \
 	pycs.conf 
-PYCSMODFILES = updates.py mailto.py users.py comments.py
+PYCSMODFILES = updates.py mailto.py users.py comments.py login.py
 SPECIFICS = $(PYCSFILES) medusa/*.py metakit.py Mk4py.so
 VER = 0.01
 DISTFN = pycs-$(VER)-src
@@ -63,7 +63,7 @@ install: scripts
 	chmod 744 $(DIRS)
 
 scripts:
-	cp -av modules/* $(D)/modules/
+	for f in `cd modules && find | grep -E "\.py$$" && cd ..`; do cp modules/$$f $(D)/modules/$$f; done
 	chown root.root $(D)/modules -R
 	chmod 755 $(D)/modules -R
 	cp www/index.html $(D)/www/

@@ -32,7 +32,7 @@ def SplitQuery( q ):
 def MungeHTML( txt ):
 	return string.replace(
 		string.replace(
-		string.replace( txt, '"', '_' ),
+		string.replace( txt, '"', '&quot;' ),
 		'<', '_' ),
 		'>', '_' )
 	

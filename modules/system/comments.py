@@ -31,6 +31,7 @@ import StringIO
 import urllib
 import string
 import cgi
+import binascii
 import base64
 
 # order by user & paragraph
@@ -76,7 +77,11 @@ if cookies.has_key( 'commentInfo' ):
 		
 	except ValueError:
 		# Broken cookie
+		print "ValueError"
 		pass
+	except binascii.Error:
+		# some other sort of broken cookie
+		print "binascii.Error"
 	except:
 		# Something else broken? :)
 		raise
@@ -179,7 +184,7 @@ else:
 			'email': storedEmail,
 			'name': storedName,
 			'url': storedUrl,
-			'comment': util.MungeHTML( form['comment'] ),
+			'comment': form['comment'],
 			}
 		
 		nComments += 1
@@ -231,7 +236,16 @@ else:
 			%s<br>
 			<a href="%s">%s</a> [<a href="mailto:%s">%s</a>]
 			</td></tr>
-			""" % ( cmt.comment, cmt.url, cmt.name, cmt.email, util.MungeHTML( cmt.email ), )
+			""" % (
+				string.replace(
+					cgi.escape( cmt.comment ),
+					"\n", "<br />"
+				),
+				util.MungeHTML( cmt.url ),
+				cgi.escape( cmt.name ),
+				cmt.email,
+				cgi.escape( cmt.email ),
+			)
 		
 	# Print 'add comment' form
 	s += """
