@@ -39,9 +39,6 @@ import html_cleaner
 import comments
 import md5
 
-# order by user & paragraph
-commentTable = set.getCommentTable()
-
 [path, params, query, fragment] = request.split_uri()
 
 # see if someone is logged in already
@@ -122,7 +119,11 @@ if noCookies:
 	
 #s += "Path %s<br>params %s<br>query %s<br>fragment %s<br>" % (path, params, query, fragment)
 
-formatter.u = query['u'] #str(int(query['u']))
+if not query.has_key('u'):
+	usernum = None
+else:
+	usernum = formatter.u = int(query['u']) #str(int(query['u']))
+postid = query.get("p", None)
 
 if query.has_key('c'):
 
@@ -131,22 +132,11 @@ if query.has_key('c'):
 
 	c = query['c']
 	if c == 'counts':
-		paragraphs = []
-		counts = []
-
-		posts = commentTable.select( { 'user': formatter.u } )
-		for post in posts:
-			paragraphs.append( post.paragraph )
-			counts.append( len( post.notes ) )
+		rows = [row for row in set.pdb.execute("SELECT postid, COUNT(id) FROM pycs_comments WHERE usernum=%d GROUP BY postid", (usernum,))]
+		paragraphs, counts = zip(*rows)
 		
-		s = "anID = [" + string.join(
-			['"%s"' % (x,) for x in paragraphs]
-			, ", " ) + "]; "
-		
-		s += "anCount = [" + string.join(
-			['"%d"' % (x,) for x in counts]
-			, ", " ) + "]; "
-
+		s = "anID = [%s]; " % ", ".join(['"%s"' % (x,) for x in paragraphs])
+		s += "anCount = [%s]; " % ", ".join(['"%d"' % (x,) for x in counts])
 		s += "nPosts = %d;\n" % (len(counts),)
 		s += """				
 		function commentCounter( nID ) {
@@ -164,60 +154,20 @@ if query.has_key('c'):
 	else:
 		s = "unknown 'c' value: %s ..." % ( html_munge( c ), )
 
+elif not query.has_key('u'):
+	s = """<p>no usernum supplied; the comment link bringing you to this page is broken!</p>"""
 elif format == 'html' and not query.has_key('p'):
 	s = """<p>no postid supplied - you might be looking for one of the following links:</p>
 	<li><a href="comments.py?u=%(usernum)s&format=rss&full=1">recent comments, abbreviated, in rss </a></li>
 	<li><a href="comments.py?u=%(usernum)s&format=rss&full=2">recent comments, unabbreviated, in rss</a></li>
 	<li><a href="comments.py?u=%(usernum)s&format=rss&full=3">all comments, in full, in rss</a> (don't subscribe to this one - it'll suck a huge amount of bandwidth when you build up a decent number of comments!)</li>
-	""" % {'usernum': formatter.u,
-	}
+	""" % {'usernum': usernum,
+	       }
 else:	
 
-	# Displaying comments or accepting a new POSTed one. The list of
-	# notes is a direct view (when only notes for one paragraph are
-	# requested) or a list of tuples of notes and paragraphs, if a
-	# fullfeed is requested. This is a bit hacky but prevents duplicate
-	# implementation
+	# Displaying comments or accepting a new POSTed one.
 
-	if not(fullfeed):
-		formatter.p = query['p']
-		#s += "user %s, paragraph %s<br>" % (u, p)
-
-		formatter.xmlFeedLink = "%s%s?u=%s&p=%s&format=rss" % ( set.ServerUrl(), path, formatter.u, formatter.p )
-
-	s = formatter.header()
-
-	# a full feed lists all comments, a paragraph feed only comments to
-	# one paragraph
-	if fullfeed:
-		vw = commentTable.select( { 'user': formatter.u } )
-	else:
-		vw = commentTable.select( { 'user': formatter.u, 'paragraph': formatter.p } )
-	if len(vw) == 0:
-		# Never heard of that post or that user, return empty list
-		notes = None
-		nComments = 0
-	else:
-		# Got it - grab the 'notes' view or construct a list of
-		# (note, paragraph) tuples
-		#print "(existing post)"
-		if fullfeed:
-			notes = []
-			nComments = 0
-			for p in vw:
-				for n in p.notes:
-					notes.append( (n, p) )
-				nComments += len(p.notes)
-		else:
-			notes = vw[0].notes
-			nComments = len(notes)
-			if not hasattr(formatter, 'link'):
-				formatter.link = vw[0].link
-			else:
-				if not formatter.link:
-					formatter.link = vw[0].link
-	
-	if request.command.lower() in ('put', 'post'):
+	if request.command.lower() == 'post':
 	
 		# We have a new comment to add
 		
@@ -227,16 +177,15 @@ else:
 		if form.has_key( 'delete' ):
 			# it's a DELETE command
 			
-			u = int( formatter.u )
 			if ( ( not set.conf.has_key( 'adminusernum' ) ) or
 				( int( loggedInUser.usernum ) != int( set.conf['adminusernum'] ) )
-			) and ( u != int( loggedInUser.usernum ) ):
+			) and ( usernum != int( loggedInUser.usernum ) ):
 				raise "Unauthorised attempt to delete comment"
-				
-			delIdx = form['delete']
-			formatter.note = _("Comment deleted.") #"delete comment u=%s, p=%s, cmt=%s" % ( formatter.u, formatter.p, delIdx )
-			notes.delete( int( delIdx ) )
-			set.Commit()
+
+			cid = int(form['delete'])
+			set.pdb.execute("DELETE FROM pycs_comments WHERE usernum=%d AND id=%d", (usernum, cid))
+			print "Deleted comment with id %d and usernum %d (logged in user %s)" % (cid, usernum, loggedInUser.usernum)
+			formatter.note = _("Comment deleted.")
 			
 		else:
 			# it's an ADD command
@@ -267,59 +216,51 @@ else:
 				'comment': form['comment'],
 				'date': time.strftime( comments.STANDARDDATEFORMAT ),
 				}
-			
-			nComments += 1
-			
-			# If we don't have a row in for this user/paragraph, make one
-			if notes == None:
-				#print "new comment"
-				notes = metakit.view()
-				
-				# Make a row in 'comments' for this paragraph
-				commentTable.append( {
-					'user': formatter.u,
-					'paragraph': formatter.p,
-					'link': form.get('link',''),
-					'notes': notes,
-					} )
-				
-				# Pull the row out again
-				vw = commentTable.select( { 'user': formatter.u, 'paragraph': formatter.p } )
-				notes = vw[0].notes
-				
-				# ... and add this particular comment in
-				notes.append( newComment )
-				set.Commit()
-			else:
-				# It's already there - add more comments
-				notes.append( newComment )
-				set.Commit()
+
+			cmttext = form['comment']
+			set.pdb.execute("INSERT INTO pycs_comments (id, usernum, postid, postlink, postername, posteremail, posterurl, commenttext, commentdate) VALUES (NEXTVAL('pycs_comments_id_seq'), %s, %s, %s, %s, %s, %s, %s, NOW())", (usernum, postid, form.get('link', ''), formatter.storedName, formatter.storedEmail, formatter.storedUrl, cmttext, ))
+			print "Added comment to usernum %d postid %s by %s, %d bytes" % (usernum, `postid`, `formatter.storedName`, len(cmttext))
 			
 			formatter.note = _("New comment added - thanks for participating!")
+
+	if not(fullfeed):
+		formatter.p = postid
+		#s += "user %s, paragraph %s<br>" % (u, p)
+
+		formatter.xmlFeedLink = "%s%s?u=%s&p=%s&format=rss" % ( set.ServerUrl(), path, formatter.u, formatter.p )
+
+	s = formatter.header()
+
+	# a full feed lists all comments, a paragraph feed only comments to
+	# one paragraph
+	sql = "SELECT id, postid, postlink, postername, posteremail, posterurl, commentdate, commenttext FROM pycs_comments WHERE usernum=%d"
+	sqlargs = [usernum]
+	if fullfeed:
+		if fullfeed < 3:
+			sql += " AND commentdate > (NOW() - INTERVAL '14 days')"
+		sql += " ORDER BY commentdate DESC"
+	else:
+		sql += " AND postid=%s"
+		sqlargs.append(formatter.p)
+
+	#print sql, sqlargs
+	notes = []
+	for cid, postid, clink, pname, pemail, plink, cdate, ctext in set.pdb.execute(sql, tuple(sqlargs)):
+		notes.append(comments.comment(cid, usernum, postid, pname, plink, pemail, cdate, ctext))
+		if clink: formatter.link = clink
 	
 	s += formatter.startTable()
 	
 	# Display comment table			
 
 	if notes:
-		if fullfeed:
-			# fullfeeds are sorted by date in reverse (newest
-			# note first)
-			notes.sort(lambda a,b: -1*cmp(a[0].date,b[0].date))
-			if fullfeed < 3:
-				now = time.strftime( "%Y-%m-%d %H:%M:%S", time.gmtime( time.time() - 14*24*3600 ) )
-				notes = filter( lambda a: a[0].date >= now, notes )
-
-		for iCmt in range( len( notes ) ):
+		for cmtObj in notes:
 			# a fullfeed has to pass in the paragraph to the
 			# formatter, while a paragraph related feed does
 			# not
-			cmt = notes[iCmt]
 			if fullfeed:
-				cmtObj = comments.comment( cmt[0], iCmt )
-				s += formatter.comment( cmtObj, paragraph=cmt[1], level=fullfeed )
+				s += formatter.comment( cmtObj, paragraph=cmtObj.postid, level=fullfeed )
 			else:
-				cmtObj = comments.comment( cmt, iCmt )
 				s += formatter.comment( cmtObj )
 	s += formatter.endTable()
 	

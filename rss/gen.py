@@ -5,7 +5,7 @@
 
 import os.path
 
-outputpath = os.path.expanduser('~/var/lib/pycs/www/allyourrss.html')
+outputpath = os.path.expanduser('~/pycs/var/lib/pycs/www/allyourrss.html')
 
 if __name__ == '__main__':
     recent = eval(open('cache/recent').read())
