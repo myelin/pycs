@@ -30,6 +30,14 @@ import pycs_settings
 def orderLink(username,group,order):
 	return set.ServerUrl() + '/system/referers.py?usernum=%s&group=%s&order=%s' % (usernum, group, order)
 
+def sortISOTime(timea,timeb):
+	timea = str(timea)
+	timeb = str(timeb)
+	if timea[-2:] == timeb[-2:]:
+		return -1*cmp(timea,timeb)
+	else:
+		return cmp(timea[-2:],timeb[-2])
+	
 request['Content-Type'] = 'text/html'
 
 [path, params, query, fragment] = request.split_uri()
@@ -101,7 +109,7 @@ else:
 			referrerlist.append(row)
 
 		if order == 'time':
-			referrerlist.sort(lambda a,b: -1*cmp(a.time,b.time))
+			referrerlist.sort(sortISOTime)
 		elif order == 'count':
 			referrerlist.sort(lambda a,b: -1*cmp(a.count,b.count))
 		else:
