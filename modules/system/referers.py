@@ -27,6 +27,7 @@ import cgi
 import string
 import pycs_settings
 import time
+from search_engines import checkUrlForSearchEngine
 
 def orderLink(username,group,order):
 	return set.ServerUrl() + '/system/referers.py?usernum=%s&group=%s&order=%s' % (usernum, group, order)
@@ -113,7 +114,9 @@ else:
 
 		referrerlist = []
 		for row in set.referrers.select( { 'usernum': usernum, 'group': group } ):
-			referrerlist.append(row)
+			(matched, term) = checkUrlForSearchEngine(row.referrer)
+			if not(matched) or not(term):
+				referrerlist.append(row)
 
 		if order == 'time':
 			referrerlist.sort(sortISOTime)

@@ -29,56 +29,7 @@ import string
 import pycs_settings
 import time
 from urllib import unquote
-
-engines = {
-	'google': [
-		re.compile(r'^http://.*\.google\..*[\?&]q=([^&]*).*$'),
-		re.compile(r'^http://.*\.google\..*[\?&]as_q=([^&]*).*$'),
-		],
-	'alltheweb': [
-		re.compile(r'^http://.*\.alltheweb\..*[\?&]q=([^&]*).*$'),
-		],
-	'feedster': [
-		re.compile(r'^http://.*\.feedster\..*[\?&]q=([^&]*).*$'),
-		],
-	'freshmeat': [
-		re.compile(r'^http://freshmeat\..*[\?&]q=([^&]*).*$'),
-		],
-	'daypop': [
-		re.compile(r'^http://.*\.daypop\..*[\?&]q=([^&]*).*$'),
-		],
-	'geourl': [
-		re.compile(r'^http://geourl\..*[\?&]p=([^&]*).*$'),
-		],
-	'yahoo': [
-		re.compile(r'^http://.*\.yahoo\..*[\?&]p=([^&]*).*$'),
-		],
-	'altavista': [
-		re.compile(r'^http://.*\.altavista\..*[\?&]q=([^&]*).*$'),
-		],
-	'msn': [
-		re.compile(r'^http://search\.msn\..*[\?&]q=([^&]*).*$'),
-		],
-	'blo.gs': [
-		re.compile(r'^http://blo\.gs\/\?q=([^&]*).*$'),
-		],
-	'lycos': [
-		re.compile(r'^http://.*\.lycos\..*[\?&]query=([^&]*).*$'),
-		],
-	'aol': [
-		re.compile(r'^http://.*\.aol\..*search.jsp\?q=([^&]*).*$'),
-		re.compile(r'^http://.*\.aol\..*[\?&]query=([^&]*).*$'),
-		],
-	't-online': [
-		re.compile(r'^http://.*\.t-online\..*tsc\?q=([^&]*).*$'),
-		],
-	'Virgilio': [
-		re.compile(r'^http://.*\.virgilio\..*search\.cgi\?qs=([^&]*).*$'),
-		],
-	'mysearch': [
-		re.compile(r'^http://.*\.mysearch\..*[\?&]searchfor=([^&]*).*$'),
-	],
-	}
+from search_engines import checkUrlForSearchEngine
 
 def orderLink(username,group,order):
 	return set.ServerUrl() + '/system/referers.py?usernum=%s&group=%s&order=%s' % (usernum, group, order)
@@ -173,14 +124,7 @@ else:
 			referrerlist.sort(lambda a,b: -1*cmp(a.referrer,b.referrer))
 
 		for row in referrerlist:
-			matched = None
-			term = None
-			for engine in engines.keys():
-				for termre in engines[engine]:
-					m = termre.match(row.referrer)
-					if m:
-						matched = engine
-						term = m.group(1)
+			(matched, term) = checkUrlForSearchEngine(row.referrer)
 			if matched and term:
 				try:
 					term = term.decode('utf-8').encode('iso-8859-1')
