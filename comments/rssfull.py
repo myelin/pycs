@@ -1,6 +1,6 @@
 # comments.rss
 
-headerString = """<?xml version="1.0"?>
+headerString = """<?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- RSS generation by Python Community Server -->
 <rss version="0.92">
 """
@@ -38,7 +38,7 @@ class formatter( rss.formatter ):
 
 		return headerString + s
 
-	def comment( self, cmt, paragraph ):
+	def comment( self, cmt, paragraph, level ):
 		title = _("Comment by")
 		if cmt.cmt.name == '':
 			title += _(" an anonymous coward")
@@ -47,13 +47,15 @@ class formatter( rss.formatter ):
 		link = '%s/system/comments.py?u=%s&#38;p=%s' % ( self.set.ServerUrl(), paragraph.user, paragraph.paragraph )
 		title += _(" for post %s") % paragraph.paragraph
 		title += cmt.dateString
-		return """		<item>
+		desc = cmt.cleanedUpComment
+		if level == 1:
+			if len(desc) > 40:
+				desc = desc[:40] + ' ...'
+		src = """		<item>
 			<title>%s</title>
 			<link>%s</link>
-			<description><![CDATA[%s]]></description>
-		</item>
-""" % (
-					title,
-					link,
-					cmt.cleanedUpComment,
-				)
+			<description><![CDATA[%s]]></description>\n
+		</item>\n"
+""" % ( title, link, desc )
+		return src
+

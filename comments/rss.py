@@ -1,6 +1,6 @@
 # comments.rss
 
-headerString = """<?xml version="1.0"?>
+headerString = """<?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- RSS generation by Python Community Server -->
 <rss version="0.92">
 """
@@ -44,7 +44,7 @@ class formatter( defaultFormatter.defaultFormatter ):
 	def footer( self ):
 		return footerString
 
-	def comment( self, cmt, paragraph=None ):
+	def comment( self, cmt, paragraph=None, level=0 ):
 		title = _("Comment by")
 		if cmt.cmt.name == '':
 			title += _(" an anonymous coward")

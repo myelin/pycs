@@ -72,7 +72,8 @@ if query.has_key( 'format' ):
 # with any command except GET)
 fullfeed = 0
 if query.has_key('full') and format == 'rss' and not( request.command.lower() in ('put', 'post') ):
-	fullfeed = 1
+	try: fullfeed = int(query['full'])
+	except: fullfeed = 1
 
 formatter = None
 if format == 'rss':
@@ -285,6 +286,9 @@ else:
 			# fullfeeds are sorted by date in reverse (newest
 			# note first)
 			notes.sort(lambda a,b: -1*cmp(a[0].date,b[0].date))
+			if fullfeed < 3:
+				now = time.strftime( "%Y-%m-%d %H:%M:%S", time.gmtime( time.time() - 14*24*3600 ) )
+				notes = filter( lambda a: a[0].date < now, notes )
 		for iCmt in range( len( notes ) ):
 			# a fullfeed has to pass in the paragraph to the
 			# formatter, while a paragraph related feed does
@@ -292,7 +296,7 @@ else:
 			cmt = notes[iCmt]
 			if fullfeed:
 				cmtObj = comments.comment( cmt[0], iCmt )
-				s += formatter.comment( cmtObj, paragraph=cmt[1] )
+				s += formatter.comment( cmtObj, paragraph=cmt[1], level=fullfeed )
 			else:
 				cmtObj = comments.comment( cmt, iCmt )
 				s += formatter.comment( cmtObj )
