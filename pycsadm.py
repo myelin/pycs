@@ -12,14 +12,22 @@ import pycs_settings
 set = pycs_settings.Settings( quiet=True, nomk=True )
 
 def usage():
-	print "pycsadm [-h]"
-	print "   Shows this page of help."
-	print ""
-	print "pycsadm [-v] [-u <xmlrpc-url>] <cmd> <args>..."
-	print "   Executes the command <cmd> on server <xmlrpc-url> with parameters <args>"
-	print "   and in the context of user <user>. Use the <cmd> help to get a list of"
-	print "   defined commands in your context."
-	print ""
+	print """pycsadm [-h]
+   Shows this page of help.
+
+pycsadm [-v] [-u <xmlrpc-url>] <cmd> <args>...
+   Executes the command <cmd> on server <xmlrpc-url> with parameters <args>
+   and in the context of user <user>. Use the <cmd> help to get a list of
+   defined commands in your context.
+
+pycsadm add_comments usernum commentfilename
+   Imports saved comments from a file 'commentfilename' (in Python script format;
+   ask on the pycs-devel mailing list if you want to generate one) to a usernum
+   'usernum'.  e.g. pycsadm add_comments 0000999 mycomments.py
+
+   Sometimes you need to run this one twice to import all the comments.  It won't
+   add duplicate comments, so you can run it as many times as you like.
+"""
 	sys.exit(0)
 
 verbose = 0

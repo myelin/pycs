@@ -1,6 +1,6 @@
 # comments.rss
 
-import pycs_settings
+import pycs_settings, cgi
 
 set = pycs_settings.Settings( quiet=True )
 
@@ -14,6 +14,9 @@ footerString = """	</channel>
 """
 
 import rss
+
+def esc(s):
+	return cgi.escape(s, 1)
 
 class formatter( rss.formatter ):
 
@@ -61,8 +64,8 @@ class formatter( rss.formatter ):
 		src = """		<item>
 			<title>%s</title>
 			<link>%s</link>
-			<description><![CDATA[%s]]></description>
+			<description>%s</description>
 		</item>
-""" % ( title, link, desc )
+""" % ( esc(title), esc(link), esc(desc) )
 		return src
 

@@ -123,6 +123,13 @@ setattr(logger.unresolving_logger, 'log', log_unresolved)
 
 if __name__ == '__main__':
 
+	do_daemonize = 1
+	for arg in sys.argv[1:]:
+		if arg == '--no-daemon':
+			do_daemonize = 0
+		else:
+			print "unknown argument: %s" % arg
+
 	# Become a daemon if we're running on a POSIX platform.
 	# TODO: run as a Windows service on NT.
 	if os.name == 'posix':
@@ -130,19 +137,20 @@ if __name__ == '__main__':
 		# Install signal handlers
 		install_handlers()
 
-		# Become a UNIX daemon
-		if os.getenv('PYCS_NO_LOGGING'):
-			daemonize.become_daemon(
-				pycs_paths.ROOTDIR,
-				'/dev/null',
-				'/dev/null'
-			)
-		else:
-			daemonize.become_daemon(
-				pycs_paths.ROOTDIR,
-				os.path.join( pycs_paths.LOGDIR, 'etc.log' ),
-				os.path.join( pycs_paths.LOGDIR, 'error.log' )
-			)
+		if do_daemonize:
+			# Become a UNIX daemon
+			if os.getenv('PYCS_NO_LOGGING'):
+				daemonize.become_daemon(
+					pycs_paths.ROOTDIR,
+					'/dev/null',
+					'/dev/null'
+				)
+			else:
+				daemonize.become_daemon(
+					pycs_paths.ROOTDIR,
+					os.path.join( pycs_paths.LOGDIR, 'etc.log' ),
+					os.path.join( pycs_paths.LOGDIR, 'error.log' )
+				)
 	
 		# Write the presently running pid to a pid file
 		# which will typically be used to stop and get status of

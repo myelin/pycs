@@ -87,7 +87,12 @@ elif format == 'html':
 	formatter = comments.html.formatter( set, loggedInUser )
 	if query.has_key('link'):
 		formatter.link = query['link']
-
+elif format == 'mt':
+	import comments.export_mt
+	
+	formatter = comments.export_mt.formatter(set)
+	fullfeed = 3
+	
 request['Content-Type'] = formatter.contentType()
 
 noCookies = 1 # we don't know about the user info

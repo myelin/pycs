@@ -117,6 +117,7 @@ class pycsAdmin_handler:
 			('normalize_comments', 'Normalize comment usernums'),
 			('list_comment_usernums', 'List all usernums in the comment table'),
 			('add_comments', 'Import some comments into the comments table'),
+			('renumber_comment', 'Changes the post ID associated with a comment thread'),
 			):
 			self.commands[name] = [ getattr(self, name), desc ]
 		
@@ -165,7 +166,7 @@ class pycsAdmin_handler:
 		if self.commands.has_key( params[0] ):
 			return self.commands[params[0]][0]( params[1] )
 		
-		return retmsg(1, 'Command %s not found!' % ( params[0], ))
+		return retmsg(1, 'Command %s not found!  Use command "help" for a list of commands.' % ( params[0], ))
 		
 
 	def help( self, params ):
@@ -438,7 +439,29 @@ class pycsAdmin_handler:
 		self.set.Commit()
 		
 		return done_msg(ret)
-				
+
+	def renumber_comment( self, params ):
+		return param_err(1, "this doesn't work - don't use it!")
+		
+		if len(params) != 4: return param_err(4)
+
+		usernum, oldid, newusernum, newid = params
+
+		import comments
+
+		ret = ''
+		ct = self.set.getCommentTable()
+		rows = ct.select({'user': usernum, 'paragraph': oldid})
+		if len(rows):
+			cmt_block = rows[0]
+		else:
+			return retmsg(1, "Comment %s does not exist for usernum %s" % (oldid, usernum))
+
+		cmt_block.user = newusernum
+		cmt_block.paragraph = newid
+		self.set.Commit()
+
+		return done_msg("Comment %s for usernum %s renumbered to %s for usernum %s" % (oldid, usernum, newid, newusernum))
 
 if __name__=='__main__':
 	# Testing
