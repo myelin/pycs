@@ -82,6 +82,8 @@ TrackBack [&lt;script type="text/javascript" language="JavaScript"&gt;trackbackC
 <p>Comment [&lt;script type="text/javascript" language="JavaScript"&gt;commentCounter('&lt;%%itemNum%%&gt;')&lt;/script&gt;]&lt;/a&gt;<br/>
 TrackBack [&lt;script type="text/javascript" language="JavaScript"&gt;trackbackCounter('&lt;%%itemNum%%&gt;')&lt;/script&gt;]&lt;/a&gt;</p>
 
+<p><b>NOTE: If you are using Radio, you need to turn off the normal comment system.  Go to <a href="http://127.0.0.1:5335/system/pages/prefs?page=2.12">this configuration page</a> and uncheck the box that says "Check this box to enable comments", then click Submit.</b></p>
+
 """ % {
 		'usernum': u.usernum,
 		'commenturl': set.ServerUrl() + "/system/comments.py",

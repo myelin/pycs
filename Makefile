@@ -99,7 +99,7 @@ DISTFN = pycs-$(VER)-src
 DEBFN = pycs_$(DEBVER)_all.deb
 LATESTFN = pycs-latest-src
 
-INSTALL = /usr/bin/install
+INSTALL = /usr/bin/install -c
 
 INSTALL_USER = $(INSTALL) -g $(USER) -o $(USER)
 INSTALL_ROOT = $(INSTALL) -g $(ROOT) -o $(ROOT)

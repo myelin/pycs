@@ -161,12 +161,13 @@ class xmlStorageSystem_handler:
 					if not m:
 						break
 					dirnm, leaf = m.groups()
-					path += "%s/" % (dirnm,)
+					path += "%s" % (dirnm,)
 					#print "  [ path",path,"  leaf",leaf,"]"
 					try:
 						os.mkdir( path )
 					except:
 						pass
+					path += "/"
 				
 				# Actually save the file
 				if type(file)==type(''):
