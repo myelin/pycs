@@ -6,7 +6,7 @@ set = pycs_settings.Settings( quiet=True )
 
 headerString = """<?xml version="1.0" encoding="%s"?>
 <!-- RSS generation by Python Community Server -->
-<rss version="0.92">
+<rss version="2.0">
 """ % set.DocumentEncoding()
 
 footerString = """	</channel>
