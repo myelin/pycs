@@ -54,6 +54,7 @@ import daemonize
 # HTTP handlers
 import default_handler
 import pycs_rewrite_handler
+import pycs_block_handler
 import pycs_module_handler
 import pycs_xmlrpc_handler
 import pycs_auth_handler
@@ -128,6 +129,9 @@ if __name__ == '__main__':
 	
 	rw_h = pycs_rewrite_handler.pycs_rewrite_handler( set, rewriteMap )
 
+	# Make URL blocker
+	bl_h = pycs_block_handler.pycs_block_handler( set )
+
 	# Make GET handler	
 	fs = filesys.os_filesystem( pycs_paths.WEBDIR )
 	default_h = default_handler.default_handler( fs )
@@ -181,6 +185,7 @@ if __name__ == '__main__':
 	hs.install_handler( default_h )
 	hs.install_handler( mod_h )
 	hs.install_handler( rpc_h )
+	hs.install_handler( bl_h )
 	hs.install_handler( rw_h )
 	#hs.install_handler( log_h )
 	
