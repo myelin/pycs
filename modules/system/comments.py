@@ -179,7 +179,7 @@ else:
 			
 			u = int( formatter.u )
 			if ( ( not set.conf.has_key( 'adminusernum' ) ) or
-				( u != int( set.conf['adminusernum'] ) )
+				( int( loggedInUser.usernum ) != int( set.conf['adminusernum'] ) )
 			) and ( u != int( loggedInUser.usernum ) ):
 				raise "Unauthorised attempt to delete comment"
 				

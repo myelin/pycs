@@ -120,8 +120,8 @@ class formatter( defaultFormatter.defaultFormatter ):
 		
 		if self.user:
 			u = int( self.u )
-			if ( set.conf.has_key( 'adminusernum' ) and
-				( u == int( set.conf['adminusernum'] ) )
+			if ( self.set.conf.has_key( 'adminusernum' ) and
+				( int( self.set.conf['adminusernum'] ) == int( self.user.usernum ) )
 			) or ( u == int( self.user.usernum ) ):
 				#ret += "logged in user: %s; this comment user: %s<br />" % ( self.user.usernum, self.u )
 				ret += """

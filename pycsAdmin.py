@@ -91,7 +91,7 @@ class pycsAdmin_handler:
 		self.adminpassword = str( random.random() )
 		stat = os.stat( os.path.join( pycs_paths.CONFDIR, "pycs.conf" ) )
 
-		if (stat[0] & 0777) == 0700:
+		if (stat[0] & 0077) == 0:
 			if set.conf.has_key( 'adminpassword' ):
 				self.adminpassword = set.conf['adminpassword']
 		self.commands = {
