@@ -25,7 +25,9 @@
 import os
 import string
 import pycs_settings
-import pycs_paths
+
+def orderLink(username,group,order):
+	return set.ServerUrl() + '/system/referers.py?usernum=%s&group=%s&order=%s' % (usernum, group, order)
 
 request['Content-Type'] = 'text/html'
 
@@ -59,46 +61,56 @@ else:
 		try:
 			usernum = int(usernum)
 		except: pass
+
+		group = query.get('group','default')
+		order = query.get('order','time')
 		
 		user = set.User( usernum )
-		usernum = getattr(user,'usernum')
-	
+		usernum = user.usernum
+		
 		s += """
 		<h2>Referrers for <strong>%s</strong></h2>
-		<table width="80%%" cellspacing="0" cellpadding="2">
+		<table width="80%%" cellspacing="5" cellpadding="2">
 		""" % (user.name,)
 
-		referers = {}
-		for log in ('referer.log', 'referer.log.1'):
-			basename = '%s-%s' % (usernum, log)
-			lfname = os.path.join(pycs_paths.LOGDIR, basename)
-			if os.path.exists(lfname):
-				LOG = open(lfname)
-				line = LOG.readline()
-				while line:
-					felder = string.split(line)
-					time = felder[0]
-					referer = '(no referer given)'
-					if len(felder) == 5:
-						referer = felder[4]
-					if referers.has_key(referer):
-						referers[referer] = referers[referer] + 1
-					else:
-						referers[referer] = 1
-					line = LOG.readline()
-				LOG.close()
-
-		refererlist = referers.items()
-		refererlist.sort(lambda a,b: -1*cmp(a[1],b[1]))
-
-		s += """
-		<tr><th align="left">Referrer</th><th align="right">Count</th></tr>
-		"""
-
-		for (referer, count) in refererlist:
+		if order == 'time':
 			s += """
-			<tr><td align="left">%s</td><td align="right">%s</td></tr>
-			""" % (referer, count)
+			<tr><th align="left"><a href="%s">Referer</a></th>
+				<th align="left">Last Reference at</th>
+				<th align="right"><a href="%s">Count</a></th></tr>
+			""" % ( orderLink( usernum, group, 'referrer' ),
+				orderLink( usernum, group, 'count' ) )
+		elif order == 'count':
+			s += """
+			<tr><th align="left"><a href="%s">Referer</a></th>
+				<th align="left"><a href="%s">Last Reference at</a></th>
+				<th align="right">Count</th></tr>
+			""" % (orderLink(usernum, group, 'referrer'),
+				orderLink(usernum, group, 'time'))
+		else:
+			s += """
+			<tr><th align="left">Referer</th>
+				 <th align="left"><a href="%s">Last Reference at</a></th>
+				<th align="right"><a href="%s">Count</a></th></tr>
+			""" % (orderLink(usernum, group, 'time'),
+				orderLink(usernum, group, 'count'))
+
+		referrerlist = []
+		for row in set.referrers.select( { 'usernum': usernum, 'group': group } ):
+			referrerlist.append(row)
+
+		if order == 'time':
+			referrerlist.sort(lambda a,b: -1*cmp(a.time,b.time))
+		elif order == 'count':
+			referrerlist.sort(lambda a,b: -1*cmp(a.count,b.count))
+		else:
+			referrerlist.sort(lambda a,b: -1*cmp(a.referrer,b.referrer))
+
+		for row in referrerlist:
+			s += """
+			<tr><td align="left"><a target="_new" href="%s">%s</a></td>
+			<td align="left"><pre>%s</pre></td><td align="right">%s</td></tr>
+			""" % (row.referrer, row.referrer, row.time, row.count)
 
 		s += """
 		</table>
