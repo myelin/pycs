@@ -115,7 +115,8 @@ class formatter( defaultFormatter.defaultFormatter ):
 		src="%s/images/tinyCoffeeCup.gif" width="10" height="10"
 		alt="%s" /></a>
 		<a href="%s"><img border="0" src="%s/images/xml.gif" width="36" height="14"
-		alt="%s" /></a>
+		alt="%s" /></a><br/>
+		<a href="/system/login.py">Log in</a> to delete comments.
 		</td></tr>
 		</table>
 		</form>
