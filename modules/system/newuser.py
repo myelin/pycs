@@ -65,21 +65,27 @@ def show_urls(u):
 	s += """<p>Your usernum is %(usernum)s.</p>
 <!--<p>If you want to use this server for comments, the URL is <b>%(commenturl)s</b></p>-->
 
-<p>To get comments to work, you need to edit your weblog template and add the following HTML to the top:</p>
+<p>To get comments and trackbacks to work, you need to edit your weblog template and add the following HTML to the top:</p>
 
-<p>&lt;script src="%(commenturl)s?u=%(usernum)s&amp;amp;c=counts" type="text/javascript"&gt;&lt;/script&gt;</p>
+<p>&lt;script src="%(commenturl)s?u=%(usernum)s&amp;amp;c=counts" type="text/javascript"&gt;&lt;/script&gt;<br/>
+&lt;script src="%(tburl)s?u=%(usernum)s&amp;amp;c=counts" type="text/javascript"&gt;&lt;/script&gt;
+</p>
 
 <p>Now, in your item template, you need to put the following:</p>
 
-<p>Comment [&lt;script type="text/javascript" language="JavaScript"&gt;commentCounter('<i><b>postid</b></i>')&lt;/script&gt;]&lt;/a&gt;</p>
+<p>Comment [&lt;script type="text/javascript" language="JavaScript"&gt;commentCounter('<i><b>postid</b></i>')&lt;/script&gt;]&lt;/a&gt;<br/>
+TrackBack [&lt;script type="text/javascript" language="JavaScript"&gt;trackbackCounter('<i><b>postid</b></i>')&lt;/script&gt;]&lt;/a&gt;
+</p>
 
 <p>Replace <b>postid</b> with script to generate the post ID for your blogging tool.  In Radio, it should look like this:</p>
 
-<p>Comment [&lt;script type="text/javascript" language="JavaScript"&gt;commentCounter('&lt;%%itemNum%%&gt;')&lt;/script&gt;]&lt;/a&gt;</p>
+<p>Comment [&lt;script type="text/javascript" language="JavaScript"&gt;commentCounter('&lt;%%itemNum%%&gt;')&lt;/script&gt;]&lt;/a&gt;<br/>
+TrackBack [&lt;script type="text/javascript" language="JavaScript"&gt;trackbackCounter('&lt;%%itemNum%%&gt;')&lt;/script&gt;]&lt;/a&gt;</p>
 
 """ % {
 		'usernum': u.usernum,
 		'commenturl': set.ServerUrl() + "/system/comments.py",
+		'tburl': set.ServerUrl() + "/system/trackback.py",
 		'serverurl': set.ServerUrl(),
 		}
 

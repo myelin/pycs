@@ -7,10 +7,13 @@ import pycs_settings
 set = pycs_settings.Settings( quiet=True )
 
 def getHeaderString(usernum):
+	csslink = None
 	if usernum:
-		csslink = set.getUserStylesheet(usernum)
-	else:
-		csslink = None
+		try:
+			csslink = set.getUserStylesheet(usernum)
+		except pycs_settings.NoSuchUser:
+			print "no such user: %s" % `usernum`
+			pass
 	css = """<style type="text/css">
 <!--
 body { font-family: verdana, sans-serif; }
@@ -36,15 +39,11 @@ body { font-family: verdana, sans-serif; }
 	return headerString
 
 startTableString = """
-<ol><!--
-	<table width="100%" cellspacing="1" cellpadding="0">
-	<tr><td class="black">
-	<table width="100%" cellspacing="1" cellpadding="10">-->
+<ol>
 """
 
 endTableString = """
-</ol><!--	</table>
-	</td></tr></table>-->
+</ol>
 """
 
 footerString = """

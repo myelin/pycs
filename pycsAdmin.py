@@ -420,11 +420,11 @@ class pycsAdmin_handler:
 				ret += 'u %s p %s cmt %s\n' % (u, p, `cmt`)
 				when = [x for x in cmt['when']]
 				while len(when) < 9: when += [0]
-				ci = {'name': cmt['from'],
-				      'email': cmt.has_key('email') and cmt['email'] or '',
-				      'url': cmt['url'],
+				ci = {'name': cmt['from'].encode('utf-8'),
+				      'email': cmt.has_key('email') and cmt['email'].encode('utf-8') or '',
+				      'url': cmt['url'].encode('utf-8'),
 				      'date': time.strftime(comments.STANDARDDATEFORMAT, when),
-				      'comment': cmt['comment'].strip(),
+				      'comment': cmt['comment'].strip().encode('utf-8'),
 				      }
 				print ci
 				rows = cmt_block.notes.select(ci)

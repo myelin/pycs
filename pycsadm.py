@@ -84,9 +84,16 @@ if cmd == 'add_comments':
 	cmts = ns['comments']
 	for k,v in cmts.items():
 		print "add comment %s" % k
-		print server.pycsAdmin.execute(token, cmd, [usernum, {k:v}])['message']
+		for c in v:
+			for a,b in c.items():
+				if type(b) == type(''):
+					c[a] = b.decode('iso-8859-1')
+		xrp = [usernum, {k:v}]
+		open('xml.xml', 'wt').write(xmlrpclib.dumps((xrp,)))
+		res = server.pycsAdmin.execute(token, cmd, xrp)
+		print res['message']
 		token = get_token()
-else:	
+else:
 	res = server.pycsAdmin.execute( token, cmd, params )
 
 if res['flError']:
