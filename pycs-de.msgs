@@ -99,3 +99,12 @@
 'Hello World'::='Hallo Welt'
 'This is a test'::='Dieses ist ein Test'
 
+# strings from xmlStorageSystem.py
+'Welcome back, %s!'::='Willkommen zurück, %s!'
+'Good to have you here, %s!'::='Klasse das du mitmachst, %s!'
+'%d files have been saved for you, %s'::='%d Dateien wurden für dich gespeichert, %s'
+'%d files have been deleted for you, %s'::='%d Dateien wurden für dich gelöscht, %s'
+'Hello, %s, from the Python Community Server!'::='Hallo, %s, Willkommen beim Python Community Server!'
+'Password incorrect'::='Passwort falsch'
+'User not found'::='Benutzerkennung nicht gefunden'
+
