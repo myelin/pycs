@@ -9,7 +9,7 @@ import xmlrpclib
 import pycs_tokens
 import pycs_settings
 
-set = pycs_settings.Settings( quiet=True, nomk=True )
+set = pycs_settings.Settings( quiet=True, nomk=True, nopg=True )
 
 def usage():
 	print """pycsadm [-h]

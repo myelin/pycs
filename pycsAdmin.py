@@ -360,15 +360,19 @@ class pycsAdmin_handler:
 
 
 	def password( self, params ):
-		if len(params) != 2:
+		if len(params) not in (1, 2):
 			return param_err(2, args="usernum, password")
 		try:
 			user = self.set.User( params[0] )
 		except:
 			return {
 				'flError': xmlrpclib.True,
-				'message': 'User %s not found' % params[1],
+				'message': 'User %s not found' % params[0],
 				}
+
+		if len(params) == 1:
+			# just return password
+			return done_msg("Password hash is '%s'" % user.password)
 
 		self.set.Password( params[0], params[1] )
 

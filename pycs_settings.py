@@ -61,7 +61,7 @@ def usedBytes( path ):
 
 class Settings:
 
-	def __init__(self, quiet=0, nomk=0, authorizer=None):
+	def __init__(self, quiet=0, nomk=0, nopg=0, authorizer=None):
 		self.authorizer = authorizer
 		self.rewrite_h = None
 		self.ar_h = None
@@ -133,10 +133,11 @@ class Settings:
 				self.DumpData()
 
 		# Set up PostgreSQL connection
-		if not self.conf.has_key("pg_host"):
-			print "ERROR: You do not have the pg_* variables set up in pycs.conf.  Are you upgrading from a version that only used MetaKit?  Please read the documentation, and pycs.conf.default, for more information."
-			raise SystemExit(0)
-		self.pdb = apply(pycs_db.DB, [self] + [self.conf[x] for x in ('pg_host', 'pg_db', 'pg_user', 'pg_pass')])
+		if not nopg:
+			if not self.conf.has_key("pg_host"):
+				print "ERROR: You do not have the pg_* variables set up in pycs.conf.  Are you upgrading from a version that only used MetaKit?  Please read the documentation, and pycs.conf.default, for more information."
+				raise SystemExit(0)
+			self.pdb = apply(pycs_db.DB, [self] + [self.conf[x] for x in ('pg_host', 'pg_db', 'pg_user', 'pg_pass')])
 
 	def getCommentTable(self):
 		return self.comments
