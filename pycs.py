@@ -169,7 +169,7 @@ if __name__ == '__main__':
 		auth = None
 
 	# Get config
-	set = pycs_settings.Settings(authorizer=auth)
+	set = pycs_settings.Settings(authorizer=auth, quiet=1)
 	#set.RecalculateUserSpace() # maybe run this once, to update everything?  slows down startup a LOT
 
 	pycs_translation.translation(set.Language()).install()
