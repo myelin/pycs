@@ -52,11 +52,13 @@ if __name__ == '__main__':
 	LOGFILE = "/var/log/apache/rcs-access.log"
 	rooturl = 'http://www.pycs.net'
 	outputroot = '/var/lib/pycs/www/'
+	confdir = '/etc/pycs'
 	if len( sys.argv ) > 1:
 		LOGFILE = sys.argv[1]
 		rooturl = sys.argv[2]
 		if len( sys.argv ) > 2:
 			outputroot = sys.argv[3]
+			confdir = sys.argv[4]
 
 	# read in referer log blacklist
 	blacklistFn = os.path.join( os.path.abspath( os.path.split( sys.argv[0] )[0] ), 'refererBlacklist.txt' )
@@ -71,7 +73,7 @@ if __name__ == '__main__':
 	#logdata = db.getas( "hits[date:S,ip:S,page:S,ua:S,ref:S,err:S]" ).ordered( 6 )
 	
 	config = ConfigParser.ConfigParser()
-	config.read( '/etc/pycs/pycs.conf' )
+	config.read( os.path.join( confdir, 'pycs.conf' ) )
 	def readAllOptions( section ):
 		return dict( [
 			( opt, config.get( section, opt ) )
