@@ -74,6 +74,10 @@ if res['flError']:
 else:
 	if res.has_key( 'columns' ) and res.has_key( 'table' ):
 		print string.join( res['columns'], '\t' )
+		lines = []
+		for c in res['columns']:
+			lines.append( '-' * len( c ) )
+		print string.join( lines, '\t' )
 		for row in res['table']:
 			print string.join( row, '\t' )
 	print res['message']

@@ -156,6 +156,8 @@ class pycsAdmin_handler:
 		for c in self.commands.keys():
 			res.append( [ c,self.commands[c][1] ] )
 
+		res.sort( lambda a,b: cmp( a[0],b[0] ) )
+
 		return {
 			'flError': xmlrpclib.False,
 			'message': 'Done!',
