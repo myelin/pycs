@@ -293,6 +293,9 @@ class xmlStorageSystem_handler:
 			}
 		
 		return {
+			'community': {
+				'flCanHostComments': xmlrpclib.True,
+				},
 			'yourUpstreamFolderUrl': self.userFolder( email ),	# user URL
 			'message': 'Hello, %s, from the Python Community Server!' % (u.name,),
 			'ctBytesInUse': 0,	# bytes in use by current user FIXME
@@ -310,7 +313,7 @@ class xmlStorageSystem_handler:
 				'ftsc', 'fttb', 
 				'gif', 'ico', 'jpeg', 'jpg', 'png', 
 				'wav', 'swf', 'sit', 'hqx', 'gz', 'zip',
-				'htaccess',
+				#'htaccess',
 				],
 			'urlRankingsByPageReads': self.set.ServerUrl() + '/system/rankings.py',
 			'urlReferers': self.set.ServerUrl() + '/system/referers.py?usernum=',
@@ -454,18 +457,10 @@ class xmlStorageSystem_handler:
 				'userAgent': "don't know",
 				'ctBytesInUse': self.userSpaceUsed( u.usernum ),
 				'whenLastSignOff': u.lastsignoff,
-				'messageOfTheDay': "no news, sorry!",
+				'messageOfTheDay': '',
 				'whenLastSignOn': u.lastsignon,
 				'flSignedOn': xmlrpclib.boolean( u.signedon ),
 				'usernum': u.usernum,
-				'rssHotlistData': {
-					'f': self.userLocalFolder( u.usernum ) + '/gems/mySubscriptions.opml', 
-					'urls': {
-						'http://scriptingnews.userland.com/xml/scriptingNews2.xml': xmlrpclib.True,
-					},
-					'whenLastUpdated': "don't know",
-					'whenLastCompiled': "don't know",
-				},
 				'ip': "don't know",
 			}, 
 			'message': 'Pong!',
