@@ -119,7 +119,7 @@ class Settings:
 	def ServerPort( self ):
 		return int( self.conf['serverport'] )
 
-	def DefaultConfigValue( key, value ):
+	def DefaultConfigValue( self, key, value ):
 		if self.conf.has_key( key ):
 			return self.conf[key]
 		else:
