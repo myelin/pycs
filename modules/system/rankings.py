@@ -75,7 +75,7 @@ for title,section in ( ("hits today",todayRanks), ("all-time hits",alltimeRanks)
 		s += """
 		<tr><td><a href="%s">%s</a> (<a href="%s">link</a>)</td><td>%d</td></tr>
 		""" % ( "referers.py?usernum=%s&order=count" % ( user.usernum, ),
-			set.UserFolder( user.usernum ), user.weblogTitle, hits
+			user.weblogTitle, set.UserFolder( user.usernum ), hits
 		)
 
 	s += """
