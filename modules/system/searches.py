@@ -33,7 +33,7 @@ from search_engines import checkUrlForSearchEngine
 from string_collector import StringCollector
 
 def orderLink(username,group,order):
-	return set.ServerUrl() + '/system/referers.py?usernum=%s&group=%s&order=%s' % (usernum, group, order)
+	return set.ServerUrl() + '/system/searches.py?usernum=%s&group=%s&order=%s' % (usernum, group, order)
 
 def sortISOTime(timea,timeb):
 	ta = time.strptime(timea.time,'%Y-%m-%d %I:%M:%S %p')
@@ -87,7 +87,7 @@ else:
 			<tr><th align="left"><a href="%s">%s</a></th>
 				<th align="left">%s</th>
 				<th align="right"><a href="%s">%s</a></th></tr>
-			""" % ( orderLink( usernum, group, 'referrer' ),
+			""" % ( orderLink( usernum, group, 'word' ),
 			        _("Search term"),
 				_("Last hit"),
 				orderLink( usernum, group, 'count' ),
@@ -97,7 +97,7 @@ else:
 			<tr><th align="left"><a href="%s">%s</a></th>
 				<th align="left"><a href="%s">%s</a></th>
 				<th align="right">%s</th></tr>
-			""" % ( orderLink(usernum, group, 'referrer'),
+			""" % ( orderLink(usernum, group, 'word'),
 			        _("Search term"),
 				orderLink(usernum, group, 'time'),
 				_("Last hit"),
