@@ -12,6 +12,10 @@ serveruser = {{USER}}
 
 maxusernum = 100
 
+# the next option should be set to a more sensible value, some address
+# where bounces should go to when problems with mails arise.
+servermailto = python-community-server-mailto@myelin.co.nz
+
 [aliases]
 
 # Put aliases here; the server will send these back as 'official URLs' for the 
