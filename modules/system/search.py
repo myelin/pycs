@@ -243,10 +243,10 @@ def search(usernum, posts_t, query, skip_hits):
 				add('<div class="searchday">')
 				add('<h2>%s-%s-%s</h2>' % (lastdate[:4], lastdate[4:6], lastdate[6:]))
 			add('<div class="searchhit"><h3><a href="%s">%s</a></h3>' % (esc(post.url), esc(post.title)))
-			desc = cleanHtml(post.description)
+			desc = cleanHtml(post.description, 0)
 			if len(desc) > 400:
 				desc = desc[:400]
-				desc = cleanHtml(desc)
+				desc = cleanHtml(desc, 0)
 				desc += ' ...'
 			add('<div class="searchpost">%s</div></div>' % desc)
 		add('</div>')
