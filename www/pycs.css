@@ -1,0 +1,25 @@
+body {
+	font-family: verdana, sans-serif;
+}
+h1 {
+	background-color: lightgreen;
+	text-align: center;
+	border: solid;
+	border-color: green;
+	padding: 0.25em;
+}
+.quietLink {
+	text-decoration: none;
+	color: black;
+}
+.margins, .indent {
+	margin-left: 10%;
+}
+.margins {
+	margin-right: 10%;
+}
+.dashedCells td {
+	border: dashed;
+	padding: 0.5em;
+	border-width: 1px;
+}
