@@ -536,7 +536,7 @@ class Settings:
 		stylesheet = '%s/pycs.css' % self.ServerUrl()
 		if usernum:
 			x = self.getUserStylesheet(usernum)
-			if x: css = x
+			if x: stylesheet = self.UserFolder(usernum) + x
 		
 		metatags = ''
 		if hidden:
