@@ -25,6 +25,16 @@ servermailto = python-community-server-mailto@myelin.co.nz
 # to restart after changing this.
 #adminpassword = XXXXX
 
+# the following two settings should be uncommented if you want to use the
+# medusa monitor server to debug the installed system. This is mostly usefull
+# for developers. The monitor client is in the medusa subdirectory of your
+# installation ($PREFIX/usr/lib/pycs/bin/medusa/monitor_client.py). If you
+# only enable monitorport but not monitorpassword, an unprotected monitor
+# server is started. Otherwise a protected monitor server is started. Of course
+# you should change the given password to something more sensible.
+#monitorport = 8448
+#monitorpassword = YYYYY
+
 # Change these two to change the appearance of the dynamically-generated
 # pages - e.g. the updates, rankings, referrers and mailto pages
 longtitle = Python Community Server
