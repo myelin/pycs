@@ -42,7 +42,7 @@ class comment:
 		
 		self.cleanedUpComment = string.replace(
 			re.sub(
-				r'(http://[^\r\n \"\<]+)',
+				r'[^"](http://[^\r\n \"\<]+)[^"]',
 				r'<a href="\1">\1</a>',
 				cgi.escape( cmt.excerpt ),
 			),
