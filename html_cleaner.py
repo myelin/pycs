@@ -23,6 +23,8 @@ class htmlCleaner( SGMLParser ):
 			"<br />\n",
 		)
 
+	def handle_entityref( self, entity ):
+		self.cleanedHTML += '&%s;' % entity
 
 	def handle_starttag( self, tag, method, attrs ):
 		if not method( attrs ):
@@ -69,6 +71,8 @@ if __name__ == '__main__':
 		"""It looks like someone's subscribed to the rendered form of your outline. People should be subscribing to the raw OPML version - http://rcs.myelin.cjb.net/users/0000001/instantOutliner/rogersCadenhead.opml - but actually they're subscribing to the one that calls your servlet. 
 
 Your outline is currently the most popular file on this server, because you plus one or two others are downloading it every 10-60 seconds. I can't imagine the hammering radio.weblogs.com must be getting from all the I/O polling, but it must be pretty shocking.""",
+		"""Script should be removed: <script>foo bar</script>""",
+		"""Entities &amp; stuff should stay: &lt;b&gt; shouldn't make the text bold!""",
 	]
 	for post in text:
 
