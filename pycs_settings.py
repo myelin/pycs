@@ -290,8 +290,8 @@ class Settings:
 		return u
 
 	def FindUserByEmail( self, email, password):
-		# Look for user with that address
-		vw = self.users.select( { 'email': email } )
+		# Look for user with that address that are not disabled
+		vw = self.users.select( { 'email': email, 'disabled': 0 } )
 		
 		# If we got a blank view, the user doesn't exist
 		if len(vw) == 0:
