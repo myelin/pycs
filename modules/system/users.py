@@ -83,11 +83,44 @@ if query.has_key('usernum'):
 	
 	except pycs_settings.NoSuchUser:
 		s += _('<p>Sorry, user %s not found!</p>') % (usernum,)
-	
+
+else:
+
+	if query.get('format', '') == 'rss':
+		s += '<?xml version="1.0" encoding="iso-8859-1"?>'
+		s += '<rss version="2.0">'
+		s += '<channel>'
+		s += '<title>%s</title>' % _('RSS feed of users')
+		s += '</channel>'
+		for user in set.users:
+			url = set.UserFolder( user.usernum )
+			s += '<item>'
+			s += '<title>%s (%d)</title>' % (
+				user.name,
+				int(user.usernum)
+			)
+			s += '<link>%s</link>' % url
+			s += '</item>'
+		s += '</rss>'
+	else:
+		s += _('<p>This is a list of all users registered on this server:')
+		s += '<ul>'
+		for user in set.users:
+			url = set.UserFolder( user.usernum )
+			s += '<li><strong>%d</strong> <a href="%s">%s</a></li>' % (
+				int(user.usernum),
+				url,
+				user.name
+			)
+		s += '</ul>'
+
 # Dump it all out
 
-page['body'] = s
-s = set.Render( page )
+if query.get('format', '') == 'rss':
+	request['Content-Type'] = 'text/xml'
+else:
+	page['body'] = s
+	s = set.Render( page )
 
 request['Content-Length'] = len(s)
 request.push( s )
