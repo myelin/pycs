@@ -4,6 +4,16 @@ from sgmllib import SGMLParser
 import re
 import string
 
+def unicode_to_entities(s):
+	ret = []
+	ra = ret.append
+	for c in s:
+		if ord(c) > 127:
+			ra('&#%d;' % ord(c))
+		else:
+			ra(c)
+	return "".join(ret)
+
 class htmlCleaner( SGMLParser ):
 
 	def __init__( self ):
@@ -19,15 +29,11 @@ class htmlCleaner( SGMLParser ):
 
 	def handle_data( self, data ):
 		self.cleanedText += data
-		self.cleanedHTML += string.replace(
-			re.sub(
-				r'(http://[^\r\n \"\<]+)',
-				r'<a href="\1" target="_blank">\1</a>',
-				data,
-			),
-			"\n",
-			"<br />\n",
-		)
+		self.cleanedHTML += unicode_to_entities(re.sub(
+			r'(http://[^\r\n \"\<]+)',
+			r'<a href="\1" target="_blank">\1</a>',
+			data,
+			).replace("\n", "<br />\n").replace("\r", ""))
 
 	def handle_entityref( self, entity ):
 		self.cleanedHTML += '&%s;' % entity

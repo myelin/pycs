@@ -27,6 +27,18 @@ pycsadm add_comments usernum commentfilename
 
    Sometimes you need to run this one twice to import all the comments.  It won't
    add duplicate comments, so you can run it as many times as you like.
+
+pycsadm renumber_comment usernum postid newusernum newpostid
+   Moves all the comments from a single post over to another post.  If the new post
+   already exists, the comments will be appended to the existing post.
+
+   For some reason this and the renumber_all_comments sometimes don't
+   get all the comments done the first time, so you need to call them
+   twice.  (Known bug, but it doesn't seem to destroy any data).
+
+pycsadm renumber_all_comments usernum newusernum
+   Moves all the comments from all the posts for a usernum over to the same
+   postid on another usernum.
 """
 	sys.exit(0)
 

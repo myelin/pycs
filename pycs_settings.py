@@ -424,6 +424,12 @@ class Settings:
 		u.password = md5.md5(password).hexdigest()
 		self.Commit()
 
+	def PasswordMD5(self, usernum, password_hash):
+		formattedUsernum = self.FormatUsernum(usernum)
+		u = self.User(usernum)
+		u.password = password_hash
+		self.Commit()
+
 	def RecalculateUserSpace(self):
 		"re-calculate space used for all users and store in the database"
 		for user in self.users:

@@ -113,11 +113,13 @@ class pycsAdmin_handler:
 			('options', 'List options for usernum'),
 			('setopt', 'Set an option for usernum'),
 			('alias', 'Set alias for usernum'),
-			('password', 'Set password for usernum'),
+			('password', 'Set password for usernum to supplied plaintext password'),
+			('password_hash', 'Set password for usernum to supplied MD5 hash'),
 			('normalize_comments', 'Normalize comment usernums'),
 			('list_comment_usernums', 'List all usernums in the comment table'),
 			('add_comments', 'Import some comments into the comments table'),
-			('renumber_comment', 'Changes the post ID associated with a comment thread'),
+			('renumber_comment', 'Moves a comment thread from one postid to another'),
+			('renumber_all_comments', 'Moves all comments for a usernum to another usernum'),
 			):
 			self.commands[name] = [ getattr(self, name), desc ]
 		
@@ -352,7 +354,7 @@ class pycsAdmin_handler:
 
 	def password( self, params ):
 		if len(params) != 2:
-			return param_err(2)
+			return param_err(2, "usernum, password")
 		try:
 			user = self.set.User( params[0] )
 		except:
@@ -365,6 +367,20 @@ class pycsAdmin_handler:
 
 		self.set.Commit()
 
+		return done_msg()
+
+	def password_hash(self, params):
+		if len(params) != 2:
+			return param_err(2, "usernum, md5 hash")
+		try:
+			user = self.set.User( params[0] )
+		except:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'User %s not found' % params[1],
+				}
+		self.set.PasswordMD5( params[0], params[1] )
+		self.set.Commit()
 		return done_msg()
 
 	def normalize_comments( self, params ):
@@ -401,22 +417,28 @@ class pycsAdmin_handler:
 			ret += "%s: %s\n" % (k, ", ".join(usernums[k]))
 		return done_msg(ret)
 	
+	def _make_comment_block(self, u, p):
+		"retrieve row in comments table for a post, creating it if it doesn't exist"
+		ct = self.set.getCommentTable()
+		rows = ct.select({'user': u, 'paragraph': p})
+		if not len(rows):
+			ct.append(user=u, paragraph=p)
+			rows = ct.select({'user': u, 'paragraph': p})
+		cmt_block = rows[0]
+		return cmt_block
+
 	def add_comments( self, params ):
 		if len(params) != 2: return param_err(2)
 
 		import comments
 
 		ret = ''
-		ct = self.set.getCommentTable()
 		u, plist = params
 		for p,cmts in plist.items():
-			rows = ct.select({'user': u, 'paragraph': p})
-			if len(rows):
-				cmt_block = rows[0]
-			else:
-				ct.append(user=u, paragraph=p)
-				cmt_block = ct[-1]
-				
+			# prepare db space for this post
+			cmt_block = _make_comment_block(u, p)
+
+			# add all comments for this post
 			for cmt in cmts:
 				ret += 'u %s p %s cmt %s\n' % (u, p, `cmt`)
 				when = [x for x in cmt['when']]
@@ -440,28 +462,64 @@ class pycsAdmin_handler:
 		
 		return done_msg(ret)
 
+	def _move_comments(self, cmt_block, newusernum, newpostid):
+		ret = ''
+		# now copy the comments over to the post on the new userid
+		ret += "getting handle to comment block for %s/%s\n" % (newusernum, newpostid)
+		new_block = self._make_comment_block(newusernum, newpostid)
+		ret += "[block: u=%s p=%s]\n" % (new_block.user, new_block.paragraph)
+
+		for cmt in cmt_block.notes:
+			cmt_v = {'date': cmt.date, 'name': cmt.name, 'email': cmt.email, 'url': cmt.url, 'comment': cmt.comment}
+			if len(new_block.notes.select(cmt_v)):
+				ret += "comment with date %s is already in there\n" % cmt.date
+			else:
+				ret += "copying comment with date %s\n" % cmt.date
+				new_block.notes.append(cmt)
+		ret += "deleting comments from original thread\n"
+		cmt_block.notes[:] = []
+			
+		return ret
+
 	def renumber_comment( self, params ):
-		return param_err(1, "this doesn't work - don't use it!")
-		
 		if len(params) != 4: return param_err(4)
 
 		usernum, oldid, newusernum, newid = params
 
+		# setup
 		import comments
-
 		ret = ''
 		ct = self.set.getCommentTable()
-		rows = ct.select({'user': usernum, 'paragraph': oldid})
+
+		# get the comments for the specified post
+		blk_v = {'user': usernum, 'paragraph': oldid}
+		rows = ct.select(blk_v)
 		if len(rows):
 			cmt_block = rows[0]
 		else:
 			return retmsg(1, "Comment %s does not exist for usernum %s" % (oldid, usernum))
 
-		cmt_block.user = newusernum
-		cmt_block.paragraph = newid
+		ret += "found comment block %s\n" % `blk_v`
+		ret += self._move_comments(cmt_block, newusernum, newid)
+
+		# make it permanent
+		ret += "committing to db\n"
 		self.set.Commit()
 
-		return done_msg("Comment %s for usernum %s renumbered to %s for usernum %s" % (oldid, usernum, newid, newusernum))
+		return done_msg("Comment %s for usernum %s renumbered to %s for usernum %s\n\ndetails:\n%s" % (oldid, usernum, newid, newusernum, ret))
+
+	def renumber_all_comments(self, params):
+		if len(params) != 2: return param_err(2)
+
+		usernum, newusernum = params
+		ret = ''
+		ct = self.set.getCommentTable()
+		for row in ct.select({"user": usernum}):
+			ret += "moving comments for u=%s p=%s to u=%s p=%s...\n" % (row.user, row.paragraph, newusernum, row.paragraph)
+			ret += self._move_comments(row, newusernum, row.paragraph)
+			ret += "\n"
+
+		return done_msg("Moved comments for usernum %s to usernum %s\n\ndetails:\n%s" % (usernum, newusernum, ret))
 
 if __name__=='__main__':
 	# Testing
