@@ -1,10 +1,25 @@
 # Python Community Server
 #
-#     search.py: Search page
+#     search.py: search your posts (in the mirroredPosts table)
 #
 # Copyright (c) 2003, Phillip Pearson <pp@myelin.co.nz>
-# 
 #
+# Permission is hereby granted, free of charge, to any person obtaining a copy of 
+# this software and associated documentation files (the "Software"), to deal in 
+# the Software without restriction, including without limitation the rights to 
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of 
+# the Software, and to permit persons to whom the Software is furnished to do so, 
+# subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all 
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS 
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER 
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import md5
 import re
@@ -122,7 +137,7 @@ def webauthorize(url):
 			return 0
 	return 1
 	
-def exclude_url_p(url):
+def allow_url_p(url):
 	"url exclusion callback; checks a url and returns 1 if it should show in the search results"
 	if webauthorize(url) == 0:
 		return 0
@@ -174,6 +189,7 @@ def search(usernum, posts_t, query, skip_hits):
 	total_hits = 0
 	for post_idx in range(len(posts_t)-1, -1, -1):
 		post = posts_t[post_idx]
+		if not allow_url_p(post.url): continue
 		try:
 			# get the post text
 			text = (post.title + post.description).decode('utf-8').lower()
@@ -214,7 +230,12 @@ def search(usernum, posts_t, query, skip_hits):
 			total_hits,
 			extra
 			))
+		lastdate = None
 		for post in hits:
+			hitdate = post.date[:8]
+			if lastdate != hitdate:
+				lastdate = hitdate
+				add('<h2>%s-%s-%s</h2>' % (lastdate[:4], lastdate[4:6], lastdate[6:]))
 			add('<div class="searchhit"><h3><a href="%s">%s</a></h3>' % (esc(post.url), esc(post.title)))
 			add('<div class="searchpost">%s</div></div>' % post.description)
 	return "".join(ret)
@@ -239,8 +260,8 @@ def main():
 	<input type="hidden" name="u" value="%s" />
 	%s <input type="text" size="80" name="q" value="%s" />
 	</form>""" % (
-		_('Searching weblog for usernum <b>%s</b>:'),
-		usernum, _('Search:'), usernum, esc(search_terms)
+		_('Searching weblog for usernum <b>%s</b>:') % usernum,
+		usernum, _('Search:'), esc(search_terms)
 	)
 
 	if search_terms:

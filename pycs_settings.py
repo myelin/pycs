@@ -425,8 +425,10 @@ class Settings:
 		metatags = ''
 		if hidden:
 			metatags += '<meta name="robots" content="noindex,nofollow,noarchive">'
-		out = """<html>
+		out = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
 	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=%s">
 		<title>%s: %s</title>
 		<link rel="stylesheet" href="%s/pycs.css" type="text/css" />
 		%s
@@ -437,7 +439,7 @@ class Settings:
 		%s
 		</div>
 	</body>
-	</html>""" % (self.LongTitle(), data['title'], self.ServerUrl(),
+</html>""" % (self.DocumentEncoding(), self.LongTitle(), data['title'], self.ServerUrl(),
 			metatags,
 			self.ShortTitle(), data['title'], data['body'])
 	

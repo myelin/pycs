@@ -1,6 +1,6 @@
 # Python Community Server
 #
-#     search.py: Search page
+#     search.py: search your weblog using ht://Dig (EXPERIMENTAL)
 #
 # Copyright (c) 2003, Phillip Pearson <pp@myelin.co.nz>
 # 
@@ -13,7 +13,7 @@
 # 	or the GNU Public License version 2 or later
 # 	<http://www.gnu.org/copyleft/gpl.html>
 #
-# 	$Id: htdig.py,v 1.1 2003/10/14 09:45:33 myelin Exp $
+# 	$Id: htdig.py,v 1.2 2003/10/15 11:27:52 myelin Exp $
 #
 # So I guess if you use search.py, your copy of PyCS falls under the GPL.
 # Don't install htsearch to keep it under the MIT license.  Your call :-)

@@ -294,19 +294,33 @@ class xmlStorageSystem_handler:
 		print "password", password
 
 		u = self.set.FindUser( email, password )
+
+		search_inf = []; flHasSearch = 0; urlSearch = ''
+		search_idx = self.set.mirrored_posts.find(usernum=u.usernum)
+		if search_idx != -1:
+			search_inf = self.set.mirrored_posts[search_idx].posts
+		if len(search_inf):
+			# the rationale here is to turn on flHasSearch if the search
+			# feature is active for this particular user.  clients should
+			# test for flCanMirrorPosts and send in a copy of their posts
+			# if it exists and is true.  then, if flHasSearch becomes true,
+			# put a search box on their pages ...
+			flHasSearch = 1
+			urlSearch = '%s/system/search.py?u=%s' % (self.set.ServerUrl(), u.usernum)
 		
 		return {
 			'community': {
 				'flCanHostComments': xmlrpclib.True,
 				'flCanHostTrackback': xmlrpclib.True,
 				'flCanHostAccessRestrictions': xmlrpclib.True,
+				'flCanMirrorPosts': xmlrpclib.True,
 				'name': self.set.LongTitle(),
 				'discussionGroupUrl': 'http://radio.userland.com/discuss/',
 				'domainName': self.set.ServerUrl(),
-				'flHasSearch': xmlrpclib.False,
+				'flHasSearch': xmlrpclib.Boolean(flHasSearch),
 				'flPublic': xmlrpclib.False,
 				'mailListUrl': 'http://groups.yahoo.com/group/radio-userland/',
-				'urlSearch': '',
+				'urlSearch': urlSearch,
 				},
 			'yourUpstreamFolderUrl': self.userFolder( email ),	# user URL
 			'message': _('Hello, %s, from the Python Community Server!') % (u.name,),
@@ -479,7 +493,7 @@ class xmlStorageSystem_handler:
 		email, password, posts = params
 		print "email", email
 		print "password", password
-		print "%d posts to mirror", len(posts)
+		print "%d posts to mirror" % len(posts)
 		assert type(posts) == type([])
 
 		# make sure the user exists
@@ -491,6 +505,8 @@ class xmlStorageSystem_handler:
 			self.set.mirrored_posts.append(usernum=email, posts=[])
 		posts_t = self.set.mirrored_posts[pos].posts
 
+		updateCount = 0
+		addCount = 0
 		# now walk through all the posts and put them in the table
 		for post in posts:
 			# make sure it's a dict of strings
@@ -506,14 +522,22 @@ class xmlStorageSystem_handler:
 			postid = store_post['postid']
 			assert(type(postid)==type(''))
 			pos = posts_t.find(postid=postid)
-			if pos != -1: posts_t.delete(pos)
+			if pos != -1:
+				updateCount += 1
+				posts_t.delete(pos)
+			else:
+				addCount += 1
 			# now add it
 			posts_t.append(store_post)
 		# all there - save
 		self.set.Commit()
 		# and tell the user it worked
 		return {'flError': xmlrpclib.False,
-			'msg': '%d posts added to the database for you (usernum %s).  Now you have %d posts' % (len(posts), email, len(posts_t)),
+			'message': '%d posts updated and %d posts added to the database for you (usernum %s).  Now you have %d posts' % (updateCount, addCount, email, len(posts_t)),
+			'totalPostsKnown': len(posts_t),
+			'postsMirroredNow': len(posts),
+			'addedPosts': addCount,
+			'updatedPosts': updateCount,
 			}
 
 	# Support functions

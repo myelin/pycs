@@ -56,7 +56,7 @@ for section in ( todayRanks, alltimeRanks ):
 	section.reverse()
 
 s += """
-<table width="100%">
+<table width="80%">
 <tr>
 """
 
