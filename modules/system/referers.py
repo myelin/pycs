@@ -23,6 +23,7 @@
 
 
 import os
+import cgi
 import string
 import pycs_settings
 
@@ -75,22 +76,22 @@ else:
 
 		if order == 'time':
 			s += """
-			<tr><th align="left"><a href="%s">Referer</a></th>
-				<th align="left">Last Reference at</th>
+			<tr><th align="left"><a href="%s">Referrer</a></th>
+				<th align="left">Last hit</th>
 				<th align="right"><a href="%s">Count</a></th></tr>
 			""" % ( orderLink( usernum, group, 'referrer' ),
 				orderLink( usernum, group, 'count' ) )
 		elif order == 'count':
 			s += """
-			<tr><th align="left"><a href="%s">Referer</a></th>
-				<th align="left"><a href="%s">Last Reference at</a></th>
+			<tr><th align="left"><a href="%s">Referrer</a></th>
+				<th align="left"><a href="%s">Last hit</a></th>
 				<th align="right">Count</th></tr>
 			""" % (orderLink(usernum, group, 'referrer'),
 				orderLink(usernum, group, 'time'))
 		else:
 			s += """
-			<tr><th align="left">Referer</th>
-				 <th align="left"><a href="%s">Last Reference at</a></th>
+			<tr><th align="left">Referrer</th>
+				 <th align="left"><a href="%s">Last hit</a></th>
 				<th align="right"><a href="%s">Count</a></th></tr>
 			""" % (orderLink(usernum, group, 'time'),
 				orderLink(usernum, group, 'count'))
@@ -110,7 +111,7 @@ else:
 			s += """
 			<tr><td align="left"><a target="_new" href="%s">%s</a></td>
 			<td align="left"><pre>%s</pre></td><td align="right">%s</td></tr>
-			""" % (row.referrer, row.referrer, row.time, row.count)
+			""" % (cgi.escape( row.referrer, 1 ), row.referrer, row.time, row.count)
 
 		s += """
 		</table>
