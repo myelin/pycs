@@ -100,13 +100,19 @@
 'Search your Weblog'::='Suchen in einem Weblog'
 'Enter the words to search for:'::='Geben Sie die Suchbegriffe ein:'
 'Search'::='Suchen'
-'<h2>Search results for <strong>%s</strong></h2>'::='<h2>Ergebnisse für die Suche nach <strong>%s</strong></h2>'
+'<h2>Search results for <strong>%s</strong></h2>'::='<h2>Ergebnisse f\xfcr die Suche nach <strong>%s</strong></h2>'
 '<p>Here are all search results while searching for <strong>%s</strong> on the weblog of <a href="%s">%s</a>.'::='<p>Hier sind die Suchergebnisse f\xfcr den Suchbegriff <strong>%s</strong> auf dem Weblog von <a href="%s">%s</a>.'
 'Rank'::='Rang'
 'Page'::='Seite'
 'Size'::='Gr\xf6sse'
 'Bytes'::='Bytes'
 # already defined: '<p>Sorry, user %s not found!</p>'
+
+# strings from modules/system/trackback.py
+'an untitled posting'::='ein Beitrag ohne Titel'
+'an anonymous blog'::='ein Blog ohne Name'
+# already defined: "Comment deleted."
+'New trackback added - thanks for participating!'::='Neuer Trackback zugefügt, danke für die Nutzung!'
 
 # strings from modules/system/users.py
 'User info'::='Benutzerinfo'
@@ -128,6 +134,32 @@
 # strings from pycs_translation.py
 'Hello World'::='Hallo Welt'
 'This is a test'::='Dieses ist ein Test'
+
+# strings from trackbacks/__init__.py
+# already defined: ' at %I:%M:%S %p on %B %d, %Y'
+
+# strings from trackbacks/html.py
+'<tr><td class="cmt"><strong>No trackbacks yet</strong></td></tr>'::='<tr><td class="cmt"><strong>Bis jetzt keine Trackbacks</strong></td></tr>'
+'Subscribe to an RSS feed of this trackback thread:'::='Bestellen Sie einen RSS Feed für die Trackbacks auf diesen Beitrag:'
+'Subscribe to this trackback thread in Radio UserLand'::='Bestellen Sie den RSS Feed für die Beitragstrackbacks mit Radio UserLand'
+'Link to the RSS (XML) feed for this trackback thread'::='Verlinken Sie auf den RSS (XML) Feed für Trackbacks zu diesem Beitrag'
+# already defined: "posted by"
+'Delete trackback'::='Trackback löschen'
+
+# strings from trackbacks/rss.py
+'(trackbacks on post %s)'::='(Trackbacks zu Beitrag %s)'
+'Trackbacks for a weblog post'::='Trackbacks zu einem Weblogbeitrag'
+# already defined: "Copyright"
+# already defined: "Comment by"
+' an anonymous blog'::=' ein Blog ohne Namen'
+
+# strings from trackbacks/rssfull.py
+'(trackbacks on weblog)'::='(Trackbacks zum Weblog)'
+'Trackbacks for a weblog, ordered by date (newest first)'::='Trackbacks für ein Weblog, nach Datum sortiert (neueste zuerst)'
+# already defined: "Copyright"
+# already defined: "Comment by"
+# already defined: " an anonymous blog"
+# already defined: " for post %s"
 
 # strings from xmlStorageSystem.py
 'Welcome back, %s!'::='Willkommen zur\xfcck, %s!'

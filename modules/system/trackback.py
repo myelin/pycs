@@ -113,20 +113,20 @@ if query.has_key('c'):
 			paragraphs.append( post.paragraph )
 			counts.append( len( post.notes ) )
 		
-		s = "anID = [" + string.join(
+		s = "anTbID = [" + string.join(
 			['"%s"' % (x,) for x in paragraphs]
 			, ", " ) + "]; "
 		
-		s += "anCount = [" + string.join(
+		s += "anTbCount = [" + string.join(
 			['"%d"' % (x,) for x in counts]
 			, ", " ) + "]; "
 
-		s += "nPosts = %d;\n" % (len(counts),)
+		s += "nTbPosts = %d;\n" % (len(counts),)
 		s += """				
 		function trackbackCounter( nID ) {
-			for ( idx = 0; idx < nPosts; idx ++ ) {
-				if ( anID[idx] == nID ) {
-					document.write( anCount[idx] );
+			for ( idx = 0; idx < nTbPosts; idx ++ ) {
+				if ( anTbID[idx] == nID ) {
+					document.write( anTbCount[idx] );
 					return;
 				}
 			}
