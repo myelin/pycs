@@ -60,6 +60,7 @@ engines = {
 		],
 	'aol': [
 		re.compile(r'^http://.*\.aol\..*search.jsp\?q=([^&]*).*$'),
+		re.compile(r'^http://.*\.aol\..*[\?&]query=([^&]*).*$'),
 		],
 	't-online': [
 		re.compile(r'^http://.*\.t-online\..*tsc\?q=([^&]*).*$'),
