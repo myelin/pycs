@@ -15,8 +15,19 @@
 'posted by'::='geschrieben von'
 'Delete comment'::='Kommentar l\xf6schen'
 
+# strings from comments/rss.py
+'(comments on post %s)'::='(Kommentare zu Beitrag %s)'
+'Comments for a weblog post'::='Kommentare zu einem Weblogbeitrag'
+'Copyright'::='Copyright'
+'Comment by'::='Kommentar von'
+' an anonymous coward'::=' einem Unbekannten'
+
+# strings from modules/system/comments.py
+'Comment deleted.'::='Kommentar gel\xf6scht.'
+'New comment added - thanks for participating!'::='Neuer Kommentar gespeichert- Vielen Dank f\xfcr die Teilnahme!'
+
 # strings from modules/system/login.py
-'<p>Now you should see \'delete\' buttons next to comments for <a href="%s">your weblog</a>.</p>'::='<p>Jetzt solltest du \'Löschen\'-Schaltflächen neben Kommentaren zu <a href="%s">deinem Weblog</a> sehen.</p>'
+'<p>Now you should see \'delete\' buttons next to comments for <a href="%s">your weblog</a>.</p>'::='<p>Jetzt solltest du \'L\xf6schen\'-Schaltfl\xe4chen neben Kommentaren zu <a href="%s">deinem Weblog</a> sehen.</p>'
 'Login'::='Anmeldung'
 '<p>Sorry, email address <b>%s</b> not found!</p>'::='<p>Sorry, die Mailadresse <b>%s</b> wurde nicht gefunden!</p>'
 '<p>Sorry, the passsword was incorrect.  Please try again.</p>'::='<p>Sorry, das Passwort ist falsch. Bitte versuche es nochmal.</p>'

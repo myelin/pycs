@@ -22,16 +22,18 @@ class formatter( defaultFormatter.defaultFormatter ):
 	def header( self ):
 		user = self.set.User( self.u )
 		s = """	<channel>
-		<title>%s (comments on post %s)</title>
+		<title>%s %s</title>
 		<link>%s</link>
-		<description>Comments for a weblog post</description>
-		<copyright>Copyright %s</copyright>
+		<description>%s</description>
+		<copyright>%s %s</copyright>
 		<managingEditor>%s</managingEditor>
 		<webMaster>%s</webMaster>
 """ % (
 		user.weblogTitle,
-		self.p,
+		_("(comments on post %s)") % self.p,
 		self.set.UserFolder( user.usernum ),
+		_("Comments for a weblog post"),
+		_("Copyright"),
 		user.name,
 		user.email,
 		user.email,
@@ -43,9 +45,9 @@ class formatter( defaultFormatter.defaultFormatter ):
 		return footerString
 
 	def comment( self, cmt ):
-		title = "Comment by"
+		title = _("Comment by")
 		if cmt.cmt.name == '':
-			title += " an anonymous coward"
+			title += _(" an anonymous coward")
 		else:
 			title += " " + cmt.cmt.name
 		if cmt.cmt.url in [ '', 'http://' ]:

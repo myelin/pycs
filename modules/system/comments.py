@@ -184,7 +184,7 @@ else:
 				raise "Unauthorised attempt to delete comment"
 				
 			delIdx = form['delete']
-			formatter.note = "Comment deleted." #"delete comment u=%s, p=%s, cmt=%s" % ( formatter.u, formatter.p, delIdx )
+			formatter.note = _("Comment deleted.") #"delete comment u=%s, p=%s, cmt=%s" % ( formatter.u, formatter.p, delIdx )
 			notes.delete( int( delIdx ) )
 			set.Commit()
 			
@@ -244,7 +244,7 @@ else:
 				notes.append( newComment )
 				set.Commit()
 			
-			formatter.note = "New comment added - thanks for participating!"
+			formatter.note = _("New comment added - thanks for participating!")
 	
 	s += formatter.startTable()
 	

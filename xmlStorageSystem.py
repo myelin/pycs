@@ -108,14 +108,14 @@ class xmlStorageSystem_handler:
 		# See if we can find the user info
 		try:
 			u = self.set.FindUserByEmail( email, password )
-			msg = 'Welcome back, %s!' % (u.name,)
+			msg = _('Welcome back, %s!') % (u.name,)
 		except pycs_settings.PasswordIncorrect:
 			return { 'flError': xmlrpclib.True,
-				'message': "Password incorrect",
+				'message': _("Password incorrect"),
 			}
 		except pycs_settings.NoSuchUser:
 			u = self.set.NewUser( email, password, name )
-			msg = 'Good to have you here, %s!' % (u.name)
+			msg = _('Good to have you here, %s!') % (u.name)
 		
 		return {
 			'usernum': u.usernum,
@@ -136,11 +136,11 @@ class xmlStorageSystem_handler:
 			u = self.set.FindUser( email, password )
 		except pycs_settings.PasswordIncorrect:
 			return { 'flError': xmlrpclib.True,
-				'message': "Password incorrect",
+				'message': _("Password incorrect"),
 			}
 		except pycs_settings.NoSuchUser:
 			return { 'flError': xmlrpclib.True,
-				'message': "User not found",
+				'message': _("User not found"),
 			}
 		
 		urlList = []
@@ -209,7 +209,7 @@ class xmlStorageSystem_handler:
 		return {
 			'yourUpstreamFolderUrl': self.userFolder( email ),
 			'flError': xmlrpclib.False,
-			'message': '%d files have been saved for you, %s' % (nFilesSaved, u.name),
+			'message': _('%d files have been saved for you, %s') % (nFilesSaved, u.name),
 			'urlList': urlList,
 			}
 
@@ -226,11 +226,11 @@ class xmlStorageSystem_handler:
 			u = self.set.FindUser( email, password )
 		except pycs_settings.PasswordIncorrect:
 			return { 'flError': xmlrpclib.True,
-				'message': "Password incorrect",
+				'message': _("Password incorrect"),
 			}
 		except pycs_settings.NoSuchUser:
 			return { 'flError': xmlrpclib.True,
-				'message': "User not found",
+				'message': _("User not found"),
 			}
 		
 		flError = xmlrpclib.False
@@ -273,7 +273,7 @@ class xmlStorageSystem_handler:
 		return {
 			'errorList': errorList,
 			'flError': flError,
-			'message': '%d files have been deleted for you, %s' % (nFilesDeleted, u.name),
+			'message': _('%d files have been deleted for you, %s') % (nFilesDeleted, u.name),
 			}
 
 
@@ -289,11 +289,11 @@ class xmlStorageSystem_handler:
 			u = self.set.FindUser( email, password )
 		except pycs_settings.PasswordIncorrect:
 			return { 'flError': xmlrpclib.True,
-				'message': "Password incorrect",
+				'message': _("Password incorrect"),
 			}
 		except pycs_settings.NoSuchUser:
 			return { 'flError': xmlrpclib.True,
-				'message': "User not found",
+				'message': _("User not found"),
 			}
 		
 		return {
@@ -308,7 +308,7 @@ class xmlStorageSystem_handler:
 				'urlSearch': '',
 				},
 			'yourUpstreamFolderUrl': self.userFolder( email ),	# user URL
-			'message': 'Hello, %s, from the Python Community Server!' % (u.name,),
+			'message': _('Hello, %s, from the Python Community Server!') % (u.name,),
 			'ctBytesInUse': self.userSpaceUsed( email ),
 			'maxBytesPerUser': 20 * 1024*1024,	# max 20M per user
 			'weblogUpdates': {
@@ -347,11 +347,11 @@ class xmlStorageSystem_handler:
 			u = self.set.FindUser( email, password )
 		except pycs_settings.PasswordIncorrect:
 			return { 'flError': xmlrpclib.True,
-				'message': "Password incorrect",
+				'message': _("Password incorrect"),
 			}
 		except pycs_settings.NoSuchUser:
 			return { 'flError': xmlrpclib.True,
-				'message': "User not found",
+				'message': _("User not found"),
 			}
 		
 		raise "Not implemented"
@@ -438,11 +438,11 @@ class xmlStorageSystem_handler:
 			
 		except pycs_settings.PasswordIncorrect:
 			return { 'flError': xmlrpclib.True,
-				'message': "Password incorrect",
+				'message': _("Password incorrect"),
 			}
 		except pycs_settings.NoSuchUser:
 			return { 'flError': xmlrpclib.True,
-				'message': "User not found",
+				'message': _("User not found"),
 			}
 		
 
