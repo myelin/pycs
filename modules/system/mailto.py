@@ -156,8 +156,7 @@ else:
 
 	s += """
 	<form method="post" action="mailto.py?action=send&usernum=%s">
-	<table width="100%%" cellspacing="0" cellpadding="2"><tr><td class="black">
-	<table width="100%%" cellspacing="0" cellpadding="2">
+	<table width="80%%" cellspacing="0" cellpadding="2">
 	<tr>	<td>Your name</td>
 		<td><input type="text" name="fromName" size="60" /></td>
 		</tr>
@@ -177,7 +176,6 @@ else:
 		<td><input type="submit" value="Send message" /></td>
 		</tr>
 	</table>
-	</td><tr></table>
 	</form>
 	""" % (usernum,)
 

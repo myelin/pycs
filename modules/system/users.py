@@ -51,8 +51,7 @@ if query.has_key('usernum'):
 		
 		s += """
 		<h2>Information for user #<strong>%s</strong></h2>
-		<table width="100%%" cellspacing="0" cellpadding="2"><tr><td class="black">
-		<table width="100%%" cellspacing="0" cellpadding="2">
+		<table width="80%%" cellspacing="0" cellpadding="2">
 		""" % (usernum,)
 		
 		cols = {}
@@ -67,7 +66,7 @@ if query.has_key('usernum'):
 		url = set.UserFolder( usernum )
 		cols['url'] = '<a href="%s">%s</a>' % (url, url)
 		
-		cols['email'] = '<a href="mailto:%s">%s</a>' % (cols['email'], cols['email'])
+		cols['email'] = '<a href="mailto.py?usernum=%s">%s</a>' % (cols['usernum'], cols['email'])
 		
 		for col in cols.keys():
 			
@@ -75,7 +74,6 @@ if query.has_key('usernum'):
 		
 		s += """
 		</table>
-		</td><tr></table>
 		"""
 	
 	except pycs_settings.NoSuchUser:

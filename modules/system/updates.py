@@ -40,8 +40,7 @@ s = """
 <p>(This isn't a very reliable updates page; you probably want the <a 
 href="weblogUpdates.py">weblogUpdates page</a> - it's much better!)</p>
 
-<table width="100%%" cellspacing="0" cellpadding="2"><tr><td class="black">
-<table width="100%%" cellspacing="0" cellpadding="2">
+<table width="80%%" cellspacing="0" cellpadding="2">
 """
 
 if len(set.updates) == 0:
@@ -62,7 +61,6 @@ else:
 		
 s += """
 </table>
-</td><tr></table>
 """
 	
 # Dump it all out

@@ -36,8 +36,7 @@ page = {
 	}
 
 s = """
-<table width="100%%" cellspacing="0" cellpadding="2"><tr><td class="black">
-<table width="100%%" cellspacing="0" cellpadding="2">
+<table width="80%%" cellspacing="0" cellpadding="2">
 """
 
 updates = updatesDb.updatesDb( set )
@@ -61,7 +60,6 @@ else:
 		
 s += """
 </table>
-</td><tr></table>
 """
 	
 # Dump it all out

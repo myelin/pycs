@@ -82,11 +82,7 @@ if form.has_key('email') and form.has_key('password'):
 			pwHash,
 			)
 		
-		s += """
-		You are now logged in as
-		user <strong>%s</strong>,
-		<strong>%s</strong>
-		""" % ( user.usernum, user.name )
+		s += """<p>You are now logged in as user <b>%s</b> (<b>%s</b>)</p>""" % ( user.usernum, user.name )
 	
 	except pycs_settings.NoSuchUser:
 		s += '<p>Sorry, email address <b>%s</b> not found!</p>' % (form['email'],)
@@ -96,34 +92,35 @@ if form.has_key('email') and form.has_key('password'):
 
 if not fLoggedIn:
 	s += """
-	<p>&nbsp;</p>
-	<table cellspacing="5" cellpadding="5" class="black" align="center">
-	<tr><td>
-	<table width="100%%" cellspacing="2" cellpadding="2">
-	"""
-
-	s += """
+	<p>Enter your e-mail address and your password to log in.  If you have more than
+	one weblog hosted here, make sure you enter the e-mail address for the right
+	blog.</p>
+	
+	<table align="center" width="100%%" cellspacing="2" cellpadding="2">
 	<form method="post" action="login.py">
 	<table>
 		<tr>
 			<td>E-mail address</td>
-			<td><input type="text" name="email" /></td>
+			<td><input type="text" name="email" size="60" /></td>
 		</tr>
 		<tr>
 			<td>Password</td>
-			<td><input type="password" name="password" /></td>
+			<td><input type="password" name="password" size="60" /></td>
 		</tr>
 		<tr>
 			<td></td>
 			<td><input type="submit" value="Log in" /></td>
 		</tr>
 	</form>
-	""";
-	
-	s += """
 	</table>
-	</td></tr></table>
+	
 	"""
+else:
+	s += """
+	<p>Now you should see 'delete' buttons next to comments for <a href="%s">your weblog</a>.</p>
+	""" % ( set.UserFolder( user.usernum ), )
+
+
 
 	
 # Dump it all out

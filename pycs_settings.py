@@ -278,33 +278,15 @@ class Settings:
 		out = """<html>
 	<head>
 		<title>Python Community Server: """ + data['title'] + """</title>
-		<style type="text/css">
-		<!--
-			body {
-				font-family: arial, sans-serif;
-				font-size: 12pt
-				}
-			td {
-				background-color: lightyellow
-				}
-			td.maintitle {
-				font-size: 24pt
-				}
-			.black {
-				background-color: black
-				}
-		-->
-		</style>
+		<link rel="stylesheet" href="http://myelin.pycs.net/pycs.css" type="text/css" />
 	</head>
 	<body>
-		<table width="100%" cellspacing="0" cellpadding="2"><tr><td class="black">
-		<table width="100%" cellspacing="0" cellpadding="10"><tr><td class="maintitle">
-			PyCS: <strong>""" + data['title'] + """</strong>
-		</td></tr></table>
-		</td></tr><table>
+		<h1>PyCS: <strong>""" + data['title'] + """</strong></h1>
+		<div class="margins">
 		"""
 		out += data['body']
 		out +=  """
+		</div>
 	</body>
 	</html>"""
 	
