@@ -216,7 +216,7 @@ def search(usernum, posts_t, query, skip_hits):
 		except Skip:
 			pass
 	if not len(hits):
-		add("<p>No posts found.</p>")
+		add(_("<p>No posts found.</p>").decode(set.DocumentEncoding()))
 	else:
 		first_hit = skip_hits
 		last_hit = skip_hits + len(hits)
@@ -224,14 +224,14 @@ def search(usernum, posts_t, query, skip_hits):
 		extra = ''
 		if first_hit > 1:
 			prev_avail = min(skip_hits, max_hits)
-			extra += extra_link % (urllib.quote(query.encode(set.DocumentEncoding())), first_hit-prev_avail, _("Show previous %s").decode(set.DocumentEncoding()) % prev_avail)
+			extra += extra_link % (urllib.quote(query), first_hit-prev_avail, _("Show previous %s").decode(set.DocumentEncoding()) % prev_avail)
 		if last_hit < total_hits:
-			extra += extra_link % (urllib.quote(query.encode(set.DocumentEncoding())), last_hit, _("Show next %d").decode(set.DocumentEncoding()) % min(max_hits, total_hits - last_hit))
-		add(_("<p>Showing hits %d-%d out of %d. %s</p>") % (
+			extra += extra_link % (urllib.quote(query), last_hit, _("Show next %d").decode(set.DocumentEncoding()) % min(max_hits, total_hits - last_hit))
+		add(_("<p>Showing hits %d-%d out of %d. %s</p>").decode(set.DocumentEncoding()) % (
 			skip_hits + 1,
 			skip_hits + len(hits),
 			total_hits,
-			extra.encode(set.DocumentEncoding())
+			extra
 			))
 		lastdate = None
 		for post in hits:
