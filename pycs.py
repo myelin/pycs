@@ -136,13 +136,20 @@ if __name__ == '__main__':
 		
 		# Install signal handlers
 		install_handlers()
-	
+
 		# Become a UNIX daemon
-		daemonize.become_daemon(
-			pycs_paths.ROOTDIR,
-			os.path.join( pycs_paths.LOGDIR, 'etc.log' ),
-			os.path.join( pycs_paths.LOGDIR, 'error.log' )
-		)
+		if os.getenv('PYCS_NO_LOGGING'):
+			daemonize.become_daemon(
+				pycs_paths.ROOTDIR,
+				'/dev/null',
+				'/dev/null'
+			)
+		else:
+			daemonize.become_daemon(
+				pycs_paths.ROOTDIR,
+				os.path.join( pycs_paths.LOGDIR, 'etc.log' ),
+				os.path.join( pycs_paths.LOGDIR, 'error.log' )
+			)
 	
 		# Write the presently running pid to a pid file
 		# which will typically be used to stop and get status of
