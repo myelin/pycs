@@ -71,6 +71,7 @@ def checkUniqueToken( token, password ):
 	return None
 
 
+
 def makeXmlBoolean( a ):
 	if a:
 		return xmlrpclib.True
@@ -97,6 +98,8 @@ class pycsAdmin_handler:
 			'help': [ self.help, 'Show table of all commands' ],
 			'enable': [ self.enable, 'Enables a user' ],
 			'disable': [ self.disable, 'Disables a user' ],
+			'list': [ self.list, 'List objects (users, etc.)' ],
+			'shuffle': [ self.shuffle, 'Shuffle hit counters' ],
 		}
 		
 		
@@ -165,14 +168,79 @@ class pycsAdmin_handler:
 			'table': res,
 			}
 
+	def shuffle( self, params ):
+		if len(params) != 1:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'Wrong number of parameters!',
+				}
+
+		if params[0] == 'hits':
+			for row in self.set.users:
+				row.hitsyesterday = row.hitstoday
+				row.hitstoday = 0
+			self.set.Commit()
+		else:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'Unknown object-spec %s' % params[0],
+				}
+		return {
+			'flError': xmlrpclib.False,
+			'message': 'Done!',
+			}
+			
+
+	def list( self, params ):
+		cols = []
+		res = []
+
+		if len(params) != 1:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'Wrong number of parameters!',
+				}
+
+		if params[0] == 'users':
+			sth = self.set.users.ordered(1)
+			cols = ['usernum', 'name', 'email']
+			for row in sth:
+				res.append( [row.usernum, row.name, row.email] )
+		elif params[0] == 'enabled':
+			sth = self.set.users.select( {'disabled': 0} )
+			cols = ['usernum', 'name', 'email']
+			for row in sth:
+				res.append( [row.usernum, row.name, row.email] )
+		elif params[0] == 'disabled':
+			sth = self.set.users.select( {'disabled': 1} )
+			cols = ['usernum', 'name', 'email']
+			for row in sth:
+				res.append( [row.usernum, row.name, row.email] )
+		else:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'Unknown object-spec %s' % params[0],
+				}
+
+		return {
+			'flError': xmlrpclib.False,
+			'message': 'Done!',
+			'columns': cols,
+			'table': res,
+			}
+
 	def enable( self, params ):
 		res = []
 
 		if len(params) != 1:
-			raise "wrong number of parameters"
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'Wrong number of parameters!',
+				}
 
 		user = self.set.User( params[0] )
 		user.disabled = 0
+		self.set.Commit()
 
 		return {
 			'flError': xmlrpclib.False,
@@ -183,10 +251,14 @@ class pycsAdmin_handler:
 		res = []
 
 		if len(params) != 1:
-			raise "wrong number of parameters"
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'Wrong number of parameters!',
+				}
 
 		user = self.set.User( params[0] )
 		user.disabled = 1
+		self.set.Commit()
 
 		return {
 			'flError': xmlrpclib.False,
