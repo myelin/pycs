@@ -5,32 +5,42 @@
 #
 # Please tell me if they don't ;-)
 
-# The root of it all (no trailing '/').  If you want to install PyCS
-# in a user directory, set this to '/home/foo'.
-ROOTDIR = ''
+# The root of it all (no trailing '/').
+# This is set automatically by the install Makefile
+ROOTDIR = '{{PREFIX}}'
 
+import os.path
 
 # Config files
-CONFDIR = ROOTDIR + '/etc/pycs'
-
+CONFDIR = os.path.join( ROOTDIR, 'etc/pycs' )
 
 # Read-only stuff
-RODIR = ROOTDIR + '/usr/lib/pycs'
-
+RODIR = os.path.join( ROOTDIR, 'usr/lib/pycs' )
 
 # Logging
-LOGDIR = ROOTDIR + '/var/log/pycs'
-ACCESSLOG = LOGDIR + '/access.log'
+LOGDIR = os.path.join( ROOTDIR, 'var/log/pycs' )
+ACCESSLOG = os.path.join( LOGDIR, 'access.log' )
 
+# Runtime information
+RUNDIR = os.path.join( ROOTDIR, 'var/run/pycs' )
+PIDFILE = os.path.join( RUNDIR, 'pycs.pid' )
 
 # Writeable area for us to store web pages, comments etc
-VARDIR = ROOTDIR + '/var/lib/pycs'
+VARDIR = os.path.join( ROOTDIR, 'var/lib/pycs' )
 
 # Persistent data store (DB)
-DATADIR = VARDIR + '/data'
+DATADIR = os.path.join( VARDIR, 'data' )
 
 # Web pages
-WEBDIR = VARDIR + '/www'
+WEBDIR = os.path.join( VARDIR, 'www' )
 
 # Scripts
-MODDIR = VARDIR + '/modules'
+MODDIR = os.path.join( VARDIR, 'modules' )
+
+if __name__ == '__main__':
+	# we are being called by make during installation to replace the prefix with
+	# something meaningful.
+
+	import sys, os.path
+	me, prefix = sys.argv
+	print open( me ).read().replace( '{{PREFIX}}', os.path.abspath( prefix ) )

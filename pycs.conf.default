@@ -1,0 +1,21 @@
+# PyCS Configuration File
+
+[main]
+
+serverurl = http://%(serverhostname)s
+
+serverhostname = localhost
+
+serverport = 5445
+
+serveruser = {{USER}}
+
+maxusernum = 100
+
+[aliases]
+
+# Put aliases here; the server will send these back as 'official URLs' for the 
+# corresponding blogs.  Use this section if you want to have urls like 
+# http://foo/blah/ instead of http://foo/users/0000001/.
+
+0000000 = %(serverurl)s/blah/

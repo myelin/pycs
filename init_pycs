@@ -1,0 +1,65 @@
+#!/bin/sh
+
+# PyCS init.d script
+# Contributed by Michael Hay <Michael.Hay@hds.com>
+
+NAME="PyCS"
+ROOTDIR=/home/www-pycs
+PIDFILE=${ROOTDIR}/var/run/pycs/pycs.pid
+
+KILL=/bin/kill
+RM=/bin/rm
+CAT=/bin/cat
+ECHO=/bin/echo
+PROG=${ROOTDIR}/usr/lib/pycs/bin/pycs.py
+PYTHON=${ROOTDIR}/bin/python
+
+PID=`$CAT $PIDFILE 2>/dev/null`
+RETVAL=0
+
+start() {
+        $ECHO -n "Starting ${NAME}: "
+	$PYTHON $PROG > /dev/null
+        RETVAL=$?
+        [ $RETVAL = 0 ] && $ECHO "OK"
+        return $RETVAL
+}
+stop() {
+	$ECHO -n "Stopping ${NAME}: "
+	$KILL -15 $PID
+	RETVAL=$?
+	[ $RETVAL = 0 ] &&  $RM -f $PIDFILE && $ECHO "OK"
+}
+status() {
+	$ECHO "Application Name: ${NAME}"
+	$ECHO "Program Executable: ${PROG}"
+	if [ $PID ]; then
+	    $ECHO "Status: Running"
+	    $ECHO "Process ID: `$CAT $PIDFILE`"
+	else
+	    $ECHO "Status: Not Running"
+	fi
+	RETVAL=$?
+}
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  status)
+        status
+	;;
+  restart)
+	stop
+	start
+	;;
+  *)
+	echo $"Usage: ${NAME} {start|stop|restart|status|help}"
+	exit 1
+esac
+
+exit $RETVAL

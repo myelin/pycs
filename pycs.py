@@ -3,8 +3,8 @@
 # Python Community Server
 #
 #     pycs.py: Main code file
-#
-# Copyright (c) 2002, Phillip Pearson <pp@myelin.co.nz>
+#     Copyright (c) 2002, Phillip Pearson <pp@myelin.co.nz>
+#                     and Michael Hay <Michael.Hay@hds.com>
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of 
 # this software and associated documentation files (the "Software"), to deal in 
@@ -28,9 +28,15 @@ print "[Loading server]"
 
 # Get the path right
 import os
+import os.path
 import sys
 scriptDir = os.path.abspath( os.path.dirname( sys.argv[0] ) )
-sys.path += [ scriptDir, scriptDir + '/medusa', scriptDir + '/metakit' ]
+sys.path += [
+	scriptDir,
+	os.path.join( scriptDir, 'medusa' ),
+	os.path.join( scriptDir, 'metakit' )
+]
+print sys.path
 
 import pycs_paths
 
@@ -39,10 +45,11 @@ import asyncore
 import http_server
 import filesys
 import re
+import time
 
 # Internal modules
 import pycs_settings
-#import pycs_comments # OBSOLETE - WILL BE REMOVED SOON
+import daemonize
 
 # HTTP handlers
 import default_handler
@@ -60,17 +67,58 @@ import weblogUpdates
 import logger
 import status_handler
 
+def terminate (signal, param):
+	"""Signal handler for the pycs daemon.  Applicable
+	only to those systems implementing POSIX signals.
+	"""
 
+	ctime = time.asctime( time.localtime( time.time() ) )
+	print "[Received signal", signal, "terminating]", ctime 
+	os.remove( pycs_paths.PIDFILE )
+	sys.exit( 0 )
+	
+def install_handlers ():
+	import signal
+	#install default signal profile
+	signal.signal( signal.SIGTTOU, signal.SIG_IGN )
+	signal.signal( signal.SIGTTIN, signal.SIG_IGN )
+	signal.signal( signal.SIGCHLD, signal.SIG_IGN )
+	signal.signal( signal.SIGTSTP, terminate )
+	signal.signal( signal.SIGTERM, terminate )
+	signal.signal( signal.SIGINT, terminate )
 
 print "[Loaded]"
 
 if __name__ == '__main__':
+
+	# Become a daemon if we're running on a POSIX platform.
+	# TODO: run as a Windows service on NT.
+	if os.name == 'posix':
+		
+		# Install signal handlers
+		install_handlers()
+	
+		# Become a UNIX daemon
+		daemonize.become_daemon(
+			pycs_paths.ROOTDIR,
+			os.path.join( pycs_paths.LOGDIR, 'etc.log' ),
+			os.path.join( pycs_paths.LOGDIR, 'error.log' )
+		)
+	
+		# Write the presently running pid to a pid file
+		# which will typically be used to stop and get status of
+		# the pycs daemon.
+		my_pid = os.getpid()
+		pid_file = open( pycs_paths.PIDFILE, 'w' )
+		pid_file.write( "%d" % my_pid )
+		pid_file.close()
+
 	# Get config
 	set = pycs_settings.Settings()
 
 	# Make URL rewriter
 	rewriteMap = []
-	rewriteFn = pycs_paths.CONFDIR + '/rewrite.conf'
+	rewriteFn = os.path.join( pycs_paths.CONFDIR, 'rewrite.conf' )
 	try:
 		import os
 		os.stat( rewriteFn )
@@ -108,6 +156,15 @@ if __name__ == '__main__':
 		# Add auth wrapper
 		mod_h = pycs_auth_handler.pycs_auth_handler( set, mod_h )
 	
+	# Make logger
+	accessLog = logger.rotating_file_logger( pycs_paths.ACCESSLOG, None, 100*1024 )
+	print "logging to",pycs_paths.ACCESSLOG
+	logger = status_handler.logger_for_status( accessLog )
+	
+	# Make web server
+	hs = http_server.http_server( '', set.ServerPort(), None, logger )
+	hs.server_name = set.conf['serverhostname']
+
 	# become the PyCS user
 	if os.name == 'posix':
 		if hasattr( os, 'seteuid' ):
@@ -118,15 +175,6 @@ if __name__ == '__main__':
 			os.seteuid (uid)
 		else:
 			print "WARNING: Can't reduce privileges; server is running as the superuser"
-	
-	# Make logger
-	accessLog = logger.rotating_file_logger( pycs_paths.ACCESSLOG, None, 100*1024 )
-	print "logging to",pycs_paths.ACCESSLOG
-	logger = status_handler.logger_for_status( accessLog )
-	
-	# Make web server
-	hs = http_server.http_server( '', set.ServerPort(), None, logger )
-	hs.server_name = set.conf['serverhostname']
 	
 	hs.install_handler( default_h )
 	hs.install_handler( mod_h )

@@ -1,0 +1,100 @@
+# URL rewriting configuration
+
+#####################################################
+###
+###   ~~vhost~~ parsing
+###
+#####################################################
+
+"""This one will rewrite a url that looks like:
+
+	http://(anything)/~~vhost~~/(servername)/(path)
+
+to:
+
+	http://(servername)/(path)
+
+This lets you do virtual hosting, even when running behind a front-end Apache 
+server, as long as the front-end server is configured to rewrite into the 
+http://(PyCS server)/~~vhost~~/(server)/(path) format, as mentioned in the 
+README. """
+
+rewriteMap.append( [
+	'~~vhost~~ -> real url',
+	re.compile( r'^http://[^/]+/~~vhost~~/(.*)' ), r'http://\1',
+	'' ] )
+
+
+#####################################################
+###
+###   Manila-style virtual hosts
+###
+#####################################################
+
+"""This one will rewrite a url that looks like:
+
+	http://(sitename).foo.com/(path)
+
+to:
+
+	http://www.bar.com/(sitename)/(path)
+
+This lets you give each of your users a separate domain name, which can be 
+convenient if you want to balance your hosting across multiple servers later on, 
+and looks nice.
+
+To enable this, uncomment the following lines and replace 'foo.com' with your 
+host name. """
+
+#rewriteMap.append( [
+#	'manila-style v-host rule',
+#	re.compile( r'^http://(?!www)([^\.]+)\.foo\.com' ),
+#	r'http://www.foo.com/\1',
+#	'' ] )
+
+#####################################################
+###
+###   Nice URLs
+###
+#####################################################
+
+"""This will let you give your users slightly nicer URLs, for example:
+
+	http://www.foo.com/blah/
+
+rather than:
+
+	http://www.foo.com/users/0000000/
+
+To add new URLs, copy the line:
+
+	( '0000000', 'blah' ),
+
+and replace the number and name with the usernum and URL part you want
+to use.  For example, the pycs.net config file includes the following
+lines:
+
+	( '0000001', 'workbench' ),
+	( '0105256', 'notes' ),
+	( '0105568', 'devlog' ),
+
+"""
+
+for x in [
+	( '0000000', 'blah' ),
+]:
+        usernum, alias = x
+        rewriteMap.append( [
+                'user ' + usernum + ' -> /' + alias + ' redirect',
+                re.compile( r'^http://[^/]+/users/' + usernum + '(.*)$' ),
+                r'http://www.pycs.net/' + alias + r'\1',
+                'R=301',
+        ] )
+        rewriteMap.append( [
+                '/' + alias + ' rewrite to /users/' + usernum,
+                re.compile( r'^http://[^/]+/' + alias + r'(.*)$' ),
+                r'http://www.pycs.net/users/' + usernum + r'\1',
+                '',
+        ] )
+
+#####################################################

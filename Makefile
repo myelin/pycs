@@ -1,10 +1,11 @@
 # Python Community Server
+# http://www.pycs.net/
 #
-#	Makefile: build script for GNU make
-#
-#	http://www.myelin.co.nz/
+#	Makefile: Python Community Server build / installation script
+#	Requires GNU make - 'make' on Linux, 'gmake' on FreeBSD
 #
 # Copyright (c) 2002, Phillip Pearson <pp@myelin.co.nz>
+# http://www.myelin.co.nz/
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of 
 # this software and associated documentation files (the "Software"), to deal in 
@@ -25,20 +26,23 @@
 
 # The user PyCS will be running as
 USER = www-pycs
-# If you don't have root access to the system PyCS will be running on, change
-# this to 'ROOT = www-pycs'.
+
+# The user who is installing PyCS.
+# If you don't have root access, change this to 'ROOT = www-pycs'
+# (or the PyCS user, if not www-pycs).
 ROOT = root
 
-#F = *.py *.pyc *.sh *.pl *.conf
-#FILES = $(addprefix $(D)/, $(F))
+# The start of all paths.  Subdirectories /usr/lib/pycs,
+# /var/lib/pycs, /etc/pycs, /var/log/pycs will be created.
+PREFIX = /home/www-pycs
+
 SUBDIRS = www conf modules comments
-#DIRS = $(addprefix $(D)/, $(SUBDIRS))
 
 NOTEFILES = README LICENSE
 INSTFILES = Makefile mkidx.pl make_readme.pl 
 CODEFILES = pycs.py \
 	pycs_settings.py pycs_comments.py pycs_module_handler.py pycs_xmlrpc_handler.py pycs_rewrite_handler.py \
-	pycs_auth_handler.py authorizer.py \
+	pycs_auth_handler.py authorizer.py daemonize.py \
 	pycs_http_util.py html_cleaner.py strptime.py \
 	xmlStorageSystem.py radioCommunityServer.py weblogUpdates.py pycs_paths.py updatesDb.py
 TESTFILES = test_server.py test_settings.py
@@ -48,21 +52,25 @@ MEDUSAFILES = medusa/*.py
 METAKITFILES = metakit.py Mk4py.so
 
 # Directories
-PREFIX = /
+
 # Read-only stuff
 NOTEDIR = $(PREFIX)/usr/lib/pycs
 CODEDIR = $(NOTEDIR)/bin
 MEDUSADIR = $(CODEDIR)/medusa
 METAKITDIR = $(CODEDIR)/metakit
 COMMENTDIR = $(CODEDIR)/comments
+
 # Config
 CONFDIR = $(PREFIX)/etc/pycs
+
 # Runtime data
 VARDIR = $(PREFIX)/var/lib/pycs
+RUNDIR = $(PREFIX)/var/run/pycs
 DATADIR = $(VARDIR)/data
 WEBDIR = $(VARDIR)/www
 RESDIR = $(VARDIR)/www/initialResources
 MODDIR = $(VARDIR)/modules
+
 # Logging
 LOGDIR = $(PREFIX)/var/log/pycs
 
@@ -70,14 +78,14 @@ LOGDIR = $(PREFIX)/var/log/pycs
 PYCSFILES = $(NOTEFILES) $(INSTFILES) $(CODEFILES) \
 	$(MISCFILES) \
 	$(TESTFILES) \
-	$(CONFFILES)
+	$(addsuffix .default, $(CONFFILES))
 
 COMMENTFILES = __init__.py rss.py html.py defaultFormatter.py
 PYCSMODFILES = updates.py mailto.py users.py comments.py login.py
 WEBFILES = index.html history.html readme.html
 RESFILES = defaultFeeds.opml defaultCategories.opml
 SPECIFICS = $(PYCSFILES) medusa/*.py metakit.py Mk4py.so
-VER = 0.09
+VER = 0.10
 DISTFN = pycs-$(VER)-src
 LATESTFN = pycs-latest-src
 
@@ -111,12 +119,14 @@ install: user scripts
 	$(INSTALL_MKDIR_PRIV) $(CONFDIR)
 	for f in $(CONFFILES); do \
 		if [ ! -f $(CONFDIR)/$$f ]; then \
+			python customise_config.py "$(USER)" < $$f.default > $$f; \
 			$(INSTALL_PRIV) $$f $(CONFDIR)/$$f; \
 		fi; \
 	done
 
 	# Variant stuff (see below for details - data, web, etc)
 	$(INSTALL_MKDIR_RW) -d $(VARDIR)
+	$(INSTALL_MKDIR_RW) -d $(RUNDIR)
 
 	# Data files go in /var/lib/pycs/data
 	$(INSTALL_MKDIR_RW) -d $(DATADIR)
@@ -131,6 +141,7 @@ install: user scripts
 	# Executables go in /usr/lib/pycs/bin
 	$(INSTALL_MKDIR_RO) -d $(CODEDIR)
 	$(INSTALL_RO) $(CODEFILES) $(CODEDIR)/
+	python pycs_paths.py "$(PREFIX)" > $(CODEDIR)/pycs_paths.py
 
 	# Medusa goes in /usr/lib/pycs/bin/medusa
 	$(INSTALL_MKDIR_RO) -d $(MEDUSADIR)
@@ -174,8 +185,6 @@ dist:
 	rm -f $(DISTFN).tar.gz
 	mkdir -p $(DISTFN)
 	cp $(PYCSFILES) $(DISTFN)/
-	perl -w extract_pycs_net.pl < pycs.conf > $(DISTFN)/pycs.conf
-	perl -w extract_pycs_net.pl < rewrite.conf > $(DISTFN)/rewrite.conf
 
 	mkdir -p $(DISTFN)/modules/system
 	cp $(addprefix modules/system/, $(PYCSMODFILES)) $(DISTFN)/modules/system/
