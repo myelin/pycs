@@ -9,7 +9,7 @@ import xmlrpclib
 import pycs_tokens
 import pycs_settings
 
-set = pycs_settings.Settings( quiet=True )
+set = pycs_settings.Settings( quiet=True, nomk=True )
 
 def usage():
 	print "pycsadm [-h]"
@@ -59,18 +59,36 @@ if not( passwords.has_key( url ) ):
 		pwfile.write( '%s = %s\n' % ( u, passwords[u] ) )
 	pwfile.close()
 
-server = xmlrpclib.Server(url)
+server = xmlrpclib.Server(url, verbose=verbose)
 
 if verbose:
 	print "== get challenge"
 
-challenge = server.pycsAdmin.challenge()
-token = pycs_tokens.createToken( passwords[url], challenge )
+def get_token():
+	challenge = server.pycsAdmin.challenge()
+	token = pycs_tokens.createToken( passwords[url], challenge )
+	return token
+token = get_token()
+
+cmd = args[0]
+params = args[1:]
 
 if verbose:
-	print "== execute %s(%s)" % ( args[0], string.join( args[1:],',' ) )
+	print "== execute %s(%s)" % ( cmd, string.join( params,',' ) )
 
-res = server.pycsAdmin.execute( token, args[0], args[1:] )
+if cmd == 'add_comments':
+	usernum, fn, = params
+	ns = {}
+	execfile(fn, ns, ns)
+	# prepare to call
+	cmts = ns['comments']
+	for k,v in cmts.items():
+		print "add comment %s" % k
+		print server.pycsAdmin.execute(token, cmd, [usernum, {k:v}])['message']
+		token = get_token()
+else:	
+	res = server.pycsAdmin.execute( token, cmd, params )
+
 if res['flError']:
 	print "Error: %s" % ( res['message'] )
 	sys.exit(8)

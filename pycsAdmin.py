@@ -33,6 +33,7 @@ Kind of like http://www.weblogs.com/RPC2 and RCS
 """
 
 import os
+import time
 import sys
 import re
 import random
@@ -86,7 +87,8 @@ def makeXmlBoolean( a ):
 
 def done_msg(msg = 'Done!'):
 	return retmsg(0, msg)
-param_err = retmsg(1, 'Wrong number of parameters!')
+def param_err(n):
+	return retmsg(1, 'Wrong number of parameters (expected %d)!' % n)
 
 class pycsAdmin_handler:
 	
@@ -100,19 +102,23 @@ class pycsAdmin_handler:
 		if (stat[0] & 0077) == 0:
 			if set.conf.has_key( 'adminpassword' ):
 				self.adminpassword = set.conf['adminpassword']
-		self.commands = {
-			'help': [ self.help, 'Show table of all commands' ],
-			'enable': [ self.enable, 'Enables a user' ],
-			'disable': [ self.disable, 'Disables a user' ],
-			'list': [ self.list, 'List objects (users, etc.)' ],
-			'shuffle': [ self.shuffle, 'Shuffle hit counters' ],
-			'recalc': [ self.recalc, 'Recalculate cached data' ],
-			'options': [ self.options, 'List options for usernum' ],
-			'setopt': [ self.setopt, 'Set an option for usernum' ],
-			'alias': [ self.alias, 'Set alias for usernum' ],
-			'password': [ self.password, 'Set password for usernum' ],
-			'normalize_comments': [ self.normalize_comments, 'Normalize comment usernums' ],
-		}
+		self.commands = {}
+		for name,desc in (
+			('help', 'Show table of all commands'),
+			('enable', 'Enables a user'),
+			('disable', 'Disables a user'),
+			('list', 'List objects (users, etc.)'),
+			('shuffle', 'Shuffle hit counters'),
+			('recalc', 'Recalculate cached data'),
+			('options', 'List options for usernum'),
+			('setopt', 'Set an option for usernum'),
+			('alias', 'Set alias for usernum'),
+			('password', 'Set password for usernum'),
+			('normalize_comments', 'Normalize comment usernums'),
+			('list_comment_usernums', 'List all usernums in the comment table'),
+			('add_comments', 'Import some comments into the comments table'),
+			):
+			self.commands[name] = [ getattr(self, name), desc ]
 		
 		
 	def call( self, method, params ):
@@ -192,7 +198,7 @@ class pycsAdmin_handler:
 			
 	def recalc( self, params ):
 		if len(params) != 1:
-			return param_err
+			return param_err(1)
 
 		if params[0] == 'diskspace':
 			self.set.RecalculateUserSpace()
@@ -204,7 +210,7 @@ class pycsAdmin_handler:
 		res = []
 
 		if len(params) != 1:
-			return param_err
+			return param_err(1)
 
 		user = self.set.User( params[0] )
 
@@ -223,7 +229,7 @@ class pycsAdmin_handler:
 		res = []
 
 		if len(params) != 3:
-			return param_err
+			return param_err(3)
 
 		user = self.set.User( params[0] )
 
@@ -236,7 +242,7 @@ class pycsAdmin_handler:
 		res = []
 
 		if len(params) != 1:
-			return param_err
+			return param_err(1)
 
 		if params[0] == 'users':
 			sth = self.set.users.ordered(1)
@@ -279,7 +285,7 @@ class pycsAdmin_handler:
 		res = []
 
 		if len(params) != 1:
-			return param_err
+			return param_err(1)
 
 		user = self.set.User( params[0] )
 		user.disabled = 0
@@ -291,7 +297,7 @@ class pycsAdmin_handler:
 		res = []
 
 		if len(params) != 1:
-			return param_err
+			return param_err(1)
 
 		user = self.set.User( params[0] )
 		user.disabled = 1
@@ -301,7 +307,7 @@ class pycsAdmin_handler:
 
 	def alias( self, params ):
 		if (len(params) < 2) or (len(params) > 3):
-			return param_err
+			return param_err(2,3)
 		if params[0] == 'del':
 			if len(params) != 2:
 				return {
@@ -345,7 +351,7 @@ class pycsAdmin_handler:
 
 	def password( self, params ):
 		if len(params) != 2:
-			return param_err
+			return param_err(2)
 		try:
 			user = self.set.User( params[0] )
 		except:
@@ -362,7 +368,7 @@ class pycsAdmin_handler:
 
 	def normalize_comments( self, params ):
 		if len(params) != 0:
-			return param_err
+			return param_err(0)
 		# now run through all comments and normalize the usernums
 		ct = self.set.getCommentTable()
 		count = changed = 0
@@ -380,6 +386,59 @@ class pycsAdmin_handler:
 		# succeeded, we assume!
 		return done_msg("Normalized %d usernums out of %d in the comment table, changes: %s" % (changed, count, ", ".join(changes)))
 
+	def list_comment_usernums( self, params ):
+		if len(params): return param_err(0)
+		
+		ct = self.set.getCommentTable()
+		usernums = {}
+		for row in ct:
+			usernums.setdefault(row.user, []).append(row.paragraph)
+		keys = [(int(x), x) for x in usernums.keys()]
+		keys.sort()
+		ret = "Usernums:\n"
+		for n,k in keys:
+			ret += "%s: %s\n" % (k, ", ".join(usernums[k]))
+		return done_msg(ret)
+	
+	def add_comments( self, params ):
+		if len(params) != 2: return param_err(2)
+
+		import comments
+
+		ret = ''
+		ct = self.set.getCommentTable()
+		u, plist = params
+		for p,cmts in plist.items():
+			rows = ct.select({'user': u, 'paragraph': p})
+			if len(rows):
+				cmt_block = rows[0]
+			else:
+				ct.append(user=u, paragraph=p)
+				cmt_block = ct[-1]
+				
+			for cmt in cmts:
+				ret += 'u %s p %s cmt %s\n' % (u, p, `cmt`)
+				when = [x for x in cmt['when']]
+				while len(when) < 9: when += [0]
+				ci = {'name': cmt['from'],
+				      'email': cmt.has_key('email') and cmt['email'] or '',
+				      'url': cmt['url'],
+				      'date': time.strftime(comments.STANDARDDATEFORMAT, when),
+				      'comment': cmt['comment'].strip(),
+				      }
+				print ci
+				rows = cmt_block.notes.select(ci)
+				print rows
+				if len(rows):
+					ret += "already got comment %s\n" % `ci`
+				else:
+					ret += "added comment %s\n" % `ci`
+					cmt_block.notes.append(ci)
+
+		self.set.Commit()
+		
+		return done_msg(ret)
+				
 
 if __name__=='__main__':
 	# Testing

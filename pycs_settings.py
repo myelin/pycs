@@ -60,7 +60,7 @@ def usedBytes( path ):
 
 class Settings:
 
-	def __init__(self, quiet=0, authorizer=None):
+	def __init__(self, quiet=0, nomk=0, authorizer=None):
 		self.authorizer = authorizer
 		self.rewrite_h = None
 		self.ar_h = None
@@ -68,7 +68,10 @@ class Settings:
 		storFn = pycs_paths.DATADIR + "/settings.dat"
 		if not quiet:
 			print "reading data from",storFn
-		self.db = metakit.storage(storFn, 1)
+		if nomk:
+			self.db = None
+		else:
+			self.db = metakit.storage(storFn, 1)
 
 		confFn = pycs_paths.CONFDIR + "/pycs.conf"
 		try:
@@ -95,35 +98,36 @@ class Settings:
 				self.aliases[user] = alias[:-1]		
 
 		# User info - one row per user
-		self.users = self.db.getas(
-			"users[usernum:S,email:S,password:S,name:S,weblogTitle:S,serialNumber:S,organization:S," +
-			"flBehindFirewall:I,hitstoday:I,hitsyesterday:I,hitsalltime:I," +
-			"membersince:S,lastping:S,pings:I,lastupstream:S,upstreams:I,lastdelete:S,deletes:I,bytesupstreamed:I," +
-			"signons:I,signedon:I,lastsignon:S,lastsignoff:S,clientPort:I,disabled:I,alias:S,flManila:I,bytesused:I,stylesheet:S]"
-			).ordered()
+		if self.db:
+			self.users = self.db.getas(
+				"users[usernum:S,email:S,password:S,name:S,weblogTitle:S,serialNumber:S,organization:S," +
+				"flBehindFirewall:I,hitstoday:I,hitsyesterday:I,hitsalltime:I," +
+				"membersince:S,lastping:S,pings:I,lastupstream:S,upstreams:I,lastdelete:S,deletes:I,bytesupstreamed:I," +
+				"signons:I,signedon:I,lastsignon:S,lastsignoff:S,clientPort:I,disabled:I,alias:S,flManila:I,bytesused:I,stylesheet:S]"
+				).ordered()
 			
-		if len(self.users) == 0:
-			# Blank database - put any predefined users here
-			pass
+			if len(self.users) == 0:
+				# Blank database - put any predefined users here
+				pass
 
-		# Metadata - only one row
-		self.meta = self.db.getas("meta[nextUsernum:I]")
-		if len(self.meta) == 0:
-			# initialize row
-			self.meta.append(nextUsernum=1)
-			self.Commit()
+			# Metadata - only one row
+			self.meta = self.db.getas("meta[nextUsernum:I]")
+			if len(self.meta) == 0:
+				# initialize row
+				self.meta.append(nextUsernum=1)
+				self.Commit()
 			
-		# Update data
-		self.updates = self.db.getas("updates[time:S,usernum:S,title:S]").ordered(2)
+			# Update data
+			self.updates = self.db.getas("updates[time:S,usernum:S,title:S]").ordered(2)
 
-		# Referrer data
-		self.referrers = self.db.getas("referrers[time:S,usernum:S,group:S,referrer:S,count:I]").ordered(2)
+			# Referrer data
+			self.referrers = self.db.getas("referrers[time:S,usernum:S,group:S,referrer:S,count:I]").ordered(2)
 
-		# Search data
-		self.mirrored_posts = self.db.getas("mirroredPosts[usernum:S,posts[date:S,postid:S,guid:S,url:S,title:S,description:S]]").ordered()
+			# Search data
+			self.mirrored_posts = self.db.getas("mirroredPosts[usernum:S,posts[date:S,postid:S,guid:S,url:S,title:S,description:S]]").ordered()
 
-		if not quiet:
-			self.DumpData()
+			if not quiet:
+				self.DumpData()
 
 	def getCommentTable(self):
 		return self.db.getas(
