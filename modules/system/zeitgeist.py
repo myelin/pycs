@@ -152,7 +152,7 @@ else:
 		i = 0
 		maxi = len(searchterms) - 1
 		for (term, url, count) in searchterms:
-			s += '<a style="font-size: %dpx; color: %s" href="%s">' % ( sizes[count], color[colnr], url )
+			s += '<a style="text-decoration: none; font-size: %dpx; color: %s" href="%s" title="%s">' % ( sizes[count], color[colnr], url, _('accessed %d times') % count )
 			s += term
 			s += '</a>'
 			colnr += 1
