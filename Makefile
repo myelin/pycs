@@ -52,7 +52,6 @@ CONFFILES = pycs.conf rewrite.conf
 MISCFILES = startserver.sh update.sh startserver.bat analyse_logs.py
 MEDUSAFILES = medusa/*.py
 MSGSFILES = pycs-*.msgs
-METAKITFILES = metakit.py Mk4py.so
 
 # Directories
 
@@ -61,7 +60,6 @@ NOTEDIR = $(PREFIX)/usr/share/doc/pycs
 BASEDIR = $(PREFIX)/usr/lib/pycs
 CODEDIR = $(BASEDIR)/bin
 MEDUSADIR = $(CODEDIR)/medusa
-METAKITDIR = $(CODEDIR)/metakit
 COMMENTDIR = $(CODEDIR)/comments
 
 # Config
@@ -160,10 +158,6 @@ install: user scripts
 	# Medusa goes in /usr/lib/pycs/bin/medusa
 	$(INSTALL_MKDIR_RO) -d $(MEDUSADIR)
 	$(INSTALL_RO) $(MEDUSAFILES) $(MEDUSADIR)/
-
-	# Likewise for Metakit
-	$(INSTALL_MKDIR_RO) -d $(METAKITDIR)
-	$(INSTALL_RO) $(METAKITFILES) $(METAKITDIR)/
 
 	# Log files go in /var/log
 	$(INSTALL_MKDIR_RW) -d $(LOGDIR)

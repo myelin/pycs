@@ -34,7 +34,6 @@ scriptDir = os.path.abspath( os.path.dirname( sys.argv[0] ) )
 sys.path += [
 	scriptDir,
 	os.path.join( scriptDir, 'medusa' ),
-	os.path.join( scriptDir, 'metakit' )
 ]
 print sys.path
 
