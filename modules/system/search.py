@@ -227,11 +227,11 @@ def search(usernum, posts_t, query, skip_hits):
 			extra += extra_link % (urllib.quote(query.encode(set.DocumentEncoding())), first_hit-prev_avail, _("Show previous %s").decode(set.DocumentEncoding()) % prev_avail)
 		if last_hit < total_hits:
 			extra += extra_link % (urllib.quote(query.encode(set.DocumentEncoding())), last_hit, _("Show next %d").decode(set.DocumentEncoding()) % min(max_hits, total_hits - last_hit))
-		add(_("<p>Showing hits %d-%d out of of %d. %s</p>") % (
+		add(_("<p>Showing hits %d-%d out of %d. %s</p>") % (
 			skip_hits + 1,
 			skip_hits + len(hits),
 			total_hits,
-			extra
+			extra.encode(set.DocumentEncoding())
 			))
 		lastdate = None
 		for post in hits:
@@ -285,7 +285,7 @@ def main():
 	%s <input type="text" size="80" name="q" value="%s" />
 	</form>""" % (
 		_('Searching weblog for usernum <b>%s</b>:') % usernum,
-		usernum, _('Search:'), esc(search_terms)
+		usernum, _('Search:'), esc(search_terms).encode(set.DocumentEncoding())
 	)
 
 	if type(ret) == type(u''):

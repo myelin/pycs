@@ -133,7 +133,7 @@ else:
 				s += """
 				<tr><td align="left"><a target="_new" href="%s">%s: <b>%s</b></a></td>
 				<td align="left"><pre>%s</pre></td><td align="right">%s</td></tr>
-				""" % ( row.referrer, matched, unquote( term ), row.time, row.count)
+				""" % ( row.referrer.replace('"','%22'), matched, unquote( term ), row.time, row.count)
 
 		s += "</table>\n"
 		s += _('<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>') % (usernum, group, order)

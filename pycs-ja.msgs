@@ -31,8 +31,10 @@
 ' at %I:%M:%S %p on %B %d, %Y'::=' at %I:%M:%S %p on %B %d, %Y'
 
 # strings from comments/html.py
-'You are commenting on the following link:<br><a href="%s" target="_blank">%s</a>'::='以下のリンクに対するコメントです:<br><a href="%s" target="_blank">%s</a>'
-'<tr><td class="cmt"><strong>No comments yet</strong></td></tr>'::='<tr><td class="cmt"><strong>コメントはまだありません</strong></td></tr>'
+# !!! new string
+'You are commenting on the following link:<br /><a href="%s" target="_blank">%s</a>'::='以下のリンクに対するコメント:<br /><a href="%s" target="_blank">%s</a>'
+# !!! new string
+'<div class="cmt"><strong>No comments yet</strong></li>'::='<div class="cmt"><strong>コメントはまだありません</strong></li>'
 'Add a new comment:'::='新規コメントの入力:'
 'Name'::='名前'
 'Email'::='メールアドレス'
@@ -53,7 +55,7 @@
 'Comments for a weblog post'::='Comments for a weblog post'
 'Copyright'::='Copyright'
 'Comment by'::='Comment by'
-' an anonymous coward'::=' an anonymous coward'
+' an anonymous coward'::=' 名無しさん'
 
 # strings from comments/rssfull.py
 '(comments on weblog)'::='(comments on weblog)'
@@ -64,8 +66,11 @@
 ' for post %s'::=' for post %s'
 
 # strings from modules/system/comments.py
-'Comment deleted.'::='Comment deleted.'
+'Comment deleted.'::='コメントが削除されました。'
 'New comment added - thanks for participating!'::='コメントが追加されました。ありがとう。愛してます!'
+
+# strings from modules/system/htdig.py
+'Search results'::='検索結果'
 
 # strings from modules/system/login.py
 '<p>Now you should see \'delete\' buttons next to comments for <a href="%s">your weblog</a>.</p>'::='<p><a href="%s">あなたのウエブログ</a>のコメントページには削除用のボタンが表示されるようになっています。</p>'
@@ -82,7 +87,7 @@
 
 # strings from modules/system/mailto.py
 '\n\t\t<h2>Message sent OK; <a href="%s">click here to go back</a>.</h2>\n\t\t'::='\n\t\t<h2>送信完了。<a href="%s">元のページへ戻るにはここをクリックしてください</a>。</h2>\n\t\t'
-"\n\t\t<h2>Sorry, the mail didn't send properly!</h2>\n\t\t<h2>Error:</h2>\n\t\t<h2><center><strong>%s</strong></center></h2>\n\t\t"::="\n\t\t<h2>メールの送信に失敗しました。ごめんなさい!</h2>\n\t\t<h2>エラー:</h2>\n\t\t<h2><center><strong>%s</strong></center></h2>\n\t\t"
+"\n\t\t<h2>Sorry, the mail didn't send properly!</h2>\n\t\t<h2>Error:</h2>\n\t\t<h2><center><strong>%s</strong></center></h2>\n\t\t"::='\n\t\t<h2>メールの送信に失敗しました。ごめんなさい!</h2>\n\t\t<h2>エラー:</h2>\n\t\t<h2><center><strong>%s</strong></center></h2>\n\t\t'
 'Feedback'::='フィードバック'
 '<h2>Posting your message</h2>'::='<h2>メッセージの送信</h2>'
 '<h2>Sending a message to %s</h2>'::='<h2>%s さんへのメッセージ送信</h2>'
@@ -96,34 +101,62 @@
 'Subject'::='サブジェクト'
 'Send message'::='メッセージの送信'
 
+# strings from modules/system/newuser.py
+# !!! new string
+'New User (comment hosting)'::='ユーザ登録(コメントだけのホスティング)'
+# !!! new string
+'Enter your name, e-mail address and your password (twice) to create an account.  <b><i>Note: If you are using Radio, PyDS or bzero to host a weblog on this server, DO NOT create an account this way.  Your blogging tool will do it for you.  You should only be creating an account this way if you want to only host comments on this server.</i></b>'::='アカウントを作成するには名前、メールアドレスとパスワード(2回)を入力してください。<b><i>注意: このサーバ上で Radio、PyDS または bzero を使ってウェブログを作成しようという人は、ここでアカウントを作成してはいけません。ウェブログのツールを使ってアカウント作成をおこなってください。コメントだけをこのサーバでホスティングしたい場合にのみ、ここでアカウントを作成してください。</i></b>'
+# already defined: "Name"
+# already defined: "E-mail address"
+# already defined: "Password"
+# !!! new string
+'Repeat password'::='パスワード(確認)'
+# !!! new string
+'Create account'::='アカウント作成'
+
 # strings from modules/system/rankings.py
 'Rankings'::='人気ウェブログ・ランキング'
 '<p>See also: <a href="weblogUpdates.py">weblogs updated today</a>.</p>\n'::='<p><a href="weblogUpdates.py">本日更新されたウェブログ</a>もご覧ください。</p>\n'
-'hits today'::='本日のヒット数'
-'all-time hits'::='ヒット数累計'
+'hits today'::='本日のアクセス数'
+'all-time hits'::='アクセス数累計'
 'blog name'::='ブログ名'
 'link'::='リンク'
 
 # strings from modules/system/referers.py
 'Referrer rankings'::='リファラ・ランキング'
-'Referrers for'::='Referrers for'
-' To see all referrers, <a href="referers.py?usernum=%s&group=%s&order=%s&full=1">click here</a>.'::='すべてのリファラを確認したいときは、<a href="referers.py?usernum=%s&group=%s&order=%s&full=1">ここをクリックしてください</a>。'
+'Referrers for'::='リファラ一覧'
+# !!! new string
+' Search engine hits are excluded: to see all referrers, <a href="referers.py?usernum=%s&group=%s&order=%s&full=1">click here</a>.'::='サーチエンジンからのリンクは除外されています。サーチエンジンを含むすべてのリファラの一覧は<a href="referers.py?usernum=%s&group=%s&order=%s&full=1">こちら</a>です。'
 'Referrer'::='リファラ'
 'Last hit'::='最終アクセス'
 'Count'::='カウント'
 '<p>See also: <a href="searches.py?usernum=%s&group=%s&order=%s">Search term rankings for this site</a>.</p>'::='<p><a href="searches.py?usernum=%s&group=%s&order=%s">検索キーワードによるランキング</a>もご覧ください。</p>'
 '<p>Sorry, user %s not found!</p>'::='<p>指定されたユーザ名 %s は登録されていません!</p>'
-'<p>This page shows you all referrers - including search engine hits -  to your page.'::='<p>このページはサーチ・エンジンを含むすべてのリファラ一覧です。'
-'<p>This page shows you only those referrers to your page, that are not comming from search engines.'::='<p>このページはサーチ・エンジン経由のアクセスを除いたリファラの一覧です。'
+# !!! new string
+'<p>This page shows you where the hits on your weblog came from.'::='<p>上記ユーザのウェブログへのアクセスのリンク元の一覧です。'
 
 # strings from modules/system/search.py
-'Search results'::='Search results'
+# already defined: 'Search results'
+# !!! new string
+'Searching weblog for usernum <b>%s</b>:'::='ユーザ番号 <b>%s</b> のウェブログを検索:'
+# !!! new string
+'Search:'::='検索:'
+# !!! new string
+'Show previous %s'::='前の%s件'
+# !!! new string
+'Show next %d'::='次の%d件'
+# !!! new string
+'<p>Showing hits %d-%d out of %d. %s</p>'::='<p>現在表示している結果: %d-%d件目(全%d件中) %s</p>'
+# !!! new string
+"Usernum %s has not submitted any posts to be indexed (so you can't search his/her weblog yet)."::="Usernum %s has not submitted any posts to be indexed (so you can't search his/her weblog yet)."
+# !!! new string
+"<p>You can search a blog with multiple words. The search syntax is as follows: a posting matches if at least one normal search term is in the postings text or title. If you prepend a + to a search word, this word is required. If you prepend a - to a search word, this word is forbiddend. Words don't need to be full word - actually a simple substring match is done.<p><b>foo bar +baz -booz</b><p>The above search terms would search for all posts where either <b>foo</b> or <b>bar</b> is found, <b>baz</b> is allways found and <b>booz</b> is never found."::='<p>ブログの検索条件には単語をスペースで区切って複数指定できます。普通に入力した場合、検索語のいずれかがタイトルまたは本文にマッチしたものが検索結果として表示されます。なお検索語の頭に + を付けるとその語を必須の検索条件とみなします。また検索語の頭に - を付けると、その語を含まないものだけを検索します。内部的には単純な文字列の照合をおこなっているだけなので、検索に指定する単語は完全な意味を持つ単語でなくてもかまいません。<p><b>foo bar +baz -booz</b><p>検索語を上記のように入力した場合、<b>foo</b> または <b>bar</b> を含んでおり、かつ <b>baz</b> を含んでいて <b>booz</b> を含んでいないコンテンツが検索されます。'
 
 # strings from modules/system/searches.py
 'Search term rankings'::='検索キーワードによるランキング'
 '<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>'::='<p><a href="referers.py?usernum=%s&group=%s&order=%s">このサイトに対するリファラ</a>もご覧ください。</p>'
 # already defined: '<p>Sorry, user %s not found!</p>'
-'<h2>Search terms for <strong>%s</strong></h2>'::='<h2>Search terms for <strong>%s</strong></h2>'
+'<h2>Search terms for <strong>%s</strong></h2>'::='<h2>検索キーワード一覧 <strong>%s</strong></h2>'
 'Search term'::='検索キーワード'
 # already defined: "Last hit"
 # already defined: "Count"
@@ -152,8 +185,18 @@
 'New trackback added - thanks for participating!'::='トラックバックが追加されました。ありがとう。愛してます!'
 
 # strings from modules/system/users.py
-'User info'::='User info'
+'User info'::='ユーザ情報'
 # already defined: '<p>Sorry, user %s not found!</p>'
+# !!! new string
+'RSS feed of users'::='RSS feed of users'
+# !!! new string
+'RSS feed of all blogs and users registered on this community server'::='RSS feed of all blogs and users registered on this community server'
+# !!! new string
+'<p>This is a list of all users registered on this server:</p>'::='<p>このサーバに登録されているユーザの一覧です:</p>'
+# !!! new string
+'sort by usernum'::='ユーザ番号順で並び替え'
+# !!! new string
+'sort by space used'::='ディスク使用量順で並び替え'
 'Information for user'::='Information for user'
 
 # strings from modules/system/weblogUpdates.py
@@ -164,7 +207,8 @@
 # strings from modules/system/zeitgeist.py
 'Zeitgeist overview'::='Zeitgeist overview'
 '<h2>Zeitgeist overview for <strong><a href="%s">%s</a></strong></h2>'::='<h2>Zeitgeist overview for <strong><a href="%s">%s</a></strong></h2>'
-'<p>Here are all search terms which people followed here, sorted by last hit. The larger the font, the more often the term was searched for. The more to the top, the more current was the access.'::='<p>Here are all search terms which people followed here, sorted by last hit. The larger the font, the more often the term was searched for. The more to the top, the more current was the access.'
+# !!! new string
+'<p>Here are all search terms which people followed here in the last 30 days, sorted by last hit. The larger the font, the more often the term was searched for. The more to the top, the more current was the access.'::='<p>Here are all search terms which people followed here in the last 30 days, sorted by last hit. The larger the font, the more often the term was searched for. The more to the top, the more current was the access.'
 'accessed %d times'::='accessed %d times'
 # already defined: '<p>Sorry, user %s not found!</p>'
 
@@ -204,15 +248,12 @@
 '%d files have been saved for you, %s'::='%d files have been saved for you, %s'
 '%d files have been deleted for you, %s'::='%d files have been deleted for you, %s'
 'Hello, %s, from the Python Community Server!'::='Hello, %s, from the Python Community Server!'
-# already defined: "Password incorrect"
-# already defined: "Password incorrect"
-# already defined: "User not found"
-# already defined: "Password incorrect"
-# already defined: "User not found"
-# already defined: "Password incorrect"
-# already defined: "User not found"
+# !!! new string
+'%d posts updated and %d posts added to the database for you (usernum %s).  Now you have %d posts'::='%d posts updated and %d posts added to the database for you (usernum %s).  Now you have %d posts'
+# !!! new string
+'%d posts deleted from the database for you (usernum %s).  Now you have %d posts'::='%d posts deleted from the database for you (usernum %s).  Now you have %d posts'
 # already defined: "Password incorrect"
 # already defined: "User not found"
-# already defined: "Password incorrect"
-# already defined: "User not found"
+# !!! new string
+"You (usernum %s) don't have any postings stored, yet."::="You (usernum %s) don't have any postings stored, yet."
 
