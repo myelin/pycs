@@ -43,6 +43,7 @@ import pycs_paths
 # System & web server modules
 import asyncore
 import http_server
+import monitor
 import filesys
 import re
 import time
@@ -173,6 +174,15 @@ if __name__ == '__main__':
 	# Make web server
 	hs = http_server.http_server( '', set.ServerPort(), None, logger )
 	hs.server_name = set.conf['serverhostname']
+
+	ms = None
+	if set.conf.has_key( 'monitorport' ):
+		port = int( set.conf['monitorport'] )
+		if set.conf.has_key( 'monitorpassword' ):
+			pwd = set.conf['monitorpassword']
+			ms = monitor.secure_monitor_server( pwd, '', port )
+		else:
+			ms = monitor.monitor_server( '', port )
 
 	# become the PyCS user
 	if os.name == 'posix':
