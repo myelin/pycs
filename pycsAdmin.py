@@ -102,7 +102,7 @@ class pycsAdmin_handler:
 	def __init__( self, set ):
 		self.set = set
 		self.adminpassword = str( random.random() )
-		stat = os.stat( os.path.join( pycs_paths.CONFDIR, "pycs.conf" ) )
+		stat = os.stat( pycs_paths.PYCS_CONF )
 
 		if (stat[0] & 0077) == 0 or os.name == 'nt':
 			if set.conf.has_key( 'adminpassword' ):
