@@ -1,0 +1,4 @@
+# example crontab for www-pycs
+
+5 0 * * *       $HOME/pycs/bin/python $HOME/pycs/usr/lib/pycs/bin/pycsadm.py shuffle hits >/dev/null
+
