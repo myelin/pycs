@@ -41,7 +41,7 @@ import base64
 query = util.SplitQuery( query )
 form = util.SplitQuery( input_data.read() )
 
-request['Content-Type'] = 'text/html; charset=%s' % set.DocumentEncoding()
+request['Content-Type'] = 'text/html; charset=utf-8'
 
 page = {
 	'title': _('Search results'),
@@ -263,6 +263,8 @@ def main():
 		_('Searching weblog for usernum <b>%s</b>:') % usernum,
 		usernum, _('Search:'), esc(search_terms)
 	)
+
+	ret = ret.decode(set.DocumentEncoding()).encode('utf-8')
 
 	if search_terms:
 		ret += search(usernum, posts_t, search_terms, skip_hits)
