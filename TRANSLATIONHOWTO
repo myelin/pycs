@@ -1,0 +1,48 @@
+Short documentation on how to create and upgrade translation files
+==================================================================
+
+This is a short documentation on how to create a translation file and
+how to upgrade one. This makes use of the make_msgs.py script.
+
+The format of translation files
+-------------------------------
+
+The format is quite simple. Lines starting with # are comments. Lines with
+the following format are translations:
+
+'......'::='......'
+
+Strings can contain \n or \t and might contain %s or %d or something like
+this. You usually should keep those special strings where they are in the
+original. The string to the left is the english input from the modules, the
+string to the right is your translation.
+
+To create a new translation file (start from scratch):
+------------------------------------------------------
+
+python make_msgs.py empty >pycs-XX.msgs
+
+Here XX is the twoletter language code (for example de for german or
+fr for french). This creates an identity translation, where every string is
+replaced by it's same content. Now you just need to go through pycs-XX.msgs
+and replace the string to the right of the ::= with your translation. Please
+keep the order of replacement parameters (those %s or %d elements)! This is
+sometimes a problem, because a translation would require a different order.
+You have to use a different translation, then, as the original python code
+always passes parameters in the same order. Sorry for that, but there is no
+good solution to this (except switching to a different string rendering).
+
+To update an existing translation file:
+---------------------------------------
+
+python make_msgs.py de >pycs-de.msgs-new
+... edit pycs-de.msgs-new ...
+mv pycs-de.msgs-new pycs-de.msgs
+
+This would update pycs-de.msgs with all new strings of the scripts and would
+drop all strings that are no longer available. That's why you should edit
+the new file, so you have the old file available for references to old strings.
+
+That's all there is to know about, so just go ahead and create translation
+files for your favorite language. Please send them to the pycs-dev list for
+inclusion in the CVS archive.
