@@ -299,6 +299,13 @@ class xmlStorageSystem_handler:
 		return {
 			'community': {
 				'flCanHostComments': xmlrpclib.True,
+				'name': 'Python Community Server',
+				'discussionGroupUrl': 'http://radio.userland.com/discuss/',
+				'domainName': self.set.ServerUrl(),
+				'flHasSearch': xmlrpclib.False,
+				'flPublic': xmlrpclib.False,
+				'mailListUrl': 'http://groups.yahoo.com/group/radio-userland/',
+				'urlSearch': '',
 				},
 			'yourUpstreamFolderUrl': self.userFolder( email ),	# user URL
 			'message': 'Hello, %s, from the Python Community Server!' % (u.name,),
