@@ -16,6 +16,15 @@ maxusernum = 100
 # where bounces should go to when problems with mails arise.
 servermailto = python-community-server-mailto@myelin.co.nz
 
+# the next option must be uncommented and set to a sensible value if you want
+# to use the pycsadm interface with this server. The password is here in
+# cleartext, because a special challenge/response model is used. So you have
+# to chmod 700 this file, so others can't read your password! The server will
+# deny reading this password if the file mode is not correct to protect you
+# from problems! The password will only be read on server start, so you have
+# to restart after changing this.
+#adminpassword = XXXXX
+
 [aliases]
 
 # Put aliases here; the server will send these back as 'official URLs' for the 

@@ -63,6 +63,7 @@ import pycs_auth_handler
 import xmlStorageSystem
 import radioCommunityServer
 import weblogUpdates
+import pycsAdmin
 
 # Logging
 import logger
@@ -153,6 +154,10 @@ if __name__ == '__main__':
 	# Make weblogUpdates XML-RPC handler
 	rpc_wu_h = weblogUpdates.weblogUpdates_handler( set )
 	rpc_h.AddNamespace( 'weblogUpdates', rpc_wu_h )
+	
+	# Make pycsAdmin XML-RPC handler
+	rpc_padm_h = pycsAdmin.pycsAdmin_handler( set )
+	rpc_h.AddNamespace( 'pycsAdmin', rpc_padm_h )
 	
 	# Make handler for /system
 	mod_h = pycs_module_handler.pycs_module_handler( set )

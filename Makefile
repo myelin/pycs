@@ -40,11 +40,11 @@ SUBDIRS = www conf modules comments
 
 NOTEFILES = README LICENSE
 INSTFILES = Makefile mkidx.pl make_readme.pl 
-CODEFILES = pycs.py \
+CODEFILES = pycs.py pycsadm.py \
 	pycs_settings.py pycs_module_handler.py pycs_xmlrpc_handler.py pycs_rewrite_handler.py \
 	pycs_auth_handler.py authorizer.py daemonize.py pycs_block_handler.py \
-	pycs_http_util.py html_cleaner.py strptime.py \
-	xmlStorageSystem.py radioCommunityServer.py weblogUpdates.py pycs_paths.py updatesDb.py
+	pycs_tokens.py pycs_http_util.py html_cleaner.py strptime.py \
+	xmlStorageSystem.py radioCommunityServer.py weblogUpdates.py pycs_paths.py updatesDb.py pycsAdmin.py
 TESTFILES = test_server.py test_settings.py
 CONFFILES = pycs.conf rewrite.conf
 MISCFILES = startserver.sh update.sh startserver.bat analyse_logs.py
