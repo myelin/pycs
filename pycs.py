@@ -37,6 +37,10 @@ sys.path += [
 ]
 print sys.path
 
+# patch new mimetypes
+import mimetypes
+mimetypes.types_map['.ico'] = 'image/x-icon'
+
 import pycs_paths
 
 # System & web server modules
