@@ -5,6 +5,10 @@
 
 #	/ - root directory; put a suitably vague index.html here rather than restricting this.
 #	|
+#	+--- initialResources - various things that get read automatically by Radio;
+#	|			if you restrict this, Radio will have severe trouble
+#	|			getting onto the community server.
+#	|
 #	+--- system - various scripts; some odd restrictions are required here
 #	|	|
 #	|	+--- comments.py [?(...)u=(usernum)(...)]
@@ -68,14 +72,15 @@
 # That creates a user 'phil', with password 'abcd', who can see the system files
 # and blogs /users/0000001 and /users/0000002 (or whatever aliases point to them).
 
-import re, urlparse, md5, pycs_paths, os.path
+import re, md5, pycs_paths, os.path
 
 # Figure out what type of file we are looking at
 
-UNKNOWN_FILE = 0
-SYSTEM_FILE = 1
-USER_FILE = 2
-PUBLIC_FILE = 3
+UNKNOWN_FILE = 0 # something we haven't classified
+SYSTEM_FILE  = 1 # admin pages in /system
+USER_FILE    = 2 # user-specific (i.e. a blog, or a count / comments page)
+PUBLIC_FILE  = 3 # public (front page, rankings, updates)
+RPC_FILE     = 4 # required to be readable without a password by Radio (/RPC2, initialResources)
 
 def classify_file( path, query ):
 	if not query: query = ''
@@ -100,8 +105,7 @@ def classify_file( path, query ):
 			if m_usernum:
 				if len( m_usernum ) > 1:
 					# security error: more than one usernum passed
-					print "too many usernums:",m_usernum
-					fail
+					raise "too many usernums: %s" % ( `m_usernum`, )
 				# we are viewing a file associated with a usernum
 				usernum = m_usernum[0]
 				filetype = USER_FILE
@@ -111,15 +115,17 @@ def classify_file( path, query ):
 			if m_usernum:
 				if len( m_usernum ) > 1:
 					# security error: more than one usernum passed
-					fail
+					raise "too many usernums: %s" % ( `m_usernum`, )
 				# we are viewing a file associated with a usernum
 				usernum = m_usernum[0]
 				filetype = USER_FILE
 	else:
 		folder = re.match( r'(.*)\/', path ).group( 1 )
 		print "folder:",folder
-		if folder in ( '', 'initialResources' ):
+		if folder == '':
 			filetype = PUBLIC_FILE
+		elif folder == 'initialResources':
+			filetype = RPC_FILE
 	
 	return filetype, usernum
 
@@ -138,10 +144,13 @@ def parse_users_conf( confFn ):
 		for visibility in re.split( ',', visibilities ):
 			if not visibility: continue
 			if visibility == 'all':
-				can_see[UNKNOWN_FILE] = 1
-				can_see[SYSTEM_FILE] = 1
-				can_see[PUBLIC_FILE] = 1
-				can_see[USER_FILE] = 1
+				for filetype in ( UNKNOWN_FILE,
+					SYSTEM_FILE,
+					PUBLIC_FILE,
+					USER_FILE,
+					RPC_FILE,
+				):
+					can_see[filetype] = 1
 			elif visibility == 'public':
 				can_see[PUBLIC_FILE] = 1
 			elif visibility == 'etc':
@@ -150,6 +159,8 @@ def parse_users_conf( confFn ):
 				can_see[SYSTEM_FILE] = 1
 			elif visibility == 'user':
 				can_see[USER_FILE] = 1
+			elif visibility == 'rpc':
+				can_see[RPC_FILE] = 1
 			else:
 				usernum = '%d' % ( int( visibility ), )
 				visible_users = can_see.setdefault( USER_FILE, {} )
