@@ -67,6 +67,9 @@
 'Comment deleted.'::='Kommentar gel\xf6scht.'
 'New comment added - thanks for participating!'::='Neuer Kommentar gespeichert- Vielen Dank f\xfcr die Teilnahme!'
 
+# strings from modules/system/htdig.py
+'Search results'::='Suchergebnisse'
+
 # strings from modules/system/login.py
 '<p>Now you should see \'delete\' buttons next to comments for <a href="%s">your weblog</a>.</p>'::='<p>Jetzt solltest du \'L\xf6schen\'-Schaltfl\xe4chen neben Kommentaren zu <a href="%s">deinem Weblog</a> sehen.</p>'
 'Login'::='Anmeldung'
@@ -107,17 +110,22 @@
 # strings from modules/system/referers.py
 'Referrer rankings'::='Verweisliste'
 'Referrers for'::='Verweise auf'
-' To see all referrers, <a href="referers.py?usernum=%s&group=%s&order=%s&full=1">click here</a>.'::=' Um alle Verweise zu sehen <a href="referers.py?usernum=%s&group=%s&order=%s&full=1">klicke hier</a>.'
+' Search engine hits are excluded: to see all referrers, <a href="referers.py?usernum=%s&group=%s&order=%s&full=1">click here</a>.'::=' Verweise von Suchmaschinen sind ausgefiltert: <a href="referers.py?usernum=%s&group=%s&order=%s&full=1">Hier klicken um alle Verweise zu sehen.</a>.'
 'Referrer'::='Verweis'
 'Last hit'::='Letzter Hit'
 'Count'::='Anzahl'
 '<p>See also: <a href="searches.py?usernum=%s&group=%s&order=%s">Search term rankings for this site</a>.</p>'::='<p>Siehe auch: <a href="searches.py?usernum=%s&group=%s&order=%s">Suchbegriffsliste f\xfcr dieses Weblog</a>.</p>'
 '<p>Sorry, user %s not found!</p>'::='<p>Sorry, Benutzer %s existiert nicht!</p>'
-'<p>This page shows you all referrers - including search engine hits -  to your page.'::='<p>Diese Seite zeigt Dir alle Verweise auf dein Weblog, inklusive der Hits durch Suchmaschinen.'
-'<p>This page shows you only those referrers to your page, that are not comming from search engines.'::='<p>Diese Seite zeigt dir nur die Verweise auf Dein Weblog, die nicht durch Suchmaschinen kommen.'
+'<p>This page shows you where the hits on your weblog came from.'::='<p>Diese Seite zeigt von wo Hits auf das Weblog gekommen sind.'
 
 # strings from modules/system/search.py
-'Search results'::='Suchergebnisse'
+# already defined: 'Search results'
+'Searching weblog for usernum <b>%s</b>:'::='Durchsuche Weblog von Benutzer <b>%s</b>:'
+'Search:'::='Suche:'
+'Show previous %s'::='Zeige vorige %s'
+'Show next %d'::='Zeige nächste %d'
+'<p>Showing hits %d-%d out of of %d. %s</p>'::='<p>Zeige Treffer %d-%d von %d. %s</p>'
+"Usernum %s has not submitted any posts to be indexed (so you can't search his/her weblog yet)."::="Benutzer %s hat bisher keine Beiträge zur Suche bereitgestellt, daher kann noch nicht in dem Weblog gesucht werden."
 
 # strings from modules/system/searches.py
 'Search term rankings'::='Suchbegriffsliste'
@@ -155,7 +163,7 @@
 'User info'::='Benutzerinfo'
 # already defined: '<p>Sorry, user %s not found!</p>'
 'RSS feed of users'::='RSS Feed f\xfcr Benutzer'
-'RSS feed of all blogs and users registered on this community server'::='RSS Feed für alle Blogs und Benutzer die hier registriert sind'
+'RSS feed of all blogs and users registered on this community server'::='RSS Feed f\xfcr alle Blogs und Benutzer die hier registriert sind'
 '<p>This is a list of all users registered on this server:'::='<p>Hier eine Liste aller auf diesem Server registrierten Benutzer:'
 'Information for user'::='Information f\xfcr Benutzer'
 
@@ -207,15 +215,6 @@
 '%d files have been saved for you, %s'::='%d Dateien wurden f\xfcr dich gespeichert, %s'
 '%d files have been deleted for you, %s'::='%d Dateien wurden f\xfcr dich gel\xf6scht, %s'
 'Hello, %s, from the Python Community Server!'::='Hallo, %s, Willkommen beim Python Community Server!'
-# already defined: "Password incorrect"
-# already defined: "Password incorrect"
-# already defined: "User not found"
-# already defined: "Password incorrect"
-# already defined: "User not found"
-# already defined: "Password incorrect"
-# already defined: "User not found"
-# already defined: "Password incorrect"
-# already defined: "User not found"
 # already defined: "Password incorrect"
 # already defined: "User not found"
 

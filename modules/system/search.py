@@ -205,10 +205,10 @@ def search(usernum, posts_t, query, skip_hits):
 		extra = ''
 		if first_hit > 1:
 			prev_avail = min(skip_hits, max_hits)
-			extra += extra_link % (first_hit-prev_avail, "Show previous %s" % prev_avail)
+			extra += extra_link % (first_hit-prev_avail, _("Show previous %s") % prev_avail)
 		if last_hit < total_hits:
-			extra += extra_link % (last_hit, "Show next %d" % min(max_hits, total_hits - last_hit))
-		add("<p>Showing hits %d-%d out of of %d. %s</p>" % (
+			extra += extra_link % (last_hit, _("Show next %d") % min(max_hits, total_hits - last_hit))
+		add(_("<p>Showing hits %d-%d out of of %d. %s</p>") % (
 			skip_hits + 1,
 			skip_hits + len(hits),
 			total_hits,
@@ -227,18 +227,21 @@ def main():
 
 	idx = set.mirrored_posts.find(usernum=usernum)
 	if idx == -1:
-		return "Usernum %s has not submitted any posts to be indexed (so you can't search his/her weblog yet)." % usernum
+		return _("Usernum %s has not submitted any posts to be indexed (so you can't search his/her weblog yet).") % usernum
 	posts_t = set.mirrored_posts[idx].posts
 
 	search_terms = query.get('q', query.get('words', ''))
 	skip_hits = int(query.get('skip', '0'))
 
-	ret = """<p>Searching weblog for usernum <b>%s</b>:</p>
+	ret = """<p>%s</p>
 
 	<form method="GET">
 	<input type="hidden" name="u" value="%s" />
-	Search: <input type="text" size="80" name="q" value="%s" />
-	</form>""" % (usernum, usernum, esc(search_terms))
+	%s <input type="text" size="80" name="q" value="%s" />
+	</form>""" % (
+		_('Searching weblog for usernum <b>%s</b>:'),
+		usernum, _('Search:'), usernum, esc(search_terms)
+	)
 
 	if search_terms:
 		ret += search(usernum, posts_t, search_terms, skip_hits)
