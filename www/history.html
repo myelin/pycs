@@ -36,10 +36,25 @@
 	
 	<ul>
 	
+		<li><strong><a href="pycs-0.11-src.tar.gz">v0.11</a></strong> -
+		Thanks to <a href="http://hugo.muensterland.org/">Georg 
+		Bauer</a>, who contributed a counter script 
+		(<b>/system/count.py</b>) and a referrer page script 
+		(<b>/system/referers.py</b>), PyCS now does referrer tracking 
+		the same way as <a href="http://rcs.userland.com/">RCS</a>. That 
+		is to say, automatically ;-)<br/><br/>
+		
+		You can still use the old method (calling 
+		<b>make_referrers.py</b> from a cron job) if you like, but this 
+		one produces a less cluttered page, only counts real browser 
+		hits, and looks more like the results you would see when running 
+		on RCS.</li>
+	
 		<li><strong><a href="pycs-0.10-src.tar.gz">v0.10</a></strong> -
-		Thanks to Michael Hay (Michael dot Hay at hds dot com), who 
-		contributed a script to go into init.d and hooked PyCS up to 
-		daemonize.py, PyCS now runs as a proper daemon.<br/><br/>
+		Thanks to Michael Hay (Michael dot Hay at hds dot com; no blog 
+		AFAIK), who contributed a script to go into init.d and hooked 
+		PyCS up to daemonize.py, PyCS now runs as a proper 
+		daemon.<br/><br/>
 		
 		Improved the installer to reduce the number of steps required to 
 		get everything going.  Now you don't have to separately edit 

@@ -85,7 +85,7 @@ PYCSMODFILES = updates.py mailto.py users.py comments.py login.py
 WEBFILES = index.html history.html readme.html
 RESFILES = defaultFeeds.opml defaultCategories.opml
 SPECIFICS = $(PYCSFILES) medusa/*.py metakit.py Mk4py.so
-VER = 0.10
+VER = 0.11
 DISTFN = pycs-$(VER)-src
 LATESTFN = pycs-latest-src
 

@@ -306,7 +306,7 @@ class xmlStorageSystem_handler:
 				'wav', 'swf', 'sit', 'hqx', 'gz', 'zip',
 				'htaccess',
 				],
-			'urlReferers': self.userFolder( email ) + '/referrers.html',
+			'urlReferers': self.set.ServerUrl() + '/system/referers.py?usernum=%s' % u.usernum,
 			'urlSpamFreeMailto': self.set.ServerUrl() + '/system/mailto.py',
 			'urlWeblogUpdates': self.set.ServerUrl() + '/system/updates.py',
 			'webBugUrl': self.set.ServerUrl() + '/system/count.py',
