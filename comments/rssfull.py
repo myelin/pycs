@@ -48,7 +48,7 @@ class formatter( rss.formatter ):
 			title += _(" an anonymous coward")
 		else:
 			title += " " + cmt.cmt.name
-		link = '%s/system/comments.py?u=%s&#38;p=%s' % ( self.set.ServerUrl(), paragraph.user, paragraph.paragraph )
+		link = '%s/system/comments.py?u=%s&amp;p=%s' % ( self.set.ServerUrl(), paragraph.user, paragraph.paragraph )
 		title += _(" for post %s") % paragraph.paragraph
 		title += cmt.dateString
 		desc = cmt.cleanedUpComment
