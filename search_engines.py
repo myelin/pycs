@@ -25,15 +25,16 @@ import re
 
 engines = {
 	'google': [
-		re.compile(r'^http://.*\.google\..*[\?&]q=([^&]+).*$'),
-		re.compile(r'^http://.*\.google\..*[\?&]as_q=([^&]+).*$'),
-		re.compile(r'^http://.*\.google\..*[\?&]as_epq=([^&]+).*$'),
+		re.compile(r'^http://.*google\..*[\?&]q=([^&]+).*$'),
+		re.compile(r'^http://.*google\..*[\?&]as_q=([^&]+).*$'),
+		re.compile(r'^http://.*google\..*[\?&]as_epq=([^&]+).*$'),
 		],
 	'alltheweb': [
 		re.compile(r'^http://.*\.alltheweb\..*[\?&]q=([^&]*).*$'),
 		],
 	'feedster': [
 		re.compile(r'^http://.*\.feedster\..*[\?&]q=([^&]*).*$'),
+		re.compile(r'^http://feedster\..*[\?&]q=([^&]*).*$'),
 		],
 	'freshmeat': [
 		re.compile(r'^http://freshmeat\..*[\?&]q=([^&]*).*$'),
@@ -53,6 +54,7 @@ engines = {
 		],
 	'msn': [
 		re.compile(r'^http://search\.msn\..*[\?&]q=([^&]*).*$'),
+		re.compile(r'^http://.*\.search\.msn\..*[\?&]q=([^&]*).*$'),
 		],
 	'blo.gs': [
 		re.compile(r'^http://.*blo\.gs\/\?q=([^&]*).*$'),
@@ -107,9 +109,25 @@ engines = {
 	],
 	'netscape': [
 		re.compile(r'^http://.*netscape.*search.jsp.*[\?&]q=([^&]*).*$'),
+		re.compile(r'^http://.*netscape.*boomframe.jsp.*[\?&]query=([^&]*).*$'),
 	],
 	'bbc': [
 		re.compile(r'^http://.*bbc.co.uk.*results.pl.*[\?&]q=([^&]*).*$'),
+	],
+	'blogsuche.de': [
+		re.compile(r'http://blogsuche.de/search.php?search=([^&]*).*$'),
+	],
+	'deutschesuche.de': [
+		re.compile(r'http://www.deutschesuche.de/suche.php.*[\?&]?qkw=([^&]*).*$'),
+	],
+	'tdconline.dk': [
+		re.compile(r'http://find.tdconline.dk/google.php?q=([^&]*).*$'),
+	],
+	'picsearch.de': [
+		re.compile(r'http://www.picsearch.de/info.cgi?q=([^&]*).*$'),
+	],
+	'szukaj.wp.pl': [
+		re.compile(r'http://szukaj.wp.pl/szukaj.html?szukaj=([^&]*).*$'),
 	],
 	}
 
