@@ -27,7 +27,7 @@
 
 # strings from comments/rssfull.py
 '(comments on weblog)'::='(Kommentare zum Weblog)'
-'Comments for a weblog, ordered by date (newest first)'::='Kommentare für ein Weblog, neueste Kommentare zuoberst.'
+'Comments for a weblog, ordered by date (newest first)'::='Kommentare f\xfcr ein Weblog, neueste Kommentare zuoberst.'
 # already defined: "Copyright"
 # already defined: "Comment by"
 # already defined: " an anonymous coward"
@@ -105,6 +105,12 @@
 'Recently updated weblogs'::='K\xfcrzlich aktualisierte Weblogs'
 '<p>See also: <a href="rankings.py">most popular weblogs, ranked by page views</a>.</p>'::='<p>Siehe auch: <a href="rankings.py">Nach Hits sortierte Liste der Weblogs</a>.</p>'
 '<p>Here are the weblogs that have updated in the last 24 hours.  Is yours in there?  ;-)</p>'::='<p>Hier sind die Weblogs, die in den letzten 24 Stunden aktualisiert wurden. Ist Deines dabei? ;-)</p>'
+
+# strings from modules/system/zeitgeist.py
+# already defined: 'Search term rankings'
+'<p>Here are all search terms which people followed here, sorted by last hit. The larger the font, the more often the term was searched for.'::='<p>Hier sind alle Suchergebnisse, über die jemand auf dieses Weblog gefunden hat. Je grösser die Schrift, desto häufiger wurde dieser Suchbegriff benutzt.'
+# already defined: '<p>Sorry, user %s not found!</p>'
+'<h2>Zeitgeist overview for <strong>%s</strong></h2>'::='<h2>Zeitgeist Übersicht für <strong>%s</strong></h2>'
 
 # strings from pycs_translation.py
 'Hello World'::='Hallo Welt'
