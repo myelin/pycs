@@ -77,18 +77,18 @@ class xmlStorageSystem_handler:
 			}
 		
 		if len( method ) == 0:
-			raise "xmlStorageSystem method not specified"
+			raise Exception("xmlStorageSystem method not specified")
 		
 		base = method[0]
 		if handlers.has_key( base ):
 			return handlers[base]( method[1:], params )
 		
-		raise "xmlStorageSystem method '%s' not found" % ( method, )
+		raise Exception("xmlStorageSystem method '%s' not found" % ( method, ))
 
 
 
 	def registerUser( self, method, params ):
-		if method != []: raise "Namespace not found"
+		if method != []: raise Exception("Namespace not found")
 		
 		email, name, password, clientPort, userAgent = params #, serialNumber = params
 		print "email", email
@@ -127,7 +127,7 @@ class xmlStorageSystem_handler:
 
 
 	def saveMultipleFiles( self, method, params ):
-		if method != []: raise "Namespace not found"
+		if method != []: raise Exception("Namespace not found")
 		
 		email, password, names, files = params
 		print "email", email
@@ -147,55 +147,65 @@ class xmlStorageSystem_handler:
 		urlList = []
 		nFilesSaved = 0
 		nBytesSaved = 0
+		failure = None
 		for f in map( None, names, files ):
 			name, file = f
 			print "-> name", name #, "file", file
 			
-			# Munge the name to help protect against directory traversal attacks
-			safeName = self.munge( name )
-			print "safe name:", safeName
-			
-			# Save the file
-			fullName = "%s%s" % ( self.userLocalFolder( email ), safeName ) 
-			
-			# See if we need to create any dirs
-			r = re.compile( '(.*?)\/(.*)' )
-			path = ""
-			leaf = fullName
-			while 1:
-				#print "[ mkdir: leaf",leaf,"]"
-				m = r.match( leaf )
-				if not m:
-					break
-				dirnm, leaf = m.groups()
-				path += "%s/" % (dirnm,)
-				#print "  [ path",path,"  leaf",leaf,"]"
-				try:
-					os.mkdir( path )
-				except:
-					pass
-			
-			# Actually save the file
-			if type(file)==type(''):
-				# text file
-				print "saving text file"
-				f = open( fullName, "w" )
-				f.write( file )
-				nBytesSaved += len( file )
-				f.close()
-			elif type(file)==type(xmlrpclib.Binary()):
-				# xmlrpc binary object
-				print "saving xmlrpc bin obj"
-				f = open( fullName, "wb" )
-				f.write( file.data )
-				nBytesSaved += len( file.data )
-				f.close()
-			else:
-				raise "Unknown filetype: %s" % (type(file),)
-			
-			# Return code
-			urlList.append( "%s%s" % ( self.userFolder( email ), safeName ) )
-			nFilesSaved += 1
+			try:
+				# Munge the name to help protect against directory traversal attacks
+				safeName = self.munge( name )
+				print "safe name:", safeName
+				
+				# Save the file
+				fullName = "%s%s" % ( self.userLocalFolder( email ), safeName ) 
+				
+				# See if we need to create any dirs
+				r = re.compile( '(.*?)\/(.*)' )
+				path = ""
+				leaf = fullName
+				while 1:
+					#print "[ mkdir: leaf",leaf,"]"
+					m = r.match( leaf )
+					if not m:
+						break
+					dirnm, leaf = m.groups()
+					path += "%s/" % (dirnm,)
+					#print "  [ path",path,"  leaf",leaf,"]"
+					try:
+						os.mkdir( path )
+					except:
+						pass
+				
+				# Actually save the file
+				if type(file)==type(''):
+					# text file
+					print "saving text file"
+					f = open( fullName, "w" )
+					f.write( file )
+					nBytesSaved += len( file )
+					f.close()
+				elif type(file)==type(xmlrpclib.Binary()):
+					# xmlrpc binary object
+					print "saving xmlrpc bin obj"
+					f = open( fullName, "wb" )
+					f.write( file.data )
+					nBytesSaved += len( file.data )
+					f.close()
+				else:
+					raise Exception("Unknown filetype: %s" % (type(file),))
+				
+				# Return code
+				urlList.append( "%s%s" % ( self.userFolder( email ), safeName ) )
+				nFilesSaved += 1
+			except Exception, e:
+				import traceback
+				traceback.print_exc()
+				urlList.append( '' )
+				if failure is None:
+					failure = str(e)
+				else:
+					failure += '; ' + str(e)
 		
 		print "resulting urls:",urlList
 		
@@ -207,17 +217,22 @@ class xmlStorageSystem_handler:
 		# update 'updates' page
 		self.set.AddUpdate( email )
 		
+		if failure is None:
+			message = _('%d files have been saved for you, %s') % (nFilesSaved, u.name)
+		else:
+			message = failure
+		
 		return {
 			'yourUpstreamFolderUrl': self.userFolder( email ),
-			'flError': xmlrpclib.False,
-			'message': _('%d files have been saved for you, %s') % (nFilesSaved, u.name),
+			'flError': xmlrpclib.Boolean(failure),
+			'message': message,
 			'urlList': urlList,
 			}
 
 
 
 	def deleteMultipleFiles( self, method, params ):
-		if method != []: raise "Namespace not found"
+		if method != []: raise Exception("Namespace not found")
 		
 		email, password, relativepathList = params
 		print "email", email
@@ -280,7 +295,7 @@ class xmlStorageSystem_handler:
 
 
 	def getServerCapabilities( self, method, params ):
-		if method != []: raise "Namespace not found"
+		if method != []: raise Exception("Namespace not found")
 		
 		email, password = params
 		print "email", email
@@ -338,7 +353,7 @@ class xmlStorageSystem_handler:
 
 
 	def getMyDirectory( self, method, params ):
-		if method != []: raise "Namespace not found"
+		if method != []: raise Exception("Namespace not found")
 		
 		email, password = params
 		print "email", email
@@ -355,7 +370,7 @@ class xmlStorageSystem_handler:
 				'message': _("User not found"),
 			}
 		
-		raise "Not implemented"
+		raise NotImplementedError
 		
 		return {
 			'flError': xmlrpclib.True,
@@ -365,17 +380,17 @@ class xmlStorageSystem_handler:
 
 
 	def mailPasswordToUser( self, method, params ):
-		if method != []: raise "Namespace not found"
+		if method != []: raise Exception("Namespace not found")
 		
 		email, = params
 		print "email", email
 
-		raise "Not implemented"
+		raise NotImplementedError
 
 
 
 	def pleaseNotify( self, method, params ):
-		if method != []: raise "Namespace not found"
+		if method != []: raise Exception("Namespace not found")
 		
 		notifyProcedure, port, path, protocol, urlList = params
 		print "notifyProcedure", notifyProcedure
@@ -384,11 +399,11 @@ class xmlStorageSystem_handler:
 		print "protocol", protocol
 		print "urlList", urlList
 		
-		raise "Not implemented"
+		raise NotImplementedError
 
 
 	def requestNotification( self, method, params ):
-		if method != []: raise "Namespace not found"
+		if method != []: raise Exception("Namespace not found")
 		
 		notifyProcedure, port, path, protocol, urlList, userInfo = params
 		print "notifyProcedure", notifyProcedure
@@ -398,11 +413,11 @@ class xmlStorageSystem_handler:
 		print "urlList", urlList
 		print "userInfo", userInfo
 		
-		raise "Not implemented"
+		raise NotImplementedError
 
 
 	def ping( self, method, params ):
-		if method != []: raise "Namespace not found"
+		if method != []: raise Exception("Namespace not found")
 		
 		email, password, status, clientPort, userinfo = params
 		print "email", email
@@ -530,7 +545,7 @@ class xmlStorageSystem_handler:
 			
 		# Fail if it's something we don't understand now
 		if type(name) != type(''):
-			raise "Usernum must be a string or a number"
+			raise Exception("Usernum must be a string or a number")
 		return self.munge( name )
 
 
@@ -538,7 +553,7 @@ class xmlStorageSystem_handler:
 	def munge( self, name ):
 		# Make sure we don't have any '..'s
 		if name.find( '..' ) != -1:
-			raise "Security warning: '..' found in filename"
+			raise Exception("Security warning: '..' found in filename")
 
 		# Get rid of odd chars		
 		safeName = ""
