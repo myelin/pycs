@@ -157,7 +157,7 @@ if __name__ == '__main__':
 		mod_h = pycs_auth_handler.pycs_auth_handler( set, mod_h )
 	
 	# Make logger
-	accessLog = logger.rotating_file_logger( pycs_paths.ACCESSLOG, None, 100*1024 )
+	accessLog = logger.rotating_file_logger( pycs_paths.ACCESSLOG, None, 1024*1024 )
 	print "logging to",pycs_paths.ACCESSLOG
 	logger = status_handler.logger_for_status( accessLog )
 	
