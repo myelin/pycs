@@ -164,9 +164,9 @@ class Settings:
 		# this should actually be pulled out of the config, I think
 		userfolder = self.UserFolder( usernum )
 		ignoreReferrers = [
-			re.compile('^'+userfolder),
-			re.compile('^http://127.0.0.1:[0-9]+/'),
-			re.compile('^http://localhost:[0-9]+/'),
+			re.compile( '^' + userfolder ),
+			re.compile( r'^http://127\.0\.0\.1:\d+/' ),
+			re.compile( r'^http://localhost:\d+/' ),
 			]
 		if userfolder[-1:] == '/':
 			ignoreReferrers.append(
