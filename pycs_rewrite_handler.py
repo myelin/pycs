@@ -72,12 +72,13 @@ class pycs_rewrite_handler:
 		
 		fullUrl = 'http://%s%s' % ( request.host, path )
 
+		lastOne = 0
 		for rw in self.rewriteMap:
 			logName, regex, repl, flags = rw
 			oldUrl = fullUrl
 			fullUrl = regex.sub( repl, fullUrl )
 			redirect = None
-			if oldUrl != fullUrl:
+			if regex.match( oldUrl ):
 				print "rewriting " + oldUrl + " (with rule '" + logName + "', flags '" + flags + "')"
 				print "       to " + fullUrl
 				
@@ -96,6 +97,9 @@ class pycs_rewrite_handler:
 							redirect = ( fullUrl, code )
 						else:
 							redirect = ( fullUrl, 302 )
+					elif f == 'L':
+						print "stop processing redirects"
+						lastOne = 1
 					elif f == 'P':
 						print "proxy"
 						raise "Can't proxy, sorry!"
@@ -106,6 +110,10 @@ class pycs_rewrite_handler:
 				loc, code = redirect
 				request['Location'] = loc
 				request.error( code )
+			
+			if lastOne:
+				# Stop processing commands
+				break
 								
 		newHost, newPath = REQSPLITTER.search( fullUrl ).groups()
 

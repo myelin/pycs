@@ -123,7 +123,7 @@ class pycs_module_handler:
 		return( m != None )
 	
 	def handle_request( self, request ):
-		if request.command in ('put', 'post'):
+		if request.command.lower() in ('put', 'post'):
 			# look for a Content-Length header.
 			cl = request.get_header ('content-length')
 			length = int(cl)

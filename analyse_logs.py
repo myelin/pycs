@@ -105,8 +105,9 @@ if __name__ == '__main__':
 		if ref == '-':
 			ref = "%s; %s" % ( ip, ua )
 	
-		pageData = pages.setdefault( page, { 'hits': 0, 'refs': {}, } )
+		pageData = pages.setdefault( page, { 'hits': 0, 'refs': {}, 'bytes': 0, } )
 		pageData['hits'] += 1
+		pageData['bytes'] += ( clen == '-' and [0] or [int( clen )] )[0]
 	
 		#if ref.find( 'rcs.myelin.cjb.net' ) != -1:
 		#	continue
@@ -144,7 +145,7 @@ if __name__ == '__main__':
 	rankedPages.reverse()
 	
 	for hits, refs, url in rankedPages:
-		print '<a href="' + rooturl + url + '">' + url + '</a> -', hits, 'hits'
+		print '<a href="' + rooturl + url + '">' + url + '</a> -', hits, 'hits', "(%d bytes)" % ( pages[url]['bytes'], )
 	
 		rankedRefs = [ ( refs[name]['hits'], name ) for name in refs.keys() ]
 		rankedRefs.sort()

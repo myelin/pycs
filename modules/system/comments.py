@@ -167,7 +167,7 @@ else:
 		notes = vw[0].notes
 		nComments = len(notes)
 	
-	if request.command in ('put', 'post'):
+	if request.command.lower() in ('put', 'post'):
 	
 		# We have a new comment to add
 		

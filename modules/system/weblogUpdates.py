@@ -36,6 +36,7 @@ page = {
 	}
 
 s = """
+<p>Here are the weblogs that have updated in the last 24 hours.  Is yours in there?  ;-)</p>
 <table width="80%%" cellspacing="0" cellpadding="2">
 """
 
@@ -47,17 +48,19 @@ if len( tbl ) == 0:
 else:
 	# Run through all updates and make a row for each ('1. | My blog | 2002-03-22 03:30 AM')
 	blogs = []
+	now = time.time()
 	for nIndex in range( len( tbl ), 0, -1 ):
 		u = tbl[nIndex - 1]
-		if type( u.updateTime ) == type( 1 ):
-			blogs.append( ( u.updateTime, u ) )
-		else:
-			blogs.append( ( 0, None ) )
+		blogs.append( ( u.updateTime, u, nIndex - 1 ) )
 	blogs.sort()
 	blogs.reverse()
 	nDispIndex = 1
 	for blog in blogs:
-		tm, u = blog
+		tm, u, idx = blog
+		if ( now - u.updateTime ) > ( 24 * 3600 ):
+			# it's old - delete it
+			tbl.delete( idx )
+			continue
 		s += """
 		<tr>
 		<td>%d.</td>

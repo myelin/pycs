@@ -100,7 +100,7 @@ class tabledef:
 		if sep == '[':
 			defs, nextTok = self.parse( tokens, isRoot )
 			assert( nextTok == ']' )
-			return defs
+			return ( name, defs )
 		elif sep == ':':
 			vartype = tokens.next()
 			mkTypes = {
@@ -118,9 +118,14 @@ class tabledef:
 		pprint.pprint( self.cols )
 
 class table:
-	def __init__( self, db, cols ):
+	def __init__( self, db, tdef ):
 		self.db = db
-		self.cols = cols
+		self.tdef = tdef
+		#self.name = self.tdef.cols.name
+	def getName( self ):
+		return self.tdef.cols[0]
+	def __len__( self ):
+		return self.db.selectScalar( 'SELECT COUNT(*) FROM %s' % ( self.getName(), ) )
 
 class storage:
 	def __init__( self, **kwArgs ):
@@ -129,6 +134,10 @@ class storage:
 	def getas( self, desc ):
 		print "set up table: " + desc
 		return table( self, tabledef( desc ) )
+	def selectScalar( self, sql ):
+		c = self.db.cursor()
+		c.execute( sql )
+		return c.fetchall()[0]
 	def dump( self ):
 		print "fetch tables"
 		c = self.db.cursor()
@@ -167,5 +176,5 @@ Now you can run this script successfully.
 	db = storage( host=host, user=user, passwd=password, db=database )
 	db.dump()
 	test = db.getas( 'test[name:S,addr[line:S],tel:S,age:I]' )
-	test.cols.dumpCols()
-	
+	test.tdef.dumpCols()
+	print len( test )
