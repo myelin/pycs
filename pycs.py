@@ -64,13 +64,6 @@ import pycs_xmlrpc_handler
 import pycs_auth_handler
 import pycs_webauth_handler
 
-# XML-RPC handlers
-import xmlStorageSystem
-import radioCommunityServer
-import weblogUpdates
-import pycsAdmin
-import accessRestrictions
-
 # Logging
 import logger
 import status_handler
@@ -200,23 +193,12 @@ if __name__ == '__main__':
 	# Make XML-RPC handler
 	rpc_h = pycs_xmlrpc_handler.pycs_xmlrpc_handler( set )
 	
-	# Make xmlStorageSystem XML-RPC handler
-	rpc_xss_h = xmlStorageSystem.xmlStorageSystem_handler( set )
-	rpc_h.AddNamespace( 'xmlStorageSystem', rpc_xss_h )
+	for ns in ('xmlStorageSystem', 'radioCommunityServer', 'weblogUpdates', 'pycsAdmin'):
+		h = getattr(__import__(ns), '%s_handler' % ns)(set)
+		rpc_h.AddNamespace(ns, h)
 	
-	# Make radioCommunityServer XML-RPC handler
-	rpc_rcs_h = radioCommunityServer.radioCommunityServer_handler( set )
-	rpc_h.AddNamespace( 'radioCommunityServer', rpc_rcs_h )
-	
-	# Make weblogUpdates XML-RPC handler
-	rpc_wu_h = weblogUpdates.weblogUpdates_handler( set )
-	rpc_h.AddNamespace( 'weblogUpdates', rpc_wu_h )
-	
-	# Make pycsAdmin XML-RPC handler
-	rpc_padm_h = pycsAdmin.pycsAdmin_handler( set )
-	rpc_h.AddNamespace( 'pycsAdmin', rpc_padm_h )
-
 	# Make accessRestrictions XML-RPC handler
+	import accessRestrictions
 	rpc_ar_h = accessRestrictions.accessRestrictions_handler( set )
 	rpc_h.AddNamespace( 'accessRestrictions', rpc_ar_h )
 	set.SetAccessRestrictionsHandler(rpc_ar_h)

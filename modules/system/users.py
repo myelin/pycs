@@ -63,6 +63,12 @@ if query.has_key('usernum'):
 		
 		for col in set.users.structure():
 			cols[col.name] = getattr( user, col.name )
+		mirror = set.mirrored_posts.find(usernum=user.usernum)
+		if mirror == -1:
+			cols['search_index_active'] = 0
+		else:
+			cols['search_index_active'] = 1
+			cols['search_index_posts'] = len(set.mirrored_posts[mirror].posts)
 		
 		# Get rid of ones we don't want people to see
 		del cols['password']

@@ -25,6 +25,7 @@
 import md5, time
 import updatesDb
 import cgi
+import re
 
 request['Content-Type'] = 'text/html; charset=%s' % set.DocumentEncoding()
 

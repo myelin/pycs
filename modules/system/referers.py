@@ -112,11 +112,9 @@ else:
 			_('Referrers for'),
 			user.name,
 		)
-		if full:
-			s += _("<p>This page shows you all referrers - including search engine hits -  to your page.")
-		else:
-			s += _("<p>This page shows you only those referrers to your page, that are not comming from search engines.")
-			s += _(' To see all referrers, <a href="referers.py?usernum=%s&group=%s&order=%s&full=1">click here</a>.') % (usernum, group, order)
+		s += _("<p>This page shows you where the hits on your weblog came from.")
+		if not full:
+			s += _(' Search engine hits are excluded: to see all referrers, <a href="referers.py?usernum=%s&group=%s&order=%s&full=1">click here</a>.') % (usernum, group, order)
 		s += '<p><table width="80%%" cellspacing="5" cellpadding="2">'
 
 		if order == 'time':

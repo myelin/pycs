@@ -69,7 +69,7 @@ format = 'html'
 if query.has_key( 'format' ):
 	format = query['format']
 
-# check wether a full feed is requested and possible (only with rss and not
+# check whether a full feed is requested and possible (only with rss and not
 # with any command except GET)
 fullfeed = 0
 if query.has_key('full') and format == 'rss' and not( request.command.lower() in ('put', 'post') ):
@@ -120,6 +120,7 @@ if noCookies:
 #s += "Path %s<br>params %s<br>query %s<br>fragment %s<br>" % (path, params, query, fragment)
 
 formatter.u = query['u']
+
 if query.has_key('c'):
 
 	# We are being called to supply the number of comments; have to
@@ -160,6 +161,13 @@ if query.has_key('c'):
 	else:
 		s = "unknown 'c' value: %s ..." % ( html_munge( c ), )
 
+elif format == 'html' and not query.has_key('p'):
+	s = """<p>no postid supplied - you might be looking for one of the following links:</p>
+	<li><a href="comments.py?u=%(usernum)s&format=rss&full=1">recent comments, abbreviated, in rss </a></li>
+	<li><a href="comments.py?u=%(usernum)s&format=rss&full=2">recent comments, unabbreviated, in rss</a></li>
+	<li><a href="comments.py?u=%(usernum)s&format=rss&full=3">all comments, in full, in rss</a> (don't subscribe to this one - it'll suck a huge amount of bandwidth when you build up a decent number of comments!)</li>
+	""" % {'usernum': formatter.u,
+	}
 else:	
 
 	# Displaying comments or accepting a new POSTed one. The list of

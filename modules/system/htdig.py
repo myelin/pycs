@@ -4,11 +4,28 @@
 #
 # Copyright (c) 2003, Phillip Pearson <pp@myelin.co.nz>
 # 
+# This file is released under the MIT license, but it depends on ht://Dig,
+# which is under the following license:
+#
+# 	Part of the ht://Dig package   <http://www.htdig.org/>
+# 	Copyright (c) 1995-2000 The ht://Dig Group
+# 	For copyright details, see the file COPYING in your distribution
+# 	or the GNU Public License version 2 or later
+# 	<http://www.gnu.org/copyleft/gpl.html>
+#
+# 	$Id: htdig.py,v 1.1 2003/10/14 09:45:33 myelin Exp $
+#
+# So I guess if you use search.py, your copy of PyCS falls under the GPL.
+# Don't install htsearch to keep it under the MIT license.  Your call :-)
 #
 
 import md5
+import string
+import pycs_settings
 import re
 import cgi
+import smtplib
+import socket
 import os
 import sys
 import binascii
@@ -114,7 +131,7 @@ URLUSER = re.compile(r'/users/(\d+)(/.*)$')
 def webauthorize(url):
 	url = set.rewrite_h.rewriteUrl(url, quiet=1)
 	upm = URLUSER.match(url)
-	auth_info = ()
+	auth_info = (,)
 	if ai:
 		auth_info = ai
 	if upm:
@@ -122,7 +139,7 @@ def webauthorize(url):
 			return 0
 	return 1
 	
-def exclude_url_p(url):
+def exclude_url_callback(url):
 	"url exclusion callback; checks a url and returns 1 if it should show in the search results"
 	if webauthorize(url) == 0:
 		return 0
@@ -149,102 +166,81 @@ def exclude_url_p(url):
 		return 0
 	return 1
 
-class Skip(Exception):
-	"raise this to disqualify a post when searching"
+def pycs_htsearch(qs, cb, conf):
+	"""fork and search; cgi-style
 
-def search(usernum, posts_t, query, skip_hits):
-	"search the database for various words.  we don't do phrase searching - anybody want to hack it in?"
-	words = query.lower().split()
-	required = [] # if any required word is missing from a post, it won't show in the results
-	excluded = [] # or if any excluded words are present, it won't show either
-	nice = [] # if all required and no excluded words are there, 'nice' words help the ranking
-	for word in words:
-		if word.startswith('+'):
-			required.append(word[1:])
-		elif word.startswith('-'):
-			excluded.append(word[1:])
-		else:
-			nice.append(word)
-	ret = []
-	add = ret.append
-	#add("<p>(search results for %s --> rq %s, ex %s, n %s)</p>" % (words,required,excluded,nice))
-	hits = []
-	hits_skipped = 0
-	max_hits = 10
-	total_hits = 0
-	for post in posts_t:
-		try:
-			# get the post text
-			text = post.description.decode('utf-8').lower()
-			# see if it has any excluded words
-			for word in excluded:
-				if text.find(word) != -1: raise Skip()
-			# make sure it has all required words
-			for word in required:
-				if text.find(word) == -1: raise Skip()
-			# now count 'nice' words
-			count = 0
-			for word in nice:
-				if text.find(word) != -1: count += 1
-			if not count: raise Skip()
-			# if we got this far, we have a positive search result
-			if hits_skipped < skip_hits:
-				hits_skipped += 1
-			elif len(hits) < max_hits:
-				hits.append(post)
-			total_hits += 1
-		except Skip:
-			pass
-	if not len(hits):
-		add("<p>No posts found.</p>")
+	qs = query string to pass to htsearch
+
+	cb = url exclusion callback (takes a string, returns true to
+	say a url should show in the search results or false to say
+	that it should not)
+
+	conf = full path to htdig.conf file (usually
+	$htdig_prefix/conf/htdig.conf).
+
+	"""
+	htspath = set.conf['htsearchpath']
+	r, w = os.pipe()
+
+	pid = os.fork()
+	if pid:
+		# we are the parent
+		print "fork()ed and created pid %d" % pid
+		os.close(w)
+		r = os.fdopen(r)
+		txt = r.read()
+		os.waitpid(pid, 0)
+		print "pid %d is finished; displaying results" % pid
 	else:
-		first_hit = skip_hits
-		last_hit = skip_hits + len(hits)
-		extra_link = ' <a href="search.py?u=%s&q=%s&skip=%%d">%%s</a>.' % (usernum, query)
-		extra = ''
-		if first_hit > 1:
-			prev_avail = min(skip_hits, max_hits)
-			extra += extra_link % (first_hit-prev_avail, "Show previous %s" % prev_avail)
-		if last_hit < total_hits:
-			extra += extra_link % (last_hit, "Show next %d" % min(max_hits, total_hits - last_hit))
-		add("<p>Showing hits %d-%d out of of %d. %s</p>" % (
-			skip_hits + 1,
-			skip_hits + len(hits),
-			total_hits,
-			extra
-			))
-		for post in hits:
-			add('<div class="searchhit"><h3><a href="%s">%s</a></h3>' % (esc(post.url), esc(post.title)))
-			add('<div class="searchpost">%s</div></div>' % post.description)
-	return "".join(ret)
+		# we are the child
+		try:
+			os.close(r)
+			sys.stdout = w = os.fdopen(w, 'w')
+			sys.path.insert(0, htspath)
+			import _htsearch
+			result = _htsearch.search(qs, cb, conf)
+			w.write(result)
+			w.close()
+		finally:
+			sys.exit(0) # medusa will catch this ... have to be able to properly die :/
 
-def main():
-	usernum = query.get('u', None)
-	if usernum is None:
-		return "No usernum specified!"
-	usernum = '%07d' % int(usernum)
+	return txt
 
-	idx = set.mirrored_posts.find(usernum=usernum)
-	if idx == -1:
-		return "Usernum %s has not submitted any posts to be indexed (so you can't search his/her weblog yet)." % usernum
-	posts_t = set.mirrored_posts[idx].posts
+def search(words):
+	import urllib
+	qs = urllib.urlencode((
+		('words', words),
+		))
+	conf = set.conf['htsearchconf']
+	return pycs_htsearch(qs, exclude_url_callback, conf)
 
+if set.conf.get('enablehtdig', 'no') != 'yes':
+
+	s += """<p>Searching has not been enabled by your administrator.</p>
+	<p>(The <code>enablehtdig</code> variable in <code>pycs.conf</code>
+	needs to be set to <code>yes</code>.)</p>"""
+
+elif not set.conf.has_key('htsearchpath'):
+
+	s += """<p>I don't know how to get to the ht://Dig search CGI.</p>
+	<p>(The administrator needs to set the <code>htsearchpath</code> variable in <code>pycs.conf</code>.)</p>"""
+
+elif not set.conf.has_key('htsearchconf'):
+
+        s += """<p>I don't know how to get to the ht://Dig configuration file.</p>
+        <p>(The administrator needs to set the <code>htsearchconf</code> variable in <code>pycs.conf</code>.)</p>"""
+
+else:
 	search_terms = query.get('q', query.get('words', ''))
-	skip_hits = int(query.get('skip', '0'))
 
-	ret = """<p>Searching weblog for usernum <b>%s</b>:</p>
-
-	<form method="GET">
-	<input type="hidden" name="u" value="%s" />
+	s += """<form method="GET">
 	Search: <input type="text" size="80" name="q" value="%s" />
-	</form>""" % (usernum, usernum, esc(search_terms))
+	</form>""" % esc(search_terms)
 
 	if search_terms:
-		ret += search(usernum, posts_t, search_terms, skip_hits)
+		s += search(search_terms)
 
-	return ret
-
-page['body'] = main()
+page['body'] = s
 s = set.Render( page )
 
 request['Content-Length'] = len(s)

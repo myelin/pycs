@@ -180,7 +180,7 @@ class pycs_module_handler:
 		except:
 			# print browser error and log backtrace
 			try:
-				print "--- EXCEPTION IN MODULE ---"
+				print>>sys.stderr, "--- EXCEPTION IN MODULE ---"
 				exception, detail, traceback = sys.exc_info()
 				sys.excepthook( exception, detail, traceback )
 			finally:

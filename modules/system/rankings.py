@@ -56,13 +56,13 @@ for section in ( todayRanks, alltimeRanks ):
 	section.reverse()
 
 s += """
-<table width="80%">
+<table width="100%">
 <tr>
 """
 
 for title,section in ( (_("hits today"),todayRanks), (_("all-time hits"),alltimeRanks) ):
 	s += """
-	<td>
+	<td valign="top" width="50%%">
 	<table width="100%%" cellspacing="0" cellpadding="2">
 	<thead>
 		<tr><td>""" + _("blog name") + """</td><td>%s</td></tr>

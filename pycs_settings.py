@@ -46,7 +46,7 @@ class User:
 
 class Settings:
 
-	def __init__( self, quiet=0, authorizer=None ):
+	def __init__(self, quiet=0, authorizer=None):
 		self.authorizer = authorizer
 		self.rewrite_h = None
 		self.ar_h = None
@@ -54,31 +54,31 @@ class Settings:
 		storFn = pycs_paths.DATADIR + "/settings.dat"
 		if not quiet:
 			print "reading data from",storFn
-		self.db = metakit.storage( storFn, 1 )
+		self.db = metakit.storage(storFn, 1)
 
 		confFn = pycs_paths.CONFDIR + "/pycs.conf"
 		try:
 			import os
-			os.stat( confFn )
+			os.stat(confFn)
 		except:
 			raise "Can't read config data file: " + confFn
 		cp = ConfigParser.ConfigParser()
-		cp.read( confFn )
+		cp.read(confFn)
 
 		# Read in general config		
-		self.conf = self.readAllOptions( cp, "main" )
+		self.conf = self.readAllOptions(cp, "main")
 		
 		defaults = cp.defaults()
 		for v in self.conf.keys():
 			defaults[v] = self.conf[v]
 		
 		# Read in name aliases
-		self.aliases = self.readAllOptions( cp, "aliases" )
+		self.aliases = self.readAllOptions(cp, "aliases")
 		
 		# Strip extra slashes off the name aliases
 		for user in self.aliases.keys():
 			alias = self.aliases[user]
-			if len( alias ) and alias[-1] == '/':
+			if len(alias) and alias[-1] == '/':
 				self.aliases[user] = alias[:-1]		
 
 		# User info - one row per user
@@ -94,66 +94,69 @@ class Settings:
 			pass
 
 		# Metadata - only one row
-		self.meta = self.db.getas( "meta[nextUsernum:I]" )
+		self.meta = self.db.getas("meta[nextUsernum:I]")
 		if len(self.meta) == 0:
 			# initialize row
-			self.meta.append( nextUsernum=1 )
+			self.meta.append(nextUsernum=1)
 			self.Commit()
 			
 		# Update data
-		self.updates = self.db.getas( "updates[time:S,usernum:S,title:S]" ).ordered(2)
+		self.updates = self.db.getas("updates[time:S,usernum:S,title:S]").ordered(2)
 
 		# Referrer data
-		self.referrers = self.db.getas( "referrers[time:S,usernum:S,group:S,referrer:S,count:I]" ).ordered(2)
+		self.referrers = self.db.getas("referrers[time:S,usernum:S,group:S,referrer:S,count:I]").ordered(2)
+
+		# Search data
+		self.mirrored_posts = self.db.getas("mirroredPosts[usernum:S,posts[date:S,postid:S,guid:S,url:S,title:S,description:S]]").ordered()
 
 		if not quiet:
 			self.DumpData()
 
-	def readAllOptions( self, cp, section ):
+	def readAllOptions(self, cp, section):
 		conf = {}
-		for opt in cp.options( section ):
-			conf[opt] = cp.get( section, opt )
+		for opt in cp.options(section):
+			conf[opt] = cp.get(section, opt)
 		return conf
 
-	def ServerUrl( self ):
+	def ServerUrl(self):
 		return self.conf['serverurl']
 
-	def ServerHostname( self ):
+	def ServerHostname(self):
 		return self.conf['serverhostname']
 
-	def ServerPort( self ):
-		return int( self.conf['serverport'] )
+	def ServerPort(self):
+		return int(self.conf['serverport'])
 
-	def DefaultConfigValue( self, key, value ):
-		if self.conf.has_key( key ):
+	def DefaultConfigValue(self, key, value):
+		if self.conf.has_key(key):
 			return self.conf[key]
 		else:
 			return value
 
-	def Language( self ):
-		return self.DefaultConfigValue( 'language', 'en' )
+	def Language(self):
+		return self.DefaultConfigValue('language', 'en')
 
-	def DocumentEncoding( self ):
-		return self.DefaultConfigValue( 'documentencoding', 'iso-8859-1' )
+	def DocumentEncoding(self):
+		return self.DefaultConfigValue('documentencoding', 'iso-8859-1')
 
-	def MailEncoding( self ):
-		return self.DefaultConfigValue( 'mailencoding', 'iso-8859-1' )
+	def MailEncoding(self):
+		return self.DefaultConfigValue('mailencoding', 'iso-8859-1')
 
-	def ServerMailTo( self ):
-		return self.DefaultConfigValue( 'servermailto', 'python-community-server-mailto@myelin.co.nz' )
+	def ServerMailTo(self):
+		return self.DefaultConfigValue('servermailto', 'python-community-server-mailto@myelin.co.nz')
 
-	def LongTitle( self ):
-		return self.DefaultConfigValue( 'longtitle', 'Python Community Server' )
+	def LongTitle(self):
+		return self.DefaultConfigValue('longtitle', 'Python Community Server')
 
-	def ShortTitle( self ):
-		return self.DefaultConfigValue( 'shorttitle', 'PyCS' )
+	def ShortTitle(self):
+		return self.DefaultConfigValue('shorttitle', 'PyCS')
 
-	def GetDate( self ):
+	def GetDate(self):
 		(y, m, d, hh, mm, ss, wday, jday, dst) = time.localtime()
 		
 		return '%04d-%02d-%02d' % (y, m, d)
 
-	def GetTime( self ):
+	def GetTime(self):
 		(y, m, d, hh, mm, ss, wday, jday, dst) = time.localtime()
 		
 		# Time of day
@@ -164,40 +167,40 @@ class Settings:
 		
 		return '%04d-%02d-%02d %02d:%02d:%02d %s' % (y, m, d, hh, mm, ss, pm)
 
-	def AddUpdate( self, usernum ):
+	def AddUpdate(self, usernum):
 		theTime = self.GetTime()
 		
-		user = self.User( usernum )
+		user = self.User(usernum)
 		logTitle = user.weblogTitle
 		
 		# See if that user has updated today already
-		sth = self.updates.select( { 'usernum': usernum } )
+		sth = self.updates.select({ 'usernum': usernum })
 		row = None
-		if len( sth ) != 0:
+		if len(sth) != 0:
 			# They have - update the timestamp
 			row = sth[0]
 			row.time = theTime
 			row.title = logTitle
 		else:
 			# They haven't - add a new row to the DB
-			self.updates.append( {
+			self.updates.append({
 				'usernum': usernum,
 				'time': theTime,
 				'title': logTitle,
-				} )
+				})
 			
 		self.Commit()
 
-	def AddReferrer( self, usernum, group, referrer ):
+	def AddReferrer(self, usernum, group, referrer):
 		theTime = self.GetTime()
 
 		# add some regexps to ignore when adding Referrers
 		# this should actually be pulled out of the config, I think
-		userfolder = self.UserFolder( usernum )
+		userfolder = self.UserFolder(usernum)
 		ignoreReferrers = [
-			re.compile( '^' + userfolder ),
-			re.compile( r'^http://127\.0\.0\.1:\d+/' ),
-			re.compile( r'^http://localhost:\d+/' ),
+			re.compile('^' + userfolder),
+			re.compile(r'^http://127\.0\.0\.1:\d+/'),
+			re.compile(r'^http://localhost:\d+/'),
 			]
 		if userfolder[-1:] == '/':
 			ignoreReferrers.append(
@@ -213,75 +216,75 @@ class Settings:
 		if not(ignoreit):
 			# See if that user+group+referrer combination
 			# is already there
-			sth = self.referrers.select( {
+			sth = self.referrers.select({
 				'usernum': usernum,
 				'group': group,
 				'referrer': referrer
-				} )
-			if len( sth ) != 0:
+				})
+			if len(sth) != 0:
 				# it is, so update the timestamp and count
 				row = sth[0]
 				row.time = theTime
 				row.count += 1
 			else:
 				# it isn't, so add a new row to the DB
-				self.referrers.append( {
+				self.referrers.append({
 					'usernum': usernum,
 					'time': theTime,
 					'group': group,
 					'referrer': referrer,
 					'count': 1
-					} )
+					})
 			self.Commit()
 			
-	def Commit( self ):
+	def Commit(self):
 		self.db.commit()
 		
-	def DumpData( self ):
+	def DumpData(self):
 		self.DumpMeta()
 		self.DumpUsers()
 		
-	def DumpMeta( self ):
+	def DumpMeta(self):
 		print "Dumping metadata"
 		meta = self.meta[0]
 		st = self.meta.structure()
 		for col in st:
-			print "  %s: %s" % ( col.name, getattr( meta, col.name ) )
+			print "  %s: %s" % (col.name, getattr(meta, col.name))
 	
-	def DumpUsers( self ):
+	def DumpUsers(self):
 		print "Dumping user data"
 		st = self.users.structure()
 		for u in self.users:
 			print "USER"
 			for col in st:
-				print "  %s: %s" % ( col.name, getattr( u, col.name ) )
+				print "  %s: %s" % (col.name, getattr(u, col.name))
 
-	def FormatUsernum( self, usernum ):
+	def FormatUsernum(self, usernum):
 		
 		"Converts a usernum into DB-format, e.g. 123 -> '0000123'"
 		
 		if type(usernum)==type(''):
 			# zero-pad it
-			return ( '0' * ( 7 - len(usernum) ) ) + usernum
+			return ('0' * (7 - len(usernum))) + usernum
 		else:
 			# convert to a string
 			return "%07d" % (usernum,)
 
-	def PatchEncodingHeader( self, str ):
+	def PatchEncodingHeader(self, str):
 		"Patches the default encoding into a <?xml ...?> header"
 		if self.conf.has_key('defaultencoding'):
 			new = '<?xml version="1.0" encoding="%s"?>' % self.conf['defaultencoding']
-			return str.replace( '<?xml version="1.0"?>', new, 1 )
+			return str.replace('<?xml version="1.0"?>', new, 1)
 		else:
 			return str
 	
-	def User( self, usernum ):
+	def User(self, usernum):
 	
 		"See if the user exists, and return its DB row if it does"
 
-		no = self.FormatUsernum( usernum )
+		no = self.FormatUsernum(usernum)
 		
-		row = self.users.select( { 'usernum': self.FormatUsernum( no ) } )
+		row = self.users.select({ 'usernum': self.FormatUsernum(no) })
 		
 		if len(row) == 0:
 			print "User not found (%s)!" % (no,)
@@ -289,20 +292,20 @@ class Settings:
 			
 		return row[0]
 
-	def FindUser( self, usernum, password ):
+	def FindUser(self, usernum, password):
 	
 		"Find a user and verify the password"
 		
-		u = self.User( usernum )
+		u = self.User(usernum)
 		
 		if u.password != password:
 			print "Password incorrect (for %s) !" % (usernum,)
 			raise PasswordIncorrect
 		return u
 
-	def FindUserByEmail( self, email, password):
+	def FindUserByEmail(self, email, password):
 		# Look for user with that address
-		vw = self.users.select( { 'email': email } )
+		vw = self.users.select({ 'email': email })
 		
 		# If we got a blank view, the user doesn't exist
 		if len(vw) == 0:
@@ -317,13 +320,13 @@ class Settings:
 		return u
 		
 
-	def NewUser( self, email, password, name ):
+	def NewUser(self, email, password, name):
 		# Prepare new row
 		user = User()
 
 		# Make sure we're not full already
-		if self.conf.has_key( 'maxusernum' ):
-			if int( self.meta[0].nextUserNum ) >= int( self.conf['maxusernum'] ):
+		if self.conf.has_key('maxusernum'):
+			if int(self.meta[0].nextUserNum) >= int(self.conf['maxusernum']):
 				raise "Sorry; we're full!  We can't take any more users"
 		
 		while 1:
@@ -334,7 +337,7 @@ class Settings:
 			user.usernum = "%07d" % (self.meta[0].nextUsernum,)
 			self.meta[0].nextUsernum += 1
 			
-			if len( self.users.select( { 'usernum': user.usernum } ) ) == 0:
+			if len(self.users.select({ 'usernum': user.usernum })) == 0:
 				# We have a unique usernum - stop looking
 				break
 		
@@ -343,12 +346,12 @@ class Settings:
 		user.name = name
 
 		# Increment max usernum and add row to users
-		print "New user row =",self.users.append( user.__dict__ )
+		print "New user row =",self.users.append(user.__dict__)
 		self.Commit()
 
 		return user
 
-	def reloadAliases( self, rewriteHandler=None ):
+	def reloadAliases(self, rewriteHandler=None):
 		# set the rewriteHandler for later access (if none is given,
 		# use the one from the last call - the first call in pycs.py
 		# sets it)
@@ -366,53 +369,53 @@ class Settings:
 		rewriteMap = []
 		for row in self.users:
 			if row.alias:
-				usernum = self.FormatUsernum( row.usernum )
+				usernum = self.FormatUsernum(row.usernum)
 				if row.flManila:
-					self.aliases[usernum] = "http://%s.%s" % ( row.alias, self.ServerHostname() )
+					self.aliases[usernum] = "http://%s.%s" % (row.alias, self.ServerHostname())
 				else:
-					self.aliases[usernum] = "http://%s/%s" % ( self.ServerHostname(), row.alias )
-				rewriteMap.append( [
+					self.aliases[usernum] = "http://%s/%s" % (self.ServerHostname(), row.alias)
+				rewriteMap.append([
 					'automatic user ' + usernum + ' -> ' + self.aliases[usernum] + ' redirect',
-					re.compile( r'^http://[^/]+/users/' + usernum + '(.*)$' ),
+					re.compile(r'^http://[^/]+/users/' + usernum + '(.*)$'),
 					self.aliases[usernum] + r'\1',
 					'R=301',
-				] )
-				rewriteMap.append( [
+				])
+				rewriteMap.append([
 					'automatic /' + row.alias + ' rewrite to /users/' + usernum,
-					re.compile( r'http://[^/]+/' + row.alias + r'(.*)$' ),
+					re.compile(r'http://[^/]+/' + row.alias + r'(.*)$'),
 					r'http://' + self.ServerHostname() + r'/users/' + usernum + r'\1',
 					'',
-				] )
-		rewriteHandler.resetRewriteMap( rewriteMap )
+				])
+		rewriteHandler.resetRewriteMap(rewriteMap)
 
-	def Alias( self, usernum, alias, flManila=0 ):
-		formattedUsernum = self.FormatUsernum( usernum )
+	def Alias(self, usernum, alias, flManila=0):
+		formattedUsernum = self.FormatUsernum(usernum)
 		if alias == '':
-			if self.aliases.has_key( formattedUsernum ):
+			if self.aliases.has_key(formattedUsernum):
 				del self.aliases[formattedUsernum]
-		u = self.User( usernum )
+		u = self.User(usernum)
 		u.alias = alias
 		u.flManila = flManila
 		self.Commit()
 
-	def Password( self, usernum, password ):
-		formattedUsernum = self.FormatUsernum( usernum )
-		u = self.User( usernum )
-		u.password = md5.md5( password ).hexdigest()
+	def Password(self, usernum, password):
+		formattedUsernum = self.FormatUsernum(usernum)
+		u = self.User(usernum)
+		u.password = md5.md5(password).hexdigest()
 		self.Commit()
 
-	def UserFolder( self, usernum ):
-		formattedUsernum = self.FormatUsernum( usernum )
+	def UserFolder(self, usernum):
+		formattedUsernum = self.FormatUsernum(usernum)
 		#print "find user folder: usernum =", usernum, " formatted usernum =",formattedUsernum
-		if self.aliases.has_key( formattedUsernum ):
+		if self.aliases.has_key(formattedUsernum):
 			#print "got alias for this:", self.aliases[formattedUsernum]
 			return self.aliases[formattedUsernum] + '/'
 		else:
 			#print "no alias"
-			return self.ServerUrl() + "/users/%s/" % ( formattedUsernum, )
+			return self.ServerUrl() + "/users/%s/" % (formattedUsernum,)
 		
 	# Template renderer
-	def Render( self, data, hidden=0 ):
+	def Render(self, data, hidden=0):
 		# Renders 'data' into html
 		# data = {
 		#	'title': page title,
@@ -434,9 +437,9 @@ class Settings:
 		%s
 		</div>
 	</body>
-	</html>""" % ( self.LongTitle(), data['title'], self.ServerUrl(),
+	</html>""" % (self.LongTitle(), data['title'], self.ServerUrl(),
 			metatags,
-			self.ShortTitle(), data['title'], data['body'] )
+			self.ShortTitle(), data['title'], data['body'])
 	
 		return out
 

@@ -23,3 +23,10 @@ h1 {
 	padding: 0.5em;
 	border-width: 1px;
 }
+.searchhit {
+	border: dashed 1px;
+	padding: 0.5em;
+}
+.searchhit h3 {
+	margin-top: 0px;
+}

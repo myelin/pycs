@@ -33,7 +33,6 @@ This file handles XML-RPC requests for the xmlStorageSystem namespace.
 import os
 import sys
 import re
-import string
 import stat
 
 import pycs_settings
@@ -79,6 +78,7 @@ class xmlStorageSystem_handler:
 			'pleaseNotify': self.pleaseNotify,
 			'requestNotification': self.requestNotification,
 			'ping': self.ping,
+			'mirrorPosts': self.mirrorPosts,
 			}
 		
 		if len( method ) == 0:
@@ -86,7 +86,16 @@ class xmlStorageSystem_handler:
 		
 		base = method[0]
 		if handlers.has_key( base ):
-			return handlers[base]( method[1:], params )
+			try:
+				return handlers[base]( method[1:], params )
+			except pycs_settings.PasswordIncorrect:
+				return { 'flError': xmlrpclib.True,
+					'message': _("Password incorrect"),
+				}
+			except pycs_settings.NoSuchUser:
+				return { 'flError': xmlrpclib.True,
+					'message': _("User not found"),
+				}
 		
 		raise Exception("xmlStorageSystem method '%s' not found" % ( method, ))
 
@@ -115,10 +124,6 @@ class xmlStorageSystem_handler:
 		try:
 			u = self.set.FindUserByEmail( email, password )
 			msg = _('Welcome back, %s!') % (u.name,)
-		except pycs_settings.PasswordIncorrect:
-			return { 'flError': xmlrpclib.True,
-				'message': _("Password incorrect"),
-			}
 		except pycs_settings.NoSuchUser:
 			u = self.set.NewUser( email, password, name )
 			msg = _('Good to have you here, %s!') % (u.name)
@@ -138,16 +143,7 @@ class xmlStorageSystem_handler:
 		print "email", email
 		print "password", password
 		
-		try:
-			u = self.set.FindUser( email, password )
-		except pycs_settings.PasswordIncorrect:
-			return { 'flError': xmlrpclib.True,
-				'message': _("Password incorrect"),
-			}
-		except pycs_settings.NoSuchUser:
-			return { 'flError': xmlrpclib.True,
-				'message': _("User not found"),
-			}
+		u = self.set.FindUser( email, password )
 		
 		urlList = []
 		nFilesSaved = 0
@@ -243,16 +239,7 @@ class xmlStorageSystem_handler:
 		print "email", email
 		print "password", password
 
-		try:
-			u = self.set.FindUser( email, password )
-		except pycs_settings.PasswordIncorrect:
-			return { 'flError': xmlrpclib.True,
-				'message': _("Password incorrect"),
-			}
-		except pycs_settings.NoSuchUser:
-			return { 'flError': xmlrpclib.True,
-				'message': _("User not found"),
-			}
+		u = self.set.FindUser( email, password )
 		
 		flError = xmlrpclib.False
 		errorList = []
@@ -306,16 +293,7 @@ class xmlStorageSystem_handler:
 		print "email", email
 		print "password", password
 
-		try:
-			u = self.set.FindUser( email, password )
-		except pycs_settings.PasswordIncorrect:
-			return { 'flError': xmlrpclib.True,
-				'message': _("Password incorrect"),
-			}
-		except pycs_settings.NoSuchUser:
-			return { 'flError': xmlrpclib.True,
-				'message': _("User not found"),
-			}
+		u = self.set.FindUser( email, password )
 		
 		return {
 			'community': {
@@ -366,16 +344,7 @@ class xmlStorageSystem_handler:
 		print "email", email
 		print "password", password
 
-		try:
-			u = self.set.FindUser( email, password )
-		except pycs_settings.PasswordIncorrect:
-			return { 'flError': xmlrpclib.True,
-				'message': _("Password incorrect"),
-			}
-		except pycs_settings.NoSuchUser:
-			return { 'flError': xmlrpclib.True,
-				'message': _("User not found"),
-			}
+		u = self.set.FindUser( email, password )
 		
 		raise NotImplementedError
 		
@@ -433,54 +402,43 @@ class xmlStorageSystem_handler:
 		print "clientPort", clientPort
 		print "userinfo", userinfo
 
-		try:
-			u = self.set.FindUser( email, password )
-			
-			print "---USER INFO---",userinfo,"------"
+		u = self.set.FindUser( email, password )
+		print "---USER INFO---",userinfo,"------"
 
-			try:
-				clientPort = int(clientPort)
-			except:
-				pass
-			u.clientPort = clientPort
-			if userinfo != {}:
-				u.email = userinfo['email']
-				u.weblogTitle = encodeUnicode(userinfo['weblogTitle'], self.set.DocumentEncoding())
-				u.serialNumber = userinfo['serialNumber']
-				u.organization = encodeUnicode(userinfo['organization'], self.set.DocumentEncoding())
-				u.flBehindFirewall = (userinfo['flBehindFirewall'] == xmlrpclib.True)
-				u.name = encodeUnicode(userinfo['name'], self.set.DocumentEncoding())
-			
-			now = self.set.GetTime()
-			
-			if u.signedon:
-				if status:
-					# user is disconnecting
-					u.signedon = 0
-					u.lastsignoff = now
-					u.signons += 1
-			else:
-				if not status:
-					# user is signing on
-					u.signedon = 1
-					u.lastsignon = now
-				
-			u.lastping = now
-			u.pings += 1
-			if u.membersince == '':
-				u.membersince = now
-			
-			self.set.Commit()
-			
-		except pycs_settings.PasswordIncorrect:
-			return { 'flError': xmlrpclib.True,
-				'message': _("Password incorrect"),
-			}
-		except pycs_settings.NoSuchUser:
-			return { 'flError': xmlrpclib.True,
-				'message': _("User not found"),
-			}
+		try:
+			clientPort = int(clientPort)
+		except:
+			pass
+		u.clientPort = clientPort
+		if userinfo != {}:
+			u.email = userinfo['email']
+			u.weblogTitle = encodeUnicode(userinfo['weblogTitle'], self.set.DocumentEncoding())
+			u.serialNumber = userinfo['serialNumber']
+			u.organization = encodeUnicode(userinfo['organization'], self.set.DocumentEncoding())
+			u.flBehindFirewall = (userinfo['flBehindFirewall'] == xmlrpclib.True)
+			u.name = encodeUnicode(userinfo['name'], self.set.DocumentEncoding())
 		
+		now = self.set.GetTime()
+		
+		if u.signedon:
+			if status:
+				# user is disconnecting
+				u.signedon = 0
+				u.lastsignoff = now
+				u.signons += 1
+		else:
+			if not status:
+				# user is signing on
+				u.signedon = 1
+				u.lastsignon = now
+			
+		u.lastping = now
+		u.pings += 1
+		if u.membersince == '':
+			u.membersince = now
+		
+		self.set.Commit()
+			
 
 		return {
 			'flError': xmlrpclib.False,
@@ -515,9 +473,48 @@ class xmlStorageSystem_handler:
 		}
 
 
+	def mirrorPosts( self, method, params ):
+		if method != []: raise Exception("Namespace not found")
+		
+		email, password, posts = params
+		print "email", email
+		print "password", password
+		print "%d posts to mirror", len(posts)
+		assert type(posts) == type([])
 
+		# make sure the user exists
+		self.set.FindUser( email, password )
 
+		# make sure the user has a spot in the post mirror database
+		pos = self.set.mirrored_posts.find(usernum=email)
+		if pos == -1:
+			self.set.mirrored_posts.append(usernum=email, posts=[])
+		posts_t = self.set.mirrored_posts[pos].posts
 
+		# now walk through all the posts and put them in the table
+		for post in posts:
+			# make sure it's a dict of strings
+			assert type(post) == type({})
+			store_post = {}
+			for k in ('date',):
+				assert isinstance(post[k], xmlrpclib.DateTime)
+				post[k] = post[k].value
+			for k in ('date', 'postid', 'guid', 'url', 'title', 'description'):
+				assert type(post[k]) in (type(''), type(u'')), "Invalid type for parameter '%s': must be some sort of string" % k
+				store_post[k] = post[k].encode('utf-8')
+			# if we already have this post, remove it
+			postid = store_post['postid']
+			assert(type(postid)==type(''))
+			pos = posts_t.find(postid=postid)
+			if pos != -1: posts_t.delete(pos)
+			# now add it
+			posts_t.append(store_post)
+		# all there - save
+		self.set.Commit()
+		# and tell the user it worked
+		return {'flError': xmlrpclib.False,
+			'msg': '%d posts added to the database for you (usernum %s).  Now you have %d posts' % (len(posts), email, len(posts_t)),
+			}
 
 	# Support functions
 
@@ -544,7 +541,7 @@ class xmlStorageSystem_handler:
 		
 		# If we've been given a string, turn it into a number
 		if type(name) == type(''):
-			name = string.atoi( name )
+			name = int(name)
 			
 		# Now turn the number into a zero-padded string
 		if type(name) == type(123):
