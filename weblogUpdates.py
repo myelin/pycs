@@ -41,18 +41,6 @@ import pycs_settings
 import xmlrpclib
 
 
-
-
-def makeXmlBoolean( a ):
-	if a:
-		return xmlrpclib.True
-	else:
-		return xmlrpclib.False
-		
-
-
-
-
 class weblogUpdates_handler:
 	
 	"weblogUpdates XML-RPC functions"

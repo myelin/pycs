@@ -24,6 +24,7 @@
 
 import md5, time
 import updatesDb
+import cgi
 
 request['Content-Type'] = 'text/html; charset=%s' % set.DocumentEncoding()
 
@@ -59,13 +60,17 @@ else:
 			# it's old - delete it
 			tbl.delete( idx )
 			continue
+		# munge blog name to display properly in HTML
+		blogName = u.blogName.replace('&apos;', "'")
+		blogName = cgi.escape(re.sub(r'\<.*?\>', '', blogName), 1)
+		# display line
 		s += """
 		<tr>
 		<td>%d.</td>
 		<td><strong><a href="%s">%s</a></strong></td>
 		<td><strong>%s</strong></td>
 		</tr>
-		""" % ( nDispIndex, u.blogUrl, u.blogName,
+		""" % ( nDispIndex, u.blogUrl, blogName,
 			time.strftime( '%Y-%m-%d %I:%M %p', time.localtime( u.updateTime ) )
 			)
 		nDispIndex += 1
