@@ -176,7 +176,7 @@ if __name__ == '__main__':
 	accessLog = logger.rotating_file_logger( pycs_paths.ACCESSLOG, None, 1024*1024 )
 	print "logging to",pycs_paths.ACCESSLOG
 	logger = status_handler.logger_for_status( accessLog )
-	
+
 	# Make web server
 	hs = http_server.http_server( '', set.ServerPort(), None, logger )
 	hs.server_name = set.conf['serverhostname']
@@ -203,12 +203,17 @@ if __name__ == '__main__':
 			traceback.print_exc()
 			print "WARNING: Can't reduce privileges; server is running as the superuser"
 	
+	# Make a status handler
+	status_h = status_handler.status_extension( [ hs ] )
+	
 	hs.install_handler( default_h )
 	hs.install_handler( mod_h )
 	hs.install_handler( rpc_h )
 	hs.install_handler( bl_h )
-	hs.install_handler( rw_h )
+	hs.install_handler( status_h )
 	#hs.install_handler( log_h )
+	# install rewrite handler last, so that it is processed first
+	hs.install_handler( rw_h )
 	
 	print "[Server started]"
 	asyncore.loop()
