@@ -57,6 +57,12 @@ engines = {
 	'aol': [
 		re.compile(r'^http://.*\.aol\..*search.jsp\?q=([^&]*).*$'),
 		],
+	't-online': [
+		re.compile(r'^http://.*\.t-online\..*tsc\?q=([^&]*).*$'),
+		],
+	'Virgilio': [
+		re.compile(r'^http://.*\.virgilio\..*search\.cgi\?qs=([^&]*).*$'),
+		],
 	}
 
 def sortISOTime(timea,timeb):
