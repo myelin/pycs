@@ -35,7 +35,6 @@ Kind of like http://www.weblogs.com/RPC2 and RCS
 import os
 import sys
 import re
-import md5
 import random
 import string
 import xmlrpclib
@@ -344,8 +343,7 @@ class pycsAdmin_handler:
 				'message': 'User %s not found' % params[1],
 				}
 
-		pwhash = md5.md5( params[1] ).hexdigest()
-		self.set.Password( params[0], pwhash )
+		self.set.Password( params[0], params[1] )
 
 		self.set.Commit()
 

@@ -27,6 +27,7 @@
 import metakit
 import time
 import re
+import md5
 import ConfigParser
 import pycs_paths
 
@@ -387,7 +388,7 @@ class Settings:
 	def Password( self, usernum, password ):
 		formattedUsernum = self.FormatUsernum( usernum )
 		u = self.User( usernum )
-		u.password = password
+		u.password = md5.md5( password ).hexdigest()
 		self.Commit()
 
 	def UserFolder( self, usernum ):
