@@ -96,6 +96,16 @@
 # already defined: "Last hit"
 # already defined: "Count"
 
+# strings from modules/system/swish.py
+'Search your Weblog'::='Suchen in einem Weblog'
+'<h2>Search results for <strong>%s</strong><h2>'::='<h2>Suchergebnisse zu <strong>%s</strong><h2>'
+'<p>Here are all search results while searching for <strong>%s</strong> on the weblog of <a href="%s">%s</a>.'::='<p>Hier sind die Suchergebnisse für den Suchbegriff <strong>%s</strong> auf dem Weblog von <a href="%s">%s</a>.'
+'Rank'::='Rang'
+'Page'::='Seite'
+'Size'::='Grösse'
+'Bytes'::='Bytes'
+# already defined: '<p>Sorry, user %s not found!</p>'
+
 # strings from modules/system/users.py
 'User info'::='Benutzerinfo'
 # already defined: '<p>Sorry, user %s not found!</p>'
