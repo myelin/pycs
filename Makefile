@@ -208,7 +208,7 @@ dist:
 	rm -rf $(DISTFN)/
 	rm -f $(DISTFN).tar.gz
 	mkdir -p $(DISTFN)
-	cp $(PYCSFILES) $(DISTFN)/
+	cp $(PYCSFILES) $(MSGSFILES) $(DISTFN)/
 
 	mkdir -p $(DISTFN)/modules/system
 	cp $(addprefix modules/system/, $(PYCSMODFILES)) $(DISTFN)/modules/system/
@@ -224,6 +224,9 @@ dist:
 
 	mkdir -p $(DISTFN)/comments
 	cp $(addprefix comments/, $(COMMENTFILES)) $(DISTFN)/comments/
+
+	mkdir -p $(DISTFN)/trackbacks
+	cp $(addprefix trackbacks/, $(TRACKBACKFILES)) $(DISTFN)/trackbacks/
 
 	tar -czf $(DISTFN).tar.gz $(DISTFN)/*
 	rm -rf $(DISTFN)/

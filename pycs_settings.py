@@ -506,14 +506,14 @@ class Settings:
 		%s
 	</head>
 	<body>
-		<h1>%s: <strong>%s</strong></h1>
+	<h1><a class="quietLink" href="%s">%s</a>: <strong>%s</strong></h1>
 		<div class="margins">
 		%s
 		</div>
 	</body>
 </html>""" % (self.DocumentEncoding(), self.LongTitle(), data['title'], self.ServerUrl(),
 			metatags,
-			self.ShortTitle(), data['title'], data['body'])
+			self.ServerUrl(), self.ShortTitle(), data['title'], data['body'])
 	
 		return out
 
