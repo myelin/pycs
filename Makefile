@@ -57,8 +57,9 @@ METAKITFILES = metakit.py Mk4py.so
 # Directories
 
 # Read-only stuff
-NOTEDIR = $(PREFIX)/usr/lib/pycs
-CODEDIR = $(NOTEDIR)/bin
+NOTEDIR = $(PREFIX)/usr/share/doc/pycs
+BASEDIR = $(PREFIX)/usr/lib/pycs
+CODEDIR = $(BASEDIR)/bin
 MEDUSADIR = $(CODEDIR)/medusa
 METAKITDIR = $(CODEDIR)/metakit
 COMMENTDIR = $(CODEDIR)/comments
@@ -74,7 +75,7 @@ WEBDIR = $(VARDIR)/www
 WEBIMGDIR = $(WEBDIR)/images
 RESDIR = $(WEBDIR)/initialResources
 MODDIR = $(VARDIR)/modules
-MSGSDIR = $(NOTEDIR)/messages
+MSGSDIR = $(BASEDIR)/messages
 
 # Logging
 LOGDIR = $(PREFIX)/var/log/pycs
@@ -92,7 +93,9 @@ WEBIMGFILES = xml.gif mailto.gif tinyCoffeeCup.gif
 RESFILES = defaultFeeds.opml defaultCategories.opml
 SPECIFICS = $(PYCSFILES) medusa/*.py metakit.py Mk4py.so
 VER = 0.12pre2
+DEBVER = $(VER)-`cat DebianVersion`
 DISTFN = pycs-$(VER)-src
+DEBFN = pycs_$(DEBVER)_all.deb
 LATESTFN = pycs-latest-src
 
 INSTALL = /usr/bin/install
@@ -140,15 +143,16 @@ install: user scripts
 	# Web files go in /var/lib/pycs/www
 	$(INSTALL_MKDIR_RW) -d $(WEBDIR)
 
-	# Notes go in /usr/lib/pycs
+	# Notes go in /usr/share/doc/pycs
 	$(INSTALL_MKDIR_RO) -d $(NOTEDIR)
 	$(INSTALL_RO) $(NOTEFILES) $(NOTEDIR)/
+	mv $(NOTEDIR)/LICENSE $(NOTEDIR)/copyright
 
 	# Executables go in /usr/lib/pycs/bin
 	$(INSTALL_MKDIR_RO) -d $(CODEDIR)
 	$(INSTALL_RO) $(CODEFILES) $(CODEDIR)/
 	python pycs_paths.py "$(PREFIX)" > $(CODEDIR)/pycs_paths.py
-	
+
 	# Message catalogs go into /usr/lib/pycs/messages
 	$(INSTALL_MKDIR_RO) -d $(MSGSDIR)
 	$(INSTALL_RO) $(MSGSFILES) $(MSGSDIR)/
@@ -164,7 +168,7 @@ install: user scripts
 	# Log files go in /var/log
 	$(INSTALL_MKDIR_RW) -d $(LOGDIR)
 
-	$(INSTALL_ROOT) -m 755 startserver.sh $(NOTEDIR)/startserver.sh
+	$(INSTALL_ROOT) -m 755 startserver.sh $(BASEDIR)/startserver.sh
 
 scripts:
 	$(INSTALL_MKDIR_RO) -d $(MODDIR)
@@ -232,3 +236,12 @@ user:
 	# Set up the www-pycs user, if it doesn't already exist
 	-groupadd $(USER)
 	-useradd -d $(VARDIR) -g $(USER) $(USER)
+
+dpkg:
+	rm -rf Debian
+	mkdir -p Debian/DEBIAN
+	env VERSION=$(DEBVER) python replace_vars.py < Debian.src/DEBIAN/control > Debian/DEBIAN/control
+	make install PREFIX=./Debian
+	find ./Debian -type d | xargs chmod 755
+	mkdir -p debian_out
+	dpkg-deb -b Debian debian_out

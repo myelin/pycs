@@ -42,7 +42,7 @@ class htmlCleaner( SGMLParser ):
 	def end_s( self ): pass
 	
 	def start_tt( self, attrs ): pass
-	def end_tt( self, attrs ): pass
+	def end_tt( self ): pass
 	
 	def start_a( self, attrs ):
 		f=1
