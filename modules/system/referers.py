@@ -48,7 +48,7 @@ s = ''
 
 if not query.has_key('usernum'):
 	# no usernum specified - dump out a short explanation of why this is bad
-	page['body'] = """<p>No usernum specified!</p>
+	s += """<p>No usernum specified!</p>
 	<p>Did you get to this page from a link from your Radio <a href="http://127.0.0.1:5335/">desktop website</a>?
 	if so, something is wrong - please mail <a href="http://www.myelin.co.nz/phil/email.php">Phil</a>
 	and tell him the software is broken.</p>
