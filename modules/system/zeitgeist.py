@@ -71,7 +71,7 @@ query = util.SplitQuery( query )
 form = util.SplitQuery( input_data.read() )
 
 page = {
-	'title': _('Search term rankings'),
+	'title': _('Zeitgeist overview'),
 	'body': """<p>Something went wrong; there should be some text here!</p>
 		<p>Mail <a href="http://www.myelin.co.nz/phil/email.php">Phil</a> at 
 		<a href="http://www.myelin.co.nz/">Myelin</a> if you
@@ -104,7 +104,7 @@ else:
 		usernum = user.usernum
 		
 		s += _('<h2>Zeitgeist overview for <strong><a href="%s">%s</a></strong></h2>') % (url, user.name)
-		s += _('<p>Here are all search terms which people followed here, sorted by last hit. The larger the font, the more often the term was searched for.')
+		s += _('<p>Here are all search terms which people followed here, sorted by last hit. The larger the font, the more often the term was searched for. The more to the top, the more current was the access.')
 
 		referrerlist = []
 		for row in set.referrers.select( { 'usernum': usernum, 'group': group } ):
