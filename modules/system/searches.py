@@ -53,7 +53,7 @@ query = util.SplitQuery( query )
 form = util.SplitQuery( input_data.read() )
 
 page = {
-	'title': 'Referrer rankings',
+	'title': 'Search term rankings',
 	'body': """<p>Something went wrong; there should be some text here!</p>
 		<p>Mail <a href="http://www.myelin.co.nz/phil/email.php">Phil</a> at 
 		<a href="http://www.myelin.co.nz/">Myelin</a> if you
@@ -86,27 +86,27 @@ else:
 		usernum = user.usernum
 		
 		s += """
-		<h2>Referrers for <strong>%s</strong></h2>
+		<h2>Search terms for <strong>%s</strong></h2>
 		<table width="80%%" cellspacing="5" cellpadding="2">
 		""" % (user.name,)
 
 		if order == 'time':
 			s += """
-			<tr><th align="left"><a href="%s">Referrer</a></th>
+			<tr><th align="left"><a href="%s">Search term</a></th>
 				<th align="left">Last hit</th>
 				<th align="right"><a href="%s">Count</a></th></tr>
 			""" % ( orderLink( usernum, group, 'referrer' ),
 				orderLink( usernum, group, 'count' ) )
 		elif order == 'count':
 			s += """
-			<tr><th align="left"><a href="%s">Referrer</a></th>
+			<tr><th align="left"><a href="%s">Search term</a></th>
 				<th align="left"><a href="%s">Last hit</a></th>
 				<th align="right">Count</th></tr>
 			""" % (orderLink(usernum, group, 'referrer'),
 				orderLink(usernum, group, 'time'))
 		else:
 			s += """
-			<tr><th align="left">Referrer</th>
+			<tr><th align="left">Search term</th>
 				 <th align="left"><a href="%s">Last hit</a></th>
 				<th align="right"><a href="%s">Count</a></th></tr>
 			""" % (orderLink(usernum, group, 'time'),
@@ -140,7 +140,8 @@ else:
 
 		s += """
 		</table>
-		"""
+		<p>See also: <a href="referers.py?usernum=%s&group=%s&order=%s">Referrer rankings for this site</a>.</p>
+		""" % (usernum, group, order)
 
 	except pycs_settings.NoSuchUser:
 		s += '<p>Sorry, user %s not found!</p>' % (usernum,)

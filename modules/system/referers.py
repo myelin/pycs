@@ -121,7 +121,8 @@ else:
 
 		s += """
 		</table>
-		"""
+		<p>See also: <a href="searches.py?usernum=%s&group=%s&order=%s">Search term rankings for this site</a>.</p>
+		""" % (usernum, group, order)
 
 	except pycs_settings.NoSuchUser:
 		s += '<p>Sorry, user %s not found!</p>' % (usernum,)
