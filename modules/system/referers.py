@@ -26,17 +26,15 @@ import os
 import cgi
 import string
 import pycs_settings
+import time
 
 def orderLink(username,group,order):
 	return set.ServerUrl() + '/system/referers.py?usernum=%s&group=%s&order=%s' % (usernum, group, order)
 
 def sortISOTime(timea,timeb):
-	timea = str(timea)
-	timeb = str(timeb)
-	if timea[-2:] == timeb[-2:]:
-		return -1*cmp(timea,timeb)
-	else:
-		return cmp(timea[-2:],timeb[-2])
+	ta = time.strptime(timea.time,'%Y-%m-%d %I:%M:%S %p')
+	tb = time.strptime(timeb.time,'%Y-%m-%d %I:%M:%S %p')
+	return -1*cmp(ta,tb)
 	
 request['Content-Type'] = 'text/html'
 
