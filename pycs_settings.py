@@ -163,7 +163,8 @@ class Settings:
 		# the python community server itself)
 		ignore = [
 			self.UserFolder( usernum ),
-			self.ServerUrl()
+			'http://127.0.0.1:5335/',
+			'http://localhost:5335/',
 			]
 
 		# check for URLs to ignore as referrer

@@ -1,5 +1,4 @@
 import time
-import pycs_settings
 
 class updatesDb:
 	"Object to hold info on updated weblogs"
