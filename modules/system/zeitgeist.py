@@ -100,9 +100,10 @@ else:
 		group = query.get('group','default')
 		
 		user = set.User( usernum )
+		url = set.UserFolder( usernum )
 		usernum = user.usernum
 		
-		s += _("<h2>Zeitgeist overview for <strong>%s</strong></h2>") % (user.name,)
+		s += _('<h2>Zeitgeist overview for <strong><a href="%s">%s</a></strong></h2>') % (url, user.name)
 		s += _('<p>Here are all search terms which people followed here, sorted by last hit. The larger the font, the more often the term was searched for.')
 
 		referrerlist = []
@@ -121,6 +122,9 @@ else:
 					if m:
 						matched = engine
 						term = m.group(1)
+						try:
+							term = term.decode('utf-8').encode('iso-8859-1')
+						except: pass
 			if matched:
 				searchterms.append((term, row.referrer, row.count))
 				if counts.has_key(row.count):

@@ -161,6 +161,9 @@ else:
 						matched = engine
 						term = m.group(1)
 			if matched and term:
+				try:
+					term = term.decode('utf-8').encode('iso-8859-1')
+				except: pass
 				s += """
 				<tr><td align="left"><a target="_new" href="%s">%s: <b>%s</b></a></td>
 				<td align="left"><pre>%s</pre></td><td align="right">%s</td></tr>
