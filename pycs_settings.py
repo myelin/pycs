@@ -402,17 +402,21 @@ class Settings:
 			return self.ServerUrl() + "/users/%s/" % ( formattedUsernum, )
 		
 	# Template renderer
-	def Render( self, data ):
+	def Render( self, data, hidden=0 ):
 		# Renders 'data' into html
 		# data = {
 		#	'title': page title,
 		#	'body': body text,
 		#	}
 		
+		metatags = ''
+		if hidden:
+			metatags += '<meta name="robots" content="noindex,nofollow,noarchive">'
 		out = """<html>
 	<head>
 		<title>%s: %s</title>
 		<link rel="stylesheet" href="%s/pycs.css" type="text/css" />
+		%s
 	</head>
 	<body>
 		<h1>%s: <strong>%s</strong></h1>
@@ -421,6 +425,7 @@ class Settings:
 		</div>
 	</body>
 	</html>""" % ( self.LongTitle(), data['title'], self.ServerUrl(),
+			metatags,
 			self.ShortTitle(), data['title'], data['body'] )
 	
 		return out

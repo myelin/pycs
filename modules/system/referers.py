@@ -142,7 +142,7 @@ else:
 # Dump it all out
 
 page['body'] = s
-s = set.Render( page )
+s = set.Render( page, hidden=1 )
 
 request['Content-Length'] = len(s)
 request.push( s )
