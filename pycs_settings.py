@@ -46,7 +46,10 @@ class User:
 
 class Settings:
 
-	def __init__( self, quiet=0 ):
+	def __init__( self, quiet=0, authorizer=None ):
+		self.authorizer = authorizer
+		self.rewrite_h = None
+		
 		storFn = pycs_paths.DATADIR + "/settings.dat"
 		if not quiet:
 			print "reading data from",storFn
@@ -101,7 +104,7 @@ class Settings:
 
 		# Referrer data
 		self.referrers = self.db.getas( "referrers[time:S,usernum:S,group:S,referrer:S,count:I]" ).ordered(2)
-		
+
 		if not quiet:
 			self.DumpData()
 
@@ -430,3 +433,5 @@ class Settings:
 	
 		return out
 
+	def SetRewriteHandler(self, rw_h):
+		self.rewrite_h = rw_h

@@ -1,3 +1,4 @@
+
 # -*- Mode: Python -*-
 
 #	   Author: Sam Rushing <rushing@nightmare.com>
@@ -7,7 +8,7 @@
 #												All Rights Reserved.
 #
 
-RCS_ID =  '$Id: pycs_auth_handler.py,v 1.2 2002/10/27 11:22:48 myelin Exp $'
+RCS_ID =  '$Id: pycs_auth_handler.py,v 1.3 2003/03/29 10:27:31 myelin Exp $'
 
 # support for 'basic' authenticaion.
 
@@ -36,11 +37,10 @@ import producers
 # does anyone support digest authentication? (rfc2069)
 
 class pycs_auth_handler:
-	def __init__ (self, set, handler, realm='default'):
-		import authorizer
-		self.authorizer = authorizer.authorizer()
+	def __init__ (self, set, handler, authorizer_, realm='default'):
 		self.set = set
 		self.handler = handler
+		self.authorizer = authorizer_
 		self.realm = realm
 		self.pass_count = counter.counter()
 		self.fail_count = counter.counter()

@@ -175,10 +175,12 @@ class pycs_module_handler:
 				'set': self.set,
 				'util': pycs_http_util,
 				} )
+		except SystemExit:
+			raise
 		except:
 			# print browser error and log backtrace
 			try:
-				print "--- EXCEPTION ---"
+				print "--- EXCEPTION IN MODULE ---"
 				exception, detail, traceback = sys.exc_info()
 				sys.excepthook( exception, detail, traceback )
 			finally:

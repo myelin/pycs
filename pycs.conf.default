@@ -62,6 +62,12 @@ shorttitle = PyCS
 # expat for example only supports unicode, utf-8 and iso-8859-1!
 #defaultencoding = iso-8859-1
 
+# Enable the ht://Dig search engine.  Don't turn this on unless you have
+# patched Medusa to get it to not catch the SystemExit exception, or PyCS
+# will never clean up the child processes created in the search process,
+# and your server will not be happy.
+#enablehtdig = yes
+
 [aliases]
 
 # Put aliases here; the server will send these back as 'official URLs' for the 

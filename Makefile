@@ -87,7 +87,7 @@ PYCSFILES = $(NOTEFILES) $(INSTFILES) $(CODEFILES) \
 
 COMMENTFILES = __init__.py rss.py rssfull.py html.py defaultFormatter.py
 TRACKBACKFILES = __init__.py rss.py rssfull.py html.py defaultFormatter.py
-PYCSMODFILES = updates.py mailto.py users.py comments.py login.py count.py referers.py searches.py rankings.py zeitgeist.py trackback.py
+PYCSMODFILES = updates.py mailto.py users.py comments.py login.py count.py referers.py searches.py rankings.py zeitgeist.py trackback.py search.py
 WEBFILES = index.html history.html readme.html pycs.css
 WEBIMGFILES = xml.gif mailto.gif tinyCoffeeCup.gif
 RESFILES = defaultFeeds.opml defaultCategories.opml

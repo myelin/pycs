@@ -79,6 +79,58 @@ class pycs_rewrite_handler:
 		if rewriteMap:
 			self.rewriteMap.extend( rewriteMap )
 
+	def rewriteUrl(self, fullUrl, quiet=0):
+		lastOne = 0
+		for rw in self.rewriteMap:
+			logName, regex, repl, flags = rw
+			oldUrl = fullUrl
+			fullUrl = regex.sub( repl, fullUrl )
+			redirect = None
+			if regex.match( oldUrl ):
+				if not quiet:
+						print "rewriting " + oldUrl + " (with rule '" + logName + "', flags '" + flags + "')"
+						print "       to " + fullUrl
+				
+				# Parse flags - see if we need to redirect or something
+				flagList = re.split( ',', flags )
+				#print "flags:",flagList
+				for flag in flagList:
+					if not len( flag ): continue
+					f = flag[0]
+					if f == 'R':
+						if not quiet: print "redirect"
+						m = re.compile( 'R=(\d+)' ).match( flag )
+						if m:
+							code = int( m.group( 1 ) )
+							if not quiet: print "code",code
+							redirect = ( fullUrl, code )
+						else:
+							redirect = ( fullUrl, 302 )
+					elif f == 'L':
+						if not quiet: print "stop processing redirects"
+						lastOne = 1
+					elif f == 'P':
+						if not quiet: print "proxy"
+						raise "Can't proxy, sorry!"
+					elif f == 'H':
+						m = re.compile( 'H(.*?)=(.*)' ).match( flag )
+						if m:
+							value = regex.sub( m.group(2), oldUrl )
+							print "patch header %s to %s" % ( m.group(1), value )
+							request.set_header( m.group(1), value )
+					else:
+						raise "Unknown flag '%s' in list '%s'" % ( flag, flags )
+			
+			if redirect:
+				loc, code = redirect
+				request['Location'] = loc
+				request.error( code )
+			
+			if lastOne:
+				# Stop processing commands
+				break
+		return fullUrl
+
 	def match( self, request ):
 	
 		# Rewrite hook - figure out what the host is, and rewrite
@@ -105,54 +157,7 @@ class pycs_rewrite_handler:
 		
 		fullUrl = 'http://%s%s' % ( request.host, path )
 
-		lastOne = 0
-		for rw in self.rewriteMap:
-			logName, regex, repl, flags = rw
-			oldUrl = fullUrl
-			fullUrl = regex.sub( repl, fullUrl )
-			redirect = None
-			if regex.match( oldUrl ):
-				print "rewriting " + oldUrl + " (with rule '" + logName + "', flags '" + flags + "')"
-				print "       to " + fullUrl
-				
-				# Parse flags - see if we need to redirect or something
-				flagList = re.split( ',', flags )
-				#print "flags:",flagList
-				for flag in flagList:
-					if not len( flag ): continue
-					f = flag[0]
-					if f == 'R':
-						print "redirect"
-						m = re.compile( 'R=(\d+)' ).match( flag )
-						if m:
-							code = int( m.group( 1 ) )
-							print "code",code
-							redirect = ( fullUrl, code )
-						else:
-							redirect = ( fullUrl, 302 )
-					elif f == 'L':
-						print "stop processing redirects"
-						lastOne = 1
-					elif f == 'P':
-						print "proxy"
-						raise "Can't proxy, sorry!"
-					elif f == 'H':
-						m = re.compile( 'H(.*?)=(.*)' ).match( flag )
-						if m:
-							value = regex.sub( m.group(2), oldUrl )
-							print "patch header %s to %s" % ( m.group(1), value )
-							request.set_header( m.group(1), value )
-					else:
-						raise "Unknown flag '%s' in list '%s'" % ( flag, flags )
-			
-			if redirect:
-				loc, code = redirect
-				request['Location'] = loc
-				request.error( code )
-			
-			if lastOne:
-				# Stop processing commands
-				break
+		fullUrl = self.rewriteUrl(fullUrl)
 								
 		newHost, newPath = REQSPLITTER.search( fullUrl ).groups()
 

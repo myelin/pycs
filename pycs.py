@@ -146,8 +146,15 @@ if __name__ == '__main__':
 		pid_file.write( "%d" % my_pid )
 		pid_file.close()
 
+	# Figure out if we need to use authentication
+	if os.path.isfile( os.path.join( pycs_paths.CONFDIR, 'users.conf' ) ):
+		import authorizer
+		auth = authorizer.authorizer()
+	else:
+		auth = None
+
 	# Get config
-	set = pycs_settings.Settings()
+	set = pycs_settings.Settings(authorizer=auth)
 
 	pycs_translation.translation(set.Language()).install()
 
@@ -162,6 +169,7 @@ if __name__ == '__main__':
 	execfile( rewriteFn )
 
 	rw_h = pycs_rewrite_handler.pycs_rewrite_handler( set, rewriteMap )
+	set.SetRewriteHandler(rw_h)
 
 	set.reloadAliases( rw_h )
 	
@@ -171,9 +179,10 @@ if __name__ == '__main__':
 	# Make GET handler	
 	fs = filesys.os_filesystem( pycs_paths.WEBDIR )
 	default_h = default_handler.default_handler( fs )
-	if os.path.isfile( os.path.join( pycs_paths.CONFDIR, 'users.conf' ) ):
+
+	if set.authorizer is not None:
 		# Add auth wrapper
-		default_h = pycs_auth_handler.pycs_auth_handler( set, default_h )
+		default_h = pycs_auth_handler.pycs_auth_handler( set, default_h, set.authorizer )
 	
 	# Make XML-RPC handler
 	rpc_h = pycs_xmlrpc_handler.pycs_xmlrpc_handler( set )
@@ -198,7 +207,7 @@ if __name__ == '__main__':
 	mod_h = pycs_module_handler.pycs_module_handler( set )
 	if os.path.isfile( os.path.join( pycs_paths.CONFDIR, 'users.conf' ) ):
 		# Add auth wrapper
-		mod_h = pycs_auth_handler.pycs_auth_handler( set, mod_h )
+		mod_h = pycs_auth_handler.pycs_auth_handler( set, mod_h, set.authorizer )
 	
 	# Make logger
 	accessLog = logger.rotating_file_logger( pycs_paths.ACCESSLOG, None, 1024*1024 )

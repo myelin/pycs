@@ -85,9 +85,9 @@ USER_FILE    = 2 # user-specific (i.e. a blog, or a count / comments page)
 PUBLIC_FILE  = 3 # public (front page, rankings, updates)
 RPC_FILE     = 4 # required to be readable without a password by Radio (/RPC2, initialResources)
 
-def classify_file( path, query ):
+def classify_file( path, query, quiet=0 ):
 	if not query: query = ''
-	print "classify",path,query
+	if not quiet: print "classify",path,query
 	filetype = UNKNOWN_FILE
 	usernum = ''
 	
@@ -97,13 +97,13 @@ def classify_file( path, query ):
 			usernum = m_usernum.group( 1 )
 			filetype = USER_FILE
 	elif path.startswith( '/system' ):
-		print "system file"
+		if not quiet: print "system file"
 		filetype = SYSTEM_FILE
 		if path.startswith( '/system/weblogUpdates.py' ) or path.startswith( '/system/rankings.py' ):
-			print "blog updates/rankings"
+			if not quiet: print "blog updates/rankings"
 			filetype = PUBLIC_FILE
 		elif path.startswith( '/system/comments.py' ):
-			print "comments",query
+			if not quiet: print "comments",query
 			m_usernum = re.findall( 'u=0*(\d+)', query )
 			if m_usernum:
 				if len( m_usernum ) > 1:
@@ -112,7 +112,7 @@ def classify_file( path, query ):
 				# we are viewing a file associated with a usernum
 				usernum = m_usernum[0]
 				filetype = USER_FILE
-			print "blog comments:usernum",usernum
+			if not quiet: print "blog comments:usernum",usernum
 		elif path.startswith( '/system/mailto.py' ) or path.startswith( '/system/count.py' ) or path.startswith( '/system/swish.py' ):
 			m_usernum = re.findall( 'usernum=0*(\d+)', query )
 			if m_usernum:
@@ -124,15 +124,15 @@ def classify_file( path, query ):
 				filetype = USER_FILE
 	else:
 		folder = re.match( r'(.*)\/', path ).group( 1 )
-		print "folder:",folder
+		if not quiet: print "folder:",folder
 		if folder == '':
-			print "root folder; public"
+			if not quiet: print "root folder; public"
 			filetype = PUBLIC_FILE
 		elif folder in ( '/initialResources', '/images' ):
-			print "initialResources or images folder; rpc"
+			if not quiet: print "initialResources or images folder; rpc"
 			filetype = RPC_FILE
 		else:
-			print "unknown folder"
+			if not quiet: print "unknown folder"
 	
 	return filetype, usernum
 
@@ -177,13 +177,13 @@ def parse_users_conf( confFn ):
 	print "users:",users
 	return users
 
-def check_permission( filetype, usernum, currentUser ):
+def check_permission( filetype, usernum, currentUser, quiet=0 ):
 	
 	"""Checks permissions for a given file type and usernum against the 
 	current user (also given) and returns 1 if the user should be able to 
 	view the page, otherwise 0"""
 	
-	print "checking permissions for filetype",filetype,"usernum",usernum,"for user",currentUser
+	if not quiet: print "checking permissions for filetype",filetype,"usernum",usernum,"for user",currentUser
 	
 	# See what the current user can see
 	can_see = currentUser['can_see']
@@ -206,20 +206,21 @@ class authorizer:
 	def __init__( self ):
 		self.users = parse_users_conf( os.path.join( pycs_paths.CONFDIR, 'users.conf' ) )
 		
-	def authorize( self, path, query, auth_info ):
+	def authorize( self, path, query, auth_info, quiet=0 ):
 		if not auth_info:
 			# no login & password supplied
 			auth_info = ( '', '' )
 
 		# get username and password out of 'Authorization' HTTP header
+		#print "[auth_info: %s]" % `auth_info`
 		username, password = auth_info
 
 		# something to keep the console happy
-		print "username",username,"attempting to access",path
+		if not quiet: print "username",username,"attempting to access",path
 
 		# fail auth if user doesn't exist
 		if not self.users.has_key( username ):
-			print "user doesn't exist"
+			if not quiet: print "user doesn't exist"
 			return 0
 
 		# user exists; grab data
@@ -227,9 +228,9 @@ class authorizer:
 
 		# fail auth if password is wrong
 		if md5.md5( password ).hexdigest() != user['password']:
-			print "password incorrect"
+			if not quiet: print "password incorrect"
 			return 0
 
 		# password ok; see if this user has access to the requested url
-		filetype, usernum = classify_file( path, query )
-		return check_permission( filetype, usernum, user )
+		filetype, usernum = classify_file( path, query, quiet=quiet )
+		return check_permission( filetype, usernum, user, quiet=quiet )
