@@ -132,8 +132,11 @@ if query.has_key('c'):
 
 	c = query['c']
 	if c == 'counts':
-		rows = [row for row in set.pdb.execute("SELECT postid, COUNT(id) FROM pycs_comments WHERE usernum=%d GROUP BY postid", (usernum,))]
-		paragraphs, counts = zip(*rows)
+		rows = [row for row in set.pdb.execute("SELECT postid, COUNT(id) FROM pycs_comments WHERE usernum=%d AND is_spam=0 GROUP BY postid", (usernum,))]
+		if rows:
+			paragraphs, counts = zip(*rows)
+		else:
+			paragraphs = counts = []
 		
 		s = "anID = [%s]; " % ", ".join(['"%s"' % (x,) for x in paragraphs])
 		s += "anCount = [%s]; " % ", ".join(['"%d"' % (x,) for x in counts])
@@ -218,7 +221,7 @@ else:
 				}
 
 			cmttext = form['comment']
-			set.pdb.execute("INSERT INTO pycs_comments (id, usernum, postid, postlink, postername, posteremail, posterurl, commenttext, commentdate) VALUES (NEXTVAL('pycs_comments_id_seq'), %s, %s, %s, %s, %s, %s, %s, NOW())", (usernum, postid, form.get('link', ''), formatter.storedName, formatter.storedEmail, formatter.storedUrl, cmttext, ))
+			set.pdb.execute("INSERT INTO pycs_comments (id, usernum, postid, postlink, postername, posteremail, posterurl, commenttext, commentdate, is_spam) VALUES (NEXTVAL('pycs_comments_id_seq'), %s, %s, %s, %s, %s, %s, %s, NOW(), 0)", (usernum, postid, form.get('link', ''), formatter.storedName, formatter.storedEmail, formatter.storedUrl, cmttext, ))
 			print "Added comment to usernum %d postid %s by %s, %d bytes" % (usernum, `postid`, `formatter.storedName`, len(cmttext))
 			
 			formatter.note = _("New comment added - thanks for participating!")
@@ -233,7 +236,7 @@ else:
 
 	# a full feed lists all comments, a paragraph feed only comments to
 	# one paragraph
-	sql = "SELECT id, postid, postlink, postername, posteremail, posterurl, commentdate, commenttext FROM pycs_comments WHERE usernum=%d"
+	sql = "SELECT id, postid, postlink, postername, posteremail, posterurl, commentdate, commenttext FROM pycs_comments WHERE is_spam=0 AND usernum=%d"
 	sqlargs = [usernum]
 	if fullfeed:
 		if fullfeed < 3:
