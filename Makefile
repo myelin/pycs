@@ -36,7 +36,7 @@ ROOT = root
 # /var/lib/pycs, /etc/pycs, /var/log/pycs will be created.
 PREFIX = /home/www-pycs
 
-SUBDIRS = www conf modules comments
+SUBDIRS = www conf modules comments trackbacks
 
 NOTEFILES = README LICENSE
 INSTFILES = Makefile mkidx.pl make_readme.pl 
@@ -61,6 +61,7 @@ BASEDIR = $(PREFIX)/usr/lib/pycs
 CODEDIR = $(BASEDIR)/bin
 MEDUSADIR = $(CODEDIR)/medusa
 COMMENTDIR = $(CODEDIR)/comments
+TRACKBACKDIR = $(CODEDIR)/trackbacks
 
 # Config
 CONFDIR = $(PREFIX)/etc/pycs
@@ -85,7 +86,8 @@ PYCSFILES = $(NOTEFILES) $(INSTFILES) $(CODEFILES) \
 	$(addsuffix .default, $(CONFFILES))
 
 COMMENTFILES = __init__.py rss.py rssfull.py html.py defaultFormatter.py
-PYCSMODFILES = updates.py mailto.py users.py comments.py login.py count.py referers.py searches.py rankings.py zeitgeist.py
+TRACKBACKFILES = __init__.py rss.py rssfull.py html.py defaultFormatter.py
+PYCSMODFILES = updates.py mailto.py users.py comments.py login.py count.py referers.py searches.py rankings.py zeitgeist.py trackback.py
 WEBFILES = index.html history.html readme.html pycs.css
 WEBIMGFILES = xml.gif mailto.gif tinyCoffeeCup.gif
 RESFILES = defaultFeeds.opml defaultCategories.opml
@@ -171,6 +173,9 @@ scripts:
 
 	$(INSTALL_MKDIR_RO) -d $(COMMENTDIR)
 	$(INSTALL_RO) $(addprefix comments/, $(COMMENTFILES)) $(COMMENTDIR)/
+
+	$(INSTALL_MKDIR_RO) -d $(TRACKBACKDIR)
+	$(INSTALL_RO) $(addprefix trackbacks/, $(TRACKBACKFILES)) $(TRACKBACKDIR)/
 
 	# Install the default web files (index, history, readme) in www/;
 	# you can safely edit the files in $(PREFIX)/var/lib/pycs/www/ once
