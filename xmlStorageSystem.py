@@ -509,7 +509,10 @@ class xmlStorageSystem_handler:
 				post[k] = post[k].value
 			for k in ('date', 'postid', 'guid', 'url', 'title', 'description'):
 				assert type(post[k]) in (type(''), type(u'')), "Invalid type for parameter '%s': must be some sort of string" % k
-				store_post[k] = post[k].encode('utf-8')
+				if type(post[k]) == type(u''):
+					store_post[k] = post[k].encode('utf-8')
+				else:
+					store_post[k] = post[k]
 			# if we already have this post, remove it
 			postid = store_post['postid']
 			assert(type(postid)==type(''))
