@@ -52,6 +52,11 @@ def usedBytes( path ):
 	os.path.walk( path, counterCallback, sumf )
 	return sumf[0]
 
+def encodeUnicode( text, encoding='iso-8859-1' ):
+	if type(text) == type(u''):
+		text = text.encode( encoding )
+	return text
+
 class xmlStorageSystem_handler:
 	
 	"xmlStorageSystem XML-RPC functions"
@@ -440,11 +445,11 @@ class xmlStorageSystem_handler:
 			u.clientPort = clientPort
 			if userinfo != {}:
 				u.email = userinfo['email']
-				u.weblogTitle = userinfo['weblogTitle']
+				u.weblogTitle = encodeUnicode(userinfo['weblogTitle'], self.set.DocumentEncoding())
 				u.serialNumber = userinfo['serialNumber']
-				u.organization = userinfo['organization']
+				u.organization = encodeUnicode(userinfo['organization'], self.set.DocumentEncoding())
 				u.flBehindFirewall = (userinfo['flBehindFirewall'] == xmlrpclib.True)
-				u.name = userinfo['name']
+				u.name = encodeUnicode(userinfo['name'], self.set.DocumentEncoding())
 			
 			now = self.set.GetTime()
 			

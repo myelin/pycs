@@ -39,7 +39,7 @@ def sortISOTime(timea,timeb):
 	tb = time.strptime(timeb.time,'%Y-%m-%d %I:%M:%S %p')
 	return -1*cmp(ta,tb)
 	
-request['Content-Type'] = 'text/html'
+request['Content-Type'] = 'text/html; charset=%s' % set.DocumentEncoding()
 
 [path, params, query, fragment] = request.split_uri()
 query = util.SplitQuery( query )

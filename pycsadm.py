@@ -7,6 +7,9 @@ import string
 import getopt
 import xmlrpclib
 import pycs_tokens
+import pycs_settings
+
+set = pycs_settings.Settings( quiet=True )
 
 def usage():
 	print "pycsadm [-h]"
@@ -81,7 +84,7 @@ else:
 		for row in res['table']:
 			s = string.join( row, '\t' )
 			if type(s) == type(u''):
-				s = s.encode('ISO-8859-1')
+				s = s.encode(set.DocumentEncoding())
 			print s
 	print res['message']
 

@@ -29,6 +29,8 @@ import re
 import cgi
 import smtplib
 import socket
+from email.Message import Message
+from email.Header import Header
 
 # See pycs_module_handler.py for info on how modules work
 
@@ -38,11 +40,19 @@ import socket
 #		try request.split_uri() to get some info about the request
 
 
+no8bit = re.compile(r'.*[^\x20-\x7f]')
+def quoteHeader(txt, fromcset, tocset):
+	txt = txt.decode(documentEncoding).encode(mailEncoding)
+	if no8bit.match(txt):
+		return str(Header(txt, mailEncoding))
+	else:
+		return txt
+
 [path, params, query, fragment] = request.split_uri()
 query = util.SplitQuery( query )
 form = util.SplitQuery( input_data.read() )
 
-request['Content-Type'] = 'text/html'
+request['Content-Type'] = 'text/html; charset=%s' % set.DocumentEncoding()
 
 page = {
 	'title': _('Feedback'),
@@ -72,7 +82,10 @@ if request.command.lower() == 'post':
 
 	fields = ['fromName', 'fromEmail', 'fromUrl', 'subject', 'msgBody']
 
-	fromName = string.replace( form['fromName'], "\n", "_" )
+	documentEncoding = set.DocumentEncoding()
+	mailEncoding = set.MailEncoding()
+
+	fromName = form['fromName']
 	fromEmail = re.compile( r'[A-Za-z0-9\-\_\+\@\.]+' ).match( form['fromEmail'] )
 	if fromEmail is None:
 		fromEmail = ""
@@ -83,7 +96,7 @@ if request.command.lower() == 'post':
 		fromUrl = ""
 	else:
 		fromUrl = fromUrl.group( 0 )
-	subject = string.replace( form['subject'], "\n", "_" )
+	subject = form['subject']
 
 	s += '<table>'
 
@@ -96,29 +109,26 @@ if request.command.lower() == 'post':
 
 	s += '</table>'
 
-	# Now build an RFC-822 message out of it
-	msg = """X-User-Agent: Python Community Server
-From: "%s" <%s>
-To: %s
-Subject: %s
+	msgBody = '%s ( %s ) sent you a message through the Python Community Server:\n\n' % (fromName, fromUrl) + form['msgBody']
 
-%s ( %s ) sent you a message through the Python Community Server:
-
-""" % (
-		fromName,
+	# Now build an RFC-2822 message out of it
+	msg = Message()
+	msg.set_charset(mailEncoding)
+	msg.set_payload(msgBody.decode(documentEncoding).encode(mailEncoding))
+	msg['X-User-Agent'] = 'Python Community Server'
+	msg['From'] = '%s (%s)' % (
 		fromEmail,
-		u.email,
-		subject,
-		fromName,
-		fromUrl,
-		) + form['msgBody']
+		quoteHeader(fromName, documentEncoding, mailEncoding)
+	)
+	msg['To'] = u.email
+	msg['Subject'] = quoteHeader(subject, documentEncoding, mailEncoding)
 
 	try:
 		sender = smtplib.SMTP( "localhost", 25 )
 		sender.sendmail(
 			set.ServerMailTo(),
 			u.email,
-			msg,
+			msg.as_string(),
 			)
 		
 	except socket.error, e:

@@ -62,6 +62,12 @@ shorttitle = PyCS
 # expat for example only supports unicode, utf-8 and iso-8859-1!
 #defaultencoding = iso-8859-1
 
+# documentEncoding and mailEncoding are user visible encodings for HTML
+# pages and mails. You usually set this if you use utf-8 or something like
+# this.
+#mailencoding = iso-8859-1
+#documentencoding = iso-8859-1
+
 # Enable the ht://Dig search engine.  Don't turn this on unless you have
 # patched Medusa to get it to not catch the SystemExit exception, or PyCS
 # will never clean up the child processes created in the search process,

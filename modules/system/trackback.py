@@ -42,6 +42,32 @@ import html_cleaner
 import trackbacks
 import md5
 
+def escape_8bit(text):
+	return re.sub(r'([^\x00-\x7f])',
+		      lambda match: '&#%d;' % ord(match.group(1)), text)
+
+def convertEncoding(text, src_enc, dst_enc):
+	# convert string encoding
+	if src_enc:
+		try:
+			text = text.decode(src_enc).encode(dst_enc)
+		except UnicodeError:
+			text = escape_8bit(text)
+	else:
+		# unkown encoding
+		try:
+			text = text.decode('ascii').encode('ascii')
+		except UnicodeError:
+			try:
+				text = text.decode('utf-8').encode(dst_enc)
+			except UnicodeError:
+				try:
+					text = text.decode('iso-8859-1').encode(dst_enc)
+				except UnicodeError:
+					text = escape_8bit(text)
+	return text
+
+
 # order by user & paragraph
 trackbackTable = set.db.getas(
 	'trackbacks[user:S,paragraph:S,notes[name:S,title:S,url:S,excerpt:S,date:S]]'
@@ -209,15 +235,26 @@ else:
 			
 		else:
 			# it's an ADD command
-			formatter.storedTitle = util.MungeHTML( form.get( 'title', _('an untitled posting') ) )
-			formatter.storedName = util.MungeHTML( form.get( 'blog_name', _('an anonymous blog') ) )
+
+			srcEncoding = ''
+			for header in request.header:
+				# search encoding in request header
+				m = re.match(r'[Cc]ontent-[Tt]ype:.*charset=(.+)$', header)
+				if m:
+					srcEncoding = m.group(1).strip()
+					break
+
+			dstEncoding = set.DocumentEncoding()
+
+			formatter.storedTitle = convertEncoding(util.MungeHTML( form.get( 'title', _('an untitled posting') ) ), srcEncoding, dstEncoding)
+			formatter.storedName = convertEncoding(util.MungeHTML( form.get( 'blog_name', _('an anonymous blog') ) ), srcEncoding, dstEncoding)
 			formatter.storedUrl = util.MungeHTML( form['url'] )
 			
 			newTrackback = {
 				'title': formatter.storedTitle,
 				'name': formatter.storedName,
 				'url': formatter.storedUrl,
-				'excerpt': form.get( 'excerpt', '' ),
+				'excerpt': convertEncoding(form.get( 'excerpt', '' ), srcEncoding, dstEncoding),
 				'date': time.strftime( trackbacks.STANDARDDATEFORMAT ),
 				}
 			

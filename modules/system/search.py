@@ -13,7 +13,7 @@
 # 	or the GNU Public License version 2 or later
 # 	<http://www.gnu.org/copyleft/gpl.html>
 #
-# 	$Id: search.py,v 1.5 2003/05/15 13:10:31 gbhugo Exp $
+# 	$Id: search.py,v 1.6 2003/10/02 14:32:18 gbhugo Exp $
 #
 # So I guess if you use search.py, your copy of PyCS falls under the GPL.
 # Don't install htsearch to keep it under the MIT license.  Your call :-)
@@ -43,7 +43,7 @@ import base64
 query = util.SplitQuery( query )
 form = util.SplitQuery( input_data.read() )
 
-request['Content-Type'] = 'text/html'
+request['Content-Type'] = 'text/html; charset=%s' % set.DocumentEncoding()
 
 page = {
 	'title': _('Search results'),

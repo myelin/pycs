@@ -43,7 +43,6 @@ import xmlrpclib
 
 
 
-
 def makeXmlBoolean( a ):
 	if a:
 		return xmlrpclib.True
@@ -98,6 +97,8 @@ class weblogUpdates_handler:
 						'message': 'Sorry, "%s" isn\'t an allowed category name' % ( category, ),
 					}
 		
+		if type(blogName) == type(u''):
+			blogName = blogName.encode(self.set.DocumentEncoding())
 		print "got a ping from '%s' at '%s'" % ( blogName, blogUrl )
 		
 		import updatesDb

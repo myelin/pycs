@@ -1,16 +1,20 @@
 # comments.html
 
 import urllib
+import pycs_settings
+
+set = pycs_settings.Settings( quiet=True )
 
 headerString = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=%s" />
 <title>Trackbacks</title>
 <style type="text/css">
 <!--
 body { font-family: verdana, sans-serif; }
-textarea { width: 100% }
+textarea { width: 100%% }
 .black { background-color: black; }
 td { background-color:  lightgrey; }
 .cmt { background-color: #eeeeee; }
@@ -20,7 +24,7 @@ td { background-color:  lightgrey; }
 </style>
 </head>
 <body>
-"""
+""" % set.DocumentEncoding()
 
 startTableString = """
 	<table width="100%" cellspacing="1" cellpadding="0">

@@ -25,7 +25,7 @@
 import md5, time
 import updatesDb
 
-request['Content-Type'] = 'text/html'
+request['Content-Type'] = 'text/html; charset=%s' % set.DocumentEncoding()
 
 page = {
 	'title': _('Recently updated weblogs'),

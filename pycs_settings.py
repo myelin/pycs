@@ -133,6 +133,12 @@ class Settings:
 	def Language( self ):
 		return self.DefaultConfigValue( 'language', 'en' )
 
+	def DocumentEncoding( self ):
+		return self.DefaultConfigValue( 'documentencoding', 'iso-8859-1' )
+
+	def MailEncoding( self ):
+		return self.DefaultConfigValue( 'mailencoding', 'iso-8859-1' )
+
 	def ServerMailTo( self ):
 		return self.DefaultConfigValue( 'servermailto', 'python-community-server-mailto@myelin.co.nz' )
 

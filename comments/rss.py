@@ -1,9 +1,13 @@
 # comments.rss
 
-headerString = """<?xml version="1.0" encoding="ISO-8859-1"?>
+import pycs_settings
+
+set = pycs_settings.Settings( quiet=True )
+
+headerString = """<?xml version="1.0" encoding="%s"?>
 <!-- RSS generation by Python Community Server -->
 <rss version="0.92">
-"""
+""" % set.DocumentEncoding()
 
 footerString = """	</channel>
 </rss>

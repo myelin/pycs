@@ -9,6 +9,10 @@ class updatesDb:
 			).ordered( 2 )
 		
 	def Update( self, blogName, blogUrl ):
+
+		if type(blogName) == type(u''):
+			blogName = blogName.encode(self.set.DocumentEncoding())
+
 		"Mark a blog as updated"
 		tbl = self.updatesTable
 		while 1:

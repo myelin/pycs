@@ -29,7 +29,7 @@ import time
 import pycs_settings
 import pycs_paths
 
-request['Content-Type'] = 'text/html'
+request['Content-Type'] = 'text/html; charset=%s' % set.DocumentEncoding()
 
 [path, params, query, fragment] = request.split_uri()
 query = util.SplitQuery( query )

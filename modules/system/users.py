@@ -26,7 +26,7 @@ import string
 import md5
 import pycs_settings
 
-request['Content-Type'] = 'text/html'
+request['Content-Type'] = 'text/html; charset=%s' % set.DocumentEncoding()
 
 [path, params, query, fragment] = request.split_uri()
 query = util.SplitQuery( query )
@@ -87,7 +87,7 @@ if query.has_key('usernum'):
 else:
 
 	if query.get('format', '') == 'rss':
-		s += '<?xml version="1.0" encoding="iso-8859-1"?>'
+		s += '<?xml version="1.0" encoding="%s"?>' % set.documentEncoding()
 		s += '<rss version="2.0">'
 		s += '<channel>'
 		s += '<title>%s</title>' % _('RSS feed of users')
