@@ -50,12 +50,12 @@ class formatter( rss.formatter ):
 
 	def comment( self, cmt, paragraph, level ):
 		title = _("Comment by")
-		if cmt.cmt.name == '':
+		if cmt.name == '':
 			title += _(" an anonymous coward")
 		else:
-			title += " " + cmt.cmt.name
-		link = '%s/system/comments.py?u=%s&p=%s' % ( self.set.ServerUrl(), paragraph.user, paragraph.paragraph )
-		title += _(" for post %s") % paragraph.paragraph
+			title += " " + cmt.name
+		link = '%s/system/comments.py?u=%s&p=%s' % ( self.set.ServerUrl(), cmt.usernum, cmt.postid )
+		title += _(" for post %s") % cmt.postid
 		title += cmt.dateString
 		desc = cmt.cleanedUpComment
 		if level == 1:

@@ -9,14 +9,19 @@ try:
 except NameError:
     UnicodeDecodeError = UnicodeError
 
-def fixupunicode(s):
+def toutf8(s):
     try:
-        return s.decode("utf-8")
+        s = s.decode("utf-8")
     except UnicodeDecodeError:
-        return s.decode("iso-8859-1")
+        s = s.decode("iso-8859-1")
+    return s.encode("utf-8")
 
-def pyto8601(ts):
-    t = time.strptime(ts, '%Y-%m-%d %I:%M:%S %p')
+def pyto8601(ts, has_am=1):
+    if has_am:
+        fmt = '%Y-%m-%d %I:%M:%S %p'
+    else:
+        fmt = '%Y-%m-%d %H:%M:%S'
+    t = time.strptime(ts, fmt)
     return time.strftime("%Y%m%dT%H:%M:%S", t)
 
 class DB:
@@ -53,7 +58,7 @@ class DB:
         self.get_db_version()
 
     def update_schema(self):
-        print "Updating PostgrSQL database schema"
+        print "Updating PostgreSQL database schema"
 
         # See if the database is completely new
         try:
@@ -68,7 +73,7 @@ class DB:
         self.get_db_version()
 
         # if version 0, need to create the referrers table
-        if self.db_id == 0:
+        if self.db_id < 1:
             # grab MK table
             referrers_table = self.set.db.getas("referrers[time:S,usernum:S,group:S,referrer:S,count:I]").ordered(2)
             # set up PG
@@ -84,8 +89,8 @@ class DB:
                     print "\r%s" % count,
                 try:
                     matched, term = search_engines.checkUrlForSearchEngine(row.referrer)
-                    if term: term = fixupunicode(term).encode("utf-8")
-                    self.execute("INSERT INTO pycs_referrers (id, hit_time, usernum, usergroup, referrer, hit_count, is_search_engine, search_engine, search_term) VALUES (NEXTVAL('pycs_referrers_id_seq'), %s, %d, %s, %s, %d, %s, %s, %s)", (pyto8601(row.time), int(row.usernum), row.group, fixupunicode(row.referrer).encode("utf-8"), row.count, (matched and term) and 't' or 'f', matched, term))
+                    if term: term = toutf8(term)
+                    self.execute("INSERT INTO pycs_referrers (id, hit_time, usernum, usergroup, referrer, hit_count, is_search_engine, search_engine, search_term) VALUES (NEXTVAL('pycs_referrers_id_seq'), %s, %d, %s, %s, %d, %s, %s, %s)", (pyto8601(row.time), int(row.usernum), row.group, toutf8(row.referrer), row.count, (matched and term) and 't' or 'f', matched, term))
                 except DBE, e:
                     print e
                     print (row.time, row.usernum, row.group, row.referrer, row.count)
@@ -94,4 +99,35 @@ class DB:
             print
             self.set_db_version(1)
 
+        if self.db_id  < 2:
+            comments_table = self.set.db.getas('comments[user:S,paragraph:S,link:S,notes[name:S,email:S,url:S,comment:S,date:S]]').ordered( 2 )
+            
+            print "Creating pycs_comments table"
+            #self.execute("""DROP TABLE pycs_comments""")
+            #self.execute("""DROP SEQUENCE pycs_comments_id_seq""")
+            self.execute("""CREATE TABLE pycs_comments (id INT PRIMARY KEY, usernum INT, postid VARCHAR(255), postlink VARCHAR(2048), commentdate TIMESTAMP, postername VARCHAR(255), posteremail VARCHAR(255), posterurl VARCHAR(2048), commenttext TEXT)""")
+            self.execute("""CREATE SEQUENCE pycs_comments_id_seq""")
+            self.execute("""CREATE INDEX pycs_comments_post_index ON pycs_comments (usernum, postid, id)""")
+            print "Copying comments (for %d users) into pycs_comments table" % len(comments_table)
+            for user_row in comments_table:
+                usernum, postid, postlink = (user_row.user, user_row.paragraph, user_row.link)
+                if not usernum:
+                    usernum = 0
+                else:
+                    usernum = int(usernum)
+                print "user %s post %s postlink %s: %d comments" % (`usernum`, `postid`, `postlink`, len(user_row.notes))
+                for cmt_row in user_row.notes:
+                    name, email, url, comment, date = (cmt_row.name, cmt_row.email, cmt_row.url, cmt_row.comment, cmt_row.date)
+                    #print "name %s email %s url %s cmt %s... date %s" % (`name`, `email`, `url`, `comment[:20]`, date)
+                    if date:
+                        date = pyto8601(date, has_am=0)
+                    else:
+                        date = None
+                    try:
+                        self.execute("""INSERT INTO pycs_comments (id, usernum, postid, postlink, commentdate, postername, posteremail, posterurl, commenttext) VALUES (NEXTVAL('pycs_comments_id_seq'), %d, %s, %s, %s, %s, %s, %s, %s)""", (usernum, postid, postlink, date, toutf8(name), toutf8(email), toutf8(url), toutf8(comment)))
+                    except:
+                        print (usernum, postid, postlink, date, name, email, url, comment)
+                        raise
+            self.set_db_version(2)
+        
         print "Finished updating schema"

@@ -10,29 +10,28 @@ STANDARDDATEFORMAT = '%Y-%m-%d %H:%M:%S'
 
 class comment:
 
-	def __init__( self, cmt, iCmt ):
+	def __init__( self, cid, usernum, postid, name, url, email, date, cmttext ):
+
+		self.cid = cid
+		self.usernum = usernum
+		self.postid = postid
 		
-		self.cmt = cmt
-		
-		# index into the 'notes' subtable for this comment (used when deleting)
-		self.iCmt = iCmt
-		
-		if cmt.name == '':
+		if name == '':
 			self.name = 'an anonymous coward'
 		else:
-			self.name = cmt.name
-		if cmt.url in [ '', 'http://' ]:
+			self.name = name
+		if url in [ '', 'http://' ]:
 			self.nameString = '<span class="quietlink">%s</span>' % ( cgi.escape( self.name ), )
 		else:
-			self.nameString = '<a href="%s" class="quietlink">%s</a>' % ( pycs_http_util.MungeHTML( cmt.url ), cgi.escape( self.name ) )
-		if cmt.email == '':
+			self.nameString = '<a href="%s" class="quietlink">%s</a>' % ( pycs_http_util.MungeHTML( url ), cgi.escape( self.name ) )
+		if email == '':
 			self.emailString = ''
 		else:
-			self.emailString = ' [<a href="mailto:%s" class="quietlink">%s</a>]' % ( cmt.email, cgi.escape( cmt.email ), )
-		if cmt.date == '':
+			self.emailString = ' [<a href="mailto:%s" class="quietlink">%s</a>]' % ( email, cgi.escape( email ), )
+		if not date:
 			self.dateString = ''
 		else:
-			self.dateString = time.strftime( _(' at %I:%M:%S %p on %B %d, %Y'), strptime.strptime( cmt.date, STANDARDDATEFORMAT ) )
+			self.dateString = " at %s" % date #time.strftime( _(' at %I:%M:%S %p on %B %d, %Y'), strptime.strptime( date, STANDARDDATEFORMAT ) )
 		
 		self.commentFooter = "%s%s" % (
 			self.nameString,
@@ -44,9 +43,9 @@ class comment:
 			re.sub(
 				r'(http://[^\r\n \"\<]+)',
 				r'<a href="\1">\1</a>',
-				cgi.escape( cmt.comment ),
+				cgi.escape( cmttext ),
 			),
 			"\n", "<br />"
 		)
 		
-		self.cleanedUpComment = html_cleaner.cleanHtml( cmt.comment )
+		self.cleanedUpComment = html_cleaner.cleanHtml( cmttext )

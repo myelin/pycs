@@ -124,11 +124,6 @@ class Settings:
 			# Search data
 			self.mirrored_posts = self.db.getas("mirroredPosts[usernum:S,posts[date:S,postid:S,guid:S,url:S,title:S,description:S]]").ordered()
 
-			# Comment data
-			self.comments = self.db.getas(
-				'comments[user:S,paragraph:S,link:S,notes[name:S,email:S,url:S,comment:S,date:S]]'
-				).ordered( 2 )
-
 			if not quiet:
 				self.DumpData()
 
@@ -140,7 +135,9 @@ class Settings:
 			self.pdb = apply(pycs_db.DB, [self] + [self.conf[x] for x in ('pg_host', 'pg_db', 'pg_user', 'pg_pass')])
 
 	def getCommentTable(self):
-		return self.comments
+		if hasattr(self, 'comments'):
+			return self.comments
+		return None #FIXME: remove this function once we get comments all sorted out
 
 	def readAllOptions(self, cp, section):
 		conf = {}

@@ -165,7 +165,7 @@ class formatter( defaultFormatter.defaultFormatter ):
 				<input type="hidden" name="delete" value="%s" />
 				<input type="submit" value="%s" />
 				</form></div>
-				""" % ( self.u, self.p, cmt.iCmt,
+				""" % ( self.u, self.p, cmt.cid,
 					_("Delete comment") )
 		
 		ret += """</li>

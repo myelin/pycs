@@ -730,6 +730,7 @@ class _Connection:
         self.__ready = 0
         self.__result = None
         self.__new_result()
+#        print "send sql %s" % `cmd`
         self.__send('Q'+cmd+'\0')
         while not self.__ready:
             self.__read_response()
