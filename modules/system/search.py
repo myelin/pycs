@@ -290,6 +290,8 @@ def main():
 
 	if search_terms:
 		ret += search(usernum, posts_t, search_terms, skip_hits)
+	else:
+		ret += _("<p>You can search a blog with multiple words. The search syntax is as follows: a posting matches if at least one normal search term is in the postings text or title. If you prepend a + to a search word, this word is required. If you prepend a - to a search word, this word is forbiddend. Words don't need to be full word - actually a simple substring match is done.<p><b>foo bar +baz -booz</b><p>The above search terms would search for all posts where either <b>foo</b> or <b>bar</b> is found, <b>baz</b> is allways found and <b>booz</b> is never found.").decode(set.DocumentEncoding()).encode('utf-8')
 
 	return ret
 
