@@ -123,9 +123,13 @@ def classify_file( path, query ):
 		folder = re.match( r'(.*)\/', path ).group( 1 )
 		print "folder:",folder
 		if folder == '':
+			print "root folder; public"
 			filetype = PUBLIC_FILE
 		elif folder == 'initialResources':
+			print "initialResources folder; rpc"
 			filetype = RPC_FILE
+		else:
+			print "unknown folder"
 	
 	return filetype, usernum
 
