@@ -91,8 +91,8 @@ def classify_file( path, query ):
 	elif path.startswith( '/system' ):
 		print "system file"
 		filetype = SYSTEM_FILE
-		if path.startswith( '/system/weblogUpdates.py' ):
-			print "blog updates"
+		if path.startswith( '/system/weblogUpdates.py' ) or path.startswith( '/system/rankings.py' ):
+			print "blog updates/rankings"
 			filetype = PUBLIC_FILE
 		elif path.startswith( '/system/comments.py' ):
 			print "comments",query
