@@ -40,9 +40,7 @@ import comments
 import md5
 
 # order by user & paragraph
-commentTable = set.db.getas(
-	'comments[user:S,paragraph:S,link:S,notes[name:S,email:S,url:S,comment:S,date:S]]'
-	).ordered( 2 )
+commentTable = set.getCommentTable()
 
 [path, params, query, fragment] = request.split_uri()
 
@@ -119,7 +117,7 @@ if noCookies:
 	
 #s += "Path %s<br>params %s<br>query %s<br>fragment %s<br>" % (path, params, query, fragment)
 
-formatter.u = query['u']
+formatter.u = query['u'] #str(int(query['u']))
 
 if query.has_key('c'):
 
