@@ -86,6 +86,11 @@ class formatter( defaultFormatter.defaultFormatter ):
 		ret.append( """
 		<tr><td>
 		<form method="post" action="comments.py?u=%s&p=%s">
+		""" % ( self.u, self.p ) )
+		if hasattr(self, 'link'):
+			if self.link:
+				ret.append( '<input type="hidden" name="link" value="%s">' % self.link )
+		ret.append( """
 		<table width="100%%" cellspacing="0" cellpadding="2">
 		<tr><td></td><td><strong>%s</strong></td></tr>
 		<tr><td><label for="name">%s</label></td><td width="99%%"><input type="text" size="50" name="name" value="%s"/></td></tr>
@@ -105,8 +110,7 @@ class formatter( defaultFormatter.defaultFormatter ):
 		</table>
 		</form>
 		</td></tr>
-		""" % ( self.u, self.p,
-			_("Add a new comment:"),
+		""" % ( _("Add a new comment:"),
 			_("Name"),
 			self.storedName,
 			_("Email"),

@@ -41,7 +41,7 @@ import md5
 
 # order by user & paragraph
 commentTable = set.db.getas(
-	'comments[user:S,paragraph:S,notes[name:S,email:S,url:S,comment:S,date:S]]'
+	'comments[user:S,paragraph:S,link:S,notes[name:S,email:S,url:S,comment:S,date:S]]'
 	).ordered( 2 )
 
 [path, params, query, fragment] = request.split_uri()
@@ -208,6 +208,11 @@ else:
 		else:
 			notes = vw[0].notes
 			nComments = len(notes)
+			if not hasattr(formatter, 'link'):
+				formatter.link = vw[0].link
+			else:
+				if not formatter.link:
+					formatter.link = vw[0].link
 	
 	if request.command.lower() in ('put', 'post'):
 	
@@ -271,6 +276,7 @@ else:
 				commentTable.append( {
 					'user': formatter.u,
 					'paragraph': formatter.p,
+					'link': form.get('link',''),
 					'notes': notes,
 					} )
 				
