@@ -221,9 +221,9 @@ def search(usernum, posts_t, query, skip_hits):
 		extra = ''
 		if first_hit > 1:
 			prev_avail = min(skip_hits, max_hits)
-			extra += extra_link % (first_hit-prev_avail, _("Show previous %s") % prev_avail)
+			extra += extra_link % (first_hit-prev_avail, _("Show previous %s").decode(set.DocumentEncoding()) % prev_avail)
 		if last_hit < total_hits:
-			extra += extra_link % (last_hit, _("Show next %d") % min(max_hits, total_hits - last_hit))
+			extra += extra_link % (last_hit, _("Show next %d").decode(set.DocumentEncoding()) % min(max_hits, total_hits - last_hit))
 		add(_("<p>Showing hits %d-%d out of of %d. %s</p>") % (
 			skip_hits + 1,
 			skip_hits + len(hits),
@@ -238,7 +238,13 @@ def search(usernum, posts_t, query, skip_hits):
 				add('<h2>%s-%s-%s</h2>' % (lastdate[:4], lastdate[4:6], lastdate[6:]))
 			add('<div class="searchhit"><h3><a href="%s">%s</a></h3>' % (esc(post.url), esc(post.title)))
 			add('<div class="searchpost">%s</div></div>' % post.description)
-	return "".join(ret)
+	html = ''
+	for block in ret:
+		if type(block) == type(u''):
+			html += block.encode('utf-8')
+		else:
+			html += block
+	return html
 
 def main():
 	usernum = query.get('u', None)
@@ -252,6 +258,10 @@ def main():
 	posts_t = set.mirrored_posts[idx].posts
 
 	search_terms = query.get('q', query.get('words', ''))
+	try:
+		search_terms = search_terms.decode('utf-8')
+	except:
+		search_terms = search_terms.decode(set.DocumentEncoding())
 	skip_hits = int(query.get('skip', '0'))
 
 	ret = """<p>%s</p>
@@ -264,7 +274,10 @@ def main():
 		usernum, _('Search:'), esc(search_terms)
 	)
 
-	ret = ret.decode(set.DocumentEncoding()).encode('utf-8')
+	if type(ret) == type(u''):
+		ret = ret.encode('utf-8')
+	else:
+		ret = ret.decode(set.DocumentEncoding()).encode('utf-8')
 
 	if search_terms:
 		ret += search(usernum, posts_t, search_terms, skip_hits)
