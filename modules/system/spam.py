@@ -156,5 +156,5 @@ else:
 
 add("</pre>")
 request['Content-Type'] = 'text/html'
-request.push(s)
+request.push(''.join(s))
 request.done()
