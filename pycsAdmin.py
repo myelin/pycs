@@ -33,6 +33,7 @@ Kind of like http://www.weblogs.com/RPC2 and RCS
 """
 
 import os
+import md5
 import time
 import sys
 import re
@@ -124,6 +125,7 @@ class pycsAdmin_handler:
 			('add_comments', 'Import some comments into the comments table'),
 			('renumber_comment', 'Moves a comment thread from one postid to another'),
 			('renumber_all_comments', 'Moves all comments for a usernum to another usernum'),
+			('summarize_comments', 'Summarises comment counts and content for a usernum'),
 			('email', 'Set email address for usernum' ),
 			):
 			self.commands[name] = [ getattr(self, name), desc ]
@@ -455,7 +457,7 @@ class pycsAdmin_handler:
 		u, plist = params
 		for p,cmts in plist.items():
 			# prepare db space for this post
-			cmt_block = _make_comment_block(u, p)
+			cmt_block = self._make_comment_block(u, p)
 
 			# add all comments for this post
 			for cmt in cmts:
@@ -539,6 +541,26 @@ class pycsAdmin_handler:
 			ret += "\n"
 
 		return done_msg("Moved comments for usernum %s to usernum %s\n\ndetails:\n%s" % (usernum, newusernum, ret))
+
+	def summarize_comments(self, params):
+		usernum, = params
+		ret = ''
+		cmts = []
+		ct = self.set.getCommentTable()
+		for row in ct.select({"user": usernum}):
+			hash = md5.md5()
+			p = row.paragraph
+			try:
+				p = int(p)
+			except ValueError:
+				pass
+			for c in row.notes:
+				hash.update("%s %s" % (c.date, c.comment))
+			cmts.append((row.user, p, len(row.notes), hash.hexdigest()))
+		cmts.sort()
+		for u, p, ct, h in cmts:
+			ret += "usernum %s postid %s: %s\n" % (u, p, ct and ("%d comments, hash %s" % (ct, h)) or '')
+		return done_msg(ret)
 
 if __name__=='__main__':
 	# Testing
