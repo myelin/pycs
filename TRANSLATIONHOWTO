@@ -29,6 +29,7 @@ invalid syntax (they are actually evaluated on read!).
 To create a new translation file (start from scratch):
 ------------------------------------------------------
 
+cd $HOME/src/pycs
 python make_msgs.py empty >pycs-XX.msgs
 
 Here XX is the twoletter language code (for example de for german or
@@ -44,6 +45,7 @@ good solution to this (except switching to a different string rendering).
 To update an existing translation file:
 ---------------------------------------
 
+cd $HOME/src/pycs
 python make_msgs.py de >pycs-de.msgs-new
 ... edit pycs-de.msgs-new ...
 mv pycs-de.msgs-new pycs-de.msgs
