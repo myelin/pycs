@@ -16,11 +16,12 @@ def unicode_to_entities(s):
 
 class htmlCleaner( SGMLParser ):
 
-	def __init__( self ):
+	def __init__( self, encodeUnicode=1 ):
 		SGMLParser.__init__( self )
 		self.cleanedHTML = ''
 		self.cleanedText = ''
 		self.openTags = {}
+		self.encodeUnicode = encodeUnicode
 
 	def getCleanHtml( self ):
 		for tag, count in self.openTags.items():
@@ -29,11 +30,14 @@ class htmlCleaner( SGMLParser ):
 
 	def handle_data( self, data ):
 		self.cleanedText += data
-		self.cleanedHTML += unicode_to_entities(re.sub(
+		data = re.sub(
 			r'(http://[^\r\n \"\<]+)',
 			r'<a href="\1" target="_blank">\1</a>',
 			data,
-			).replace("\n", "<br />\n").replace("\r", ""))
+			).replace("\n", "<br />\n").replace("\r", "")
+		if self.encodeUnicode:
+			data = unicode_to_entities(data)
+		self.cleanedHTML += data
 
 	def handle_entityref( self, entity ):
 		self.cleanedHTML += '&%s;' % entity
@@ -74,8 +78,8 @@ class htmlCleaner( SGMLParser ):
 		self.cleanedHTML += '</a>'
 		return 1
 
-def cleanHtml( text ):
-	parser = htmlCleaner()
+def cleanHtml( text, encodeUnicode=1 ):
+	parser = htmlCleaner(encodeUnicode)
 	parser.feed( text )
 	parser.close()
 	return parser.getCleanHtml()
