@@ -32,6 +32,7 @@ import time
 engines = {
 	'google': [
 		re.compile(r'^http://.*\.google\..*\?q=([^&]*).*$'),
+		re.compile(r'^http://.*\.google\..*\?as_q=([^&]*).*$'),
 		],
 	'daypop': [
 		re.compile(r'^http://.*\.daypop\..*\?q=([^&]*).*$'),
