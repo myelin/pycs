@@ -220,7 +220,7 @@ def search(usernum, posts_t, query, skip_hits):
 	else:
 		first_hit = skip_hits
 		last_hit = skip_hits + len(hits)
-		extra_link = ' <a href="search.py?u=%s&q=%%s&skip=%%d">%%s</a>.' % (usernum, query)
+		extra_link = ' <a href="search.py?u=%s&q=%%s&skip=%%d">%%s</a>.' % usernum
 		extra = ''
 		if first_hit > 1:
 			prev_avail = min(skip_hits, max_hits)
