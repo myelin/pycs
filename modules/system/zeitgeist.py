@@ -186,6 +186,7 @@ else:
 		url = set.UserFolder( usernum )
 		usernum = user.usernum
 		
+		s += '<div class="zeitgeist">'
 		s += _('<h2>Zeitgeist overview for <strong><a href="%s">%s</a></strong></h2>') % (url, user.name)
 		s += _('<p>Here are all search terms which people followed here in the last 30 days, sorted by last hit. The larger the font, the more often the term was searched for. The more to the top, the more current was the access.')
 
@@ -262,13 +263,15 @@ else:
 				s += ' &middot; '
 				i += 1
 
+		s += '</div>'
+
 	except pycs_settings.NoSuchUser:
 		s += _('<p>Sorry, user %s not found!</p>') % (usernum,)
 	
 # Dump it all out
 
 page['body'] = s
-s = set.Render( page, hidden=1 )
+s = set.Render( page, hidden=1, usernum=user.usernum )
 
 request['Content-Length'] = len(s)
 request.push( s )

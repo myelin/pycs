@@ -99,7 +99,7 @@ class Settings:
 			"users[usernum:S,email:S,password:S,name:S,weblogTitle:S,serialNumber:S,organization:S," +
 			"flBehindFirewall:I,hitstoday:I,hitsyesterday:I,hitsalltime:I," +
 			"membersince:S,lastping:S,pings:I,lastupstream:S,upstreams:I,lastdelete:S,deletes:I,bytesupstreamed:I," +
-			"signons:I,signedon:I,lastsignon:S,lastsignoff:S,clientPort:I,disabled:I,alias:S,flManila:I,bytesused:I]"
+			"signons:I,signedon:I,lastsignon:S,lastsignoff:S,clientPort:I,disabled:I,alias:S,flManila:I,bytesused:I,stylesheet:S]"
 			).ordered()
 			
 		if len(self.users) == 0:
@@ -426,7 +426,28 @@ class Settings:
 
 	def UserSpaceUsed( self, email ):
 		return usedBytes( self.UserLocalFolder( email ) )
-
+	
+	def getUserOptions( self, usernum ):
+		u = self.User(usernum)
+		liste = []
+		liste.append(('stylesheet', u.stylesheet))
+		return liste
+	
+	def getUserOption( self, usernum, option ):
+		u = self.User(usernum)
+		if option == 'stylesheet':
+			return u.stylesheet
+		else:
+			raise KeyError(option)
+	
+	def setUserOption( self, usernum, option, value ):
+		u = self.User(usernum)
+		if option == 'stylesheet':
+			u.stylesheet = value
+			self.Commit()
+		else:
+			raise KeyError(option)
+	
 	def SpaceString(self, bytes):
 		if bytes < 1024:
 			return "%d bytes" % bytes
@@ -486,13 +507,24 @@ class Settings:
 			#print "no alias"
 			return self.ServerUrl() + "/users/%s/" % (formattedUsernum,)
 		
-	# Template renderer
-	def Render(self, data, hidden=0):
+	# Template renderer. An optional user number will select a stylesheet
+	# if the user has set one.
+	def Render(self, data, hidden=0, usernum=None):
 		# Renders 'data' into html
 		# data = {
 		#	'title': page title,
 		#	'body': body text,
 		#	}
+
+		stylesheet = '%s/pycs.css' % self.ServerUrl()
+		if usernum:
+			css = self.getUserOption(usernum, 'stylesheet')
+			if css:
+				base = self.UserFolder(usernum)
+				if base[-1] == '/' and css[0] == '/':
+					stylesheet = base[:-1] + css
+				else:
+					stylesheet = base + css
 		
 		metatags = ''
 		if hidden:
@@ -502,7 +534,7 @@ class Settings:
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=%s">
 		<title>%s: %s</title>
-		<link rel="stylesheet" href="%s/pycs.css" type="text/css" />
+		<link rel="stylesheet" href="%s" type="text/css" />
 		%s
 	</head>
 	<body>
@@ -511,7 +543,7 @@ class Settings:
 		%s
 		</div>
 	</body>
-</html>""" % (self.DocumentEncoding(), self.LongTitle(), data['title'], self.ServerUrl(),
+</html>""" % (self.DocumentEncoding(), self.LongTitle(), data['title'], stylesheet,
 			metatags,
 			self.ServerUrl(), self.ShortTitle(), data['title'], data['body'])
 	

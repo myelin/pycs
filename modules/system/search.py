@@ -237,7 +237,10 @@ def search(usernum, posts_t, query, skip_hits):
 		for post in hits:
 			hitdate = post.date[:8]
 			if lastdate != hitdate:
+				if lastdate:
+					add('</div>')
 				lastdate = hitdate
+				add('<div class="searchday">')
 				add('<h2>%s-%s-%s</h2>' % (lastdate[:4], lastdate[4:6], lastdate[6:]))
 			add('<div class="searchhit"><h3><a href="%s">%s</a></h3>' % (esc(post.url), esc(post.title)))
 			desc = cleanHtml(post.description)
@@ -246,6 +249,7 @@ def search(usernum, posts_t, query, skip_hits):
 				desc = cleanHtml(desc)
 				desc += ' ...'
 			add('<div class="searchpost">%s</div></div>' % desc)
+		add('</div>')
 	html = ''
 	for block in ret:
 		if type(block) == type(u''):
@@ -297,7 +301,10 @@ def main():
 	return ret
 
 page['body'] = main()
-s = set.Render( page )
+
+usernum = query.get('u')
+u = set.User(usernum)
+s = set.Render( page, usernum=u.usernum )
 
 request['Content-Length'] = len(s)
 request.push( s )

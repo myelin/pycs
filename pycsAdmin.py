@@ -101,6 +101,8 @@ class pycsAdmin_handler:
 			'list': [ self.list, 'List objects (users, etc.)' ],
 			'shuffle': [ self.shuffle, 'Shuffle hit counters' ],
 			'recalc': [ self.recalc, 'Recalculate cached data' ],
+			'options': [ self.options, 'List options for usernum' ],
+			'setopt': [ self.setopt, 'Set an option for usernum' ],
 			'alias': [ self.alias, 'Set alias for usernum' ],
 			'password': [ self.password, 'Set password for usernum' ],
 		}
@@ -210,6 +212,46 @@ class pycsAdmin_handler:
 		return {
 			'flError': xmlrpclib.False,
 			'message': 'Done!',
+			}
+
+	def options( self, params ):
+		res = []
+
+		if len(params) != 1:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'Wrong number of parameters!',
+				}
+
+		user = self.set.User( params[0] )
+
+		cols = ['option', 'value']
+		for option in self.set.getUserOptions(user.usernum):
+			res.append(list(option))
+
+		return {
+			'flError': xmlrpclib.False,
+			'message': 'Done!',
+			'columns': cols,
+			'table': res
+			}
+
+	def setopt( self, params ):
+		res = []
+
+		if len(params) != 3:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'Wrong number of parameters!',
+				}
+
+		user = self.set.User( params[0] )
+
+		self.set.setUserOption(user.usernum,params[1],params[2])
+
+		return {
+			'flError': xmlrpclib.False,
+			'message': 'Done!'
 			}
 
 	def list( self, params ):

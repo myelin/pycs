@@ -197,7 +197,7 @@ else:
 # Dump it all out
 
 page['body'] = s
-s = set.Render( page )
+s = set.Render( page, usernum = u.usernum )
 
 request['Content-Length'] = len(s)
 request.push( s )
