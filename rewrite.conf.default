@@ -27,6 +27,31 @@ rewriteMap.append( [
 
 #####################################################
 ###
+###   ~~vhostfrom~~ parsing
+###
+#####################################################
+
+"""This one will rewrite a url that looks like:
+
+        http://(anything)/~~vhostfrom~~/(remoteip)/(servername)/(path)
+
+to:
+        
+        http://(servername)/(path)
+
+This lets you do virtual hosting, even when running behind a front-end Apache
+server, as long as the front-end server is configured to rewrite into the
+http://(PyCS server)/~~vhostfrom~~/(remoteip)/(server)/(path) format
+"""
+
+rewriteMap.append( [
+        '~~vhostfrom~~ -> real url',
+        re.compile( r'^http://[^/]+/~~vhostfrom~~/(.*?)/(.*)' ), r'http://\2',
+        r'HX-Request-For=\1' ] )
+
+
+#####################################################
+###
 ###   Manila-style virtual hosts
 ###
 #####################################################
