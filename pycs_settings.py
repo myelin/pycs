@@ -126,13 +126,16 @@ class Settings:
 			# Search data
 			self.mirrored_posts = self.db.getas("mirroredPosts[usernum:S,posts[date:S,postid:S,guid:S,url:S,title:S,description:S]]").ordered()
 
+			# Comment data
+			self.comments = self.db.getas(
+				'comments[user:S,paragraph:S,link:S,notes[name:S,email:S,url:S,comment:S,date:S]]'
+				).ordered( 2 )
+
 			if not quiet:
 				self.DumpData()
 
 	def getCommentTable(self):
-		return self.db.getas(
-			'comments[user:S,paragraph:S,link:S,notes[name:S,email:S,url:S,comment:S,date:S]]'
-			).ordered( 2 )
+		return self.comments
 
 	def readAllOptions(self, cp, section):
 		conf = {}
