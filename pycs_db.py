@@ -149,6 +149,11 @@ class DB:
         if self.db_id < 4:
             self.execute("""DROP INDEX pycs_comments_post_index""")
             self.execute("""CREATE INDEX pycs_comments_post_index ON pycs_comments (is_spam, usernum, postid, id)""")
-            
+            self.set_db_version(4)
+
+        if self.db_id < 5:
+            # repair damage by comment bug that inserted NULL instead of 0 for is_spam on comment posting
+            self.execute("""UPDATE pycs_comments SET is_spam=0 WHERE is_spam IS NULL""")
+            self.set_db_version(5)
         
         print "Finished updating schema"
