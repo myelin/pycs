@@ -100,6 +100,7 @@ class pycsAdmin_handler:
 			'disable': [ self.disable, 'Disables a user' ],
 			'list': [ self.list, 'List objects (users, etc.)' ],
 			'shuffle': [ self.shuffle, 'Shuffle hit counters' ],
+			'alias': [ self.alias, 'Set alias for usernum' ],
 		}
 		
 		
@@ -216,6 +217,18 @@ class pycsAdmin_handler:
 			cols = ['usernum', 'name', 'email']
 			for row in sth:
 				res.append( [row.usernum, row.name, row.email] )
+		elif params[0] == 'rewrites':
+			cols = ['title']
+			for row in self.set.rewriteHandler.rewriteMap:
+				res.append( [row[0]] )
+		elif params[0] == 'aliases':
+			cols = ['usernum', 'alias', 'flManila']
+			for row in self.set.users:
+				if row.alias:
+					flag = 'False'
+					if row.flManila:
+						flag = 'True'
+					res.append( [row.usernum, row.alias, flag] )
 		else:
 			return {
 				'flError': xmlrpclib.True,
@@ -258,6 +271,55 @@ class pycsAdmin_handler:
 
 		user = self.set.User( params[0] )
 		user.disabled = 1
+		self.set.Commit()
+
+		return {
+			'flError': xmlrpclib.False,
+			'message': 'Done!',
+			}
+
+	def alias( self, params ):
+		if (len(params) < 2) or (len(params) > 3):
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'Wrong number of parameters!',
+				}
+		if params[0] == 'del':
+			if len(params) != 2:
+				return {
+					'flError': xmlrpclib.True,
+					'message': 'Wrong number of parameters for del!',
+					}
+		else:
+			if len(params) != 3:
+				return {
+					'flError': xmlrpclib.True,
+					'message': 'Wrong number of parameters, alias is needed!',
+					}
+
+		try:
+			user = self.set.User( params[1] )
+		except:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'User %s not found' % params[1],
+				}
+
+		if params[0] == 'simple':
+			self.set.Alias( params[1], params[2], 0 )
+			self.set.reloadAliases()
+		elif params[0] == 'manila':
+			self.set.Alias( params[1], params[2], 1 )
+			self.set.reloadAliases()
+		elif params[0] == 'del':
+			self.set.Alias( params[1], '', 0 )
+			self.set.reloadAliases()
+		else:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'Unknown alias subcommand %s' % params[0],
+				}
+
 		self.set.Commit()
 
 		return {

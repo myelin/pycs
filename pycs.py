@@ -128,9 +128,11 @@ if __name__ == '__main__':
 	except:
 		raise "Can't read URL rewriting config file " + rewriteFn
 	execfile( rewriteFn )
-	
+
 	rw_h = pycs_rewrite_handler.pycs_rewrite_handler( set, rewriteMap )
 
+	set.reloadAliases( rw_h )
+	
 	# Make URL blocker
 	bl_h = pycs_block_handler.pycs_block_handler( set )
 

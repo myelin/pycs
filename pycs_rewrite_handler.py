@@ -26,6 +26,7 @@
 
 import re
 import http_server
+from copy import copy
 
 HOST = re.compile(
 	'Host: (.*)',
@@ -45,6 +46,14 @@ class pycs_rewrite_handler:
 			self.rewriteMap = []
 		else:
 			self.rewriteMap = rewriteMap
+		self.rewriteMapBase = copy( self.rewriteMap )
+
+	# reset rewriteMap to original value and add additional rules
+	# (this is for reloading database based rewrite rules!)
+	def resetRewriteMap( self, rewriteMap=None ):
+		self.rewriteMap = copy( self.rewriteMapBase )
+		if rewriteMap:
+			self.rewriteMap.extend( rewriteMap )
 
 	def match( self, request ):
 	

@@ -81,7 +81,7 @@ class Settings:
 			"users[usernum:S,email:S,password:S,name:S,weblogTitle:S,serialNumber:S,organization:S," +
 			"flBehindFirewall:I,hitstoday:I,hitsyesterday:I,hitsalltime:I," +
 			"membersince:S,lastping:S,pings:I,lastupstream:S,upstreams:I,lastdelete:S,deletes:I,bytesupstreamed:I," +
-			"signons:I,signedon:I,lastsignon:S,lastsignoff:S,clientPort:I,disabled:I]"
+			"signons:I,signedon:I,lastsignon:S,lastsignoff:S,clientPort:I,disabled:I,alias:S,flManila:I]"
 			).ordered()
 			
 		if len(self.users) == 0:
@@ -325,6 +325,53 @@ class Settings:
 		self.Commit()
 
 		return user
+
+	def reloadAliases( self, rewriteHandler=None ):
+		# set the rewriteHandler for later access (if none is given,
+		# use the one from the last call - the first call in pycs.py
+		# sets it)
+		if rewriteHandler:
+			self.rewriteHandler = rewriteHandler
+		else:
+			rewriteHandler = self.rewriteHandler
+
+		# add manila style aliases for users with defined "alias"
+		# property and flManila true. Add normal aliases for users
+		# with flManila false. To make manila style urls work, you
+		# must have the corresponding rewrite rule in rewrite.conf.
+		# You don't need the alias rewrite rules, those are created
+		# automatically, as are the aliases settings!
+		rewriteMap = []
+		for row in self.users:
+			if row.alias:
+				usernum = self.FormatUsernum( row.usernum )
+				if row.flManila:
+					self.aliases[usernum] = "http://%s.%s" % ( row.alias, self.ServerHostname() )
+				else:
+					self.aliases[usernum] = "http://%s/%s" % ( self.ServerHostname(), row.alias )
+				rewriteMap.append( [
+					'automatic user ' + usernum + ' -> ' + self.aliases[usernum] + ' redirect',
+					re.compile( r'^http://[^/]+/users/' + usernum + '(.*)$' ),
+					self.aliases[usernum] + r'\1',
+					'R=301',
+				] )
+				rewriteMap.append( [
+					'automatic /' + row.alias + ' rewrite to /users/' + usernum,
+					re.compile( r'http://[^/]+/' + row.alias + r'(.*)$' ),
+					r'http://' + self.ServerHostname() + r'/users/' + usernum + r'\1',
+					'',
+				] )
+		rewriteHandler.resetRewriteMap( rewriteMap )
+
+	def Alias( self, usernum, alias, flManila=0 ):
+		formattedUsernum = self.FormatUsernum( usernum )
+		if alias == '':
+			if self.aliases.has_key( formattedUsernum ):
+				del self.aliases[formattedUsernum]
+		u = self.User( usernum )
+		u.alias = alias
+		u.flManila = flManila
+		self.Commit()
 
 	def UserFolder( self, usernum ):
 		formattedUsernum = self.FormatUsernum( usernum )
