@@ -55,12 +55,16 @@ if not query.has_key('usernum'):
 	that way you can get a summary of hits (by referrer) for a weblog hosted on this server.</p>
 	"""
 elif not query.has_key('q'):
-	s += """<p>No query specified!</p>
-	<p>You have to specify some text you are searching for, else this
-	call makes no sense.
-	<p>If you got here by editing the URL, try putting something like "?usernum=0000001&q=sometext" at the end;
-	that way you can get search results for a weblog hosted on this server.</p>
-	"""
+	s += """<p>Enter the words to search for:</p>
+
+	<p>
+	<form method="get" action="%s">
+		<input type="hidden" name="usernum" value="%s">
+		<input type="text" name="q" size="40">
+		<input type="submit" value="Search">
+	</form>
+	</p>
+	""" % (cgi.escape(path, 1), cgi.escape(query['usernum'], 1))
 else:
 
 	try:

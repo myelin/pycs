@@ -15,6 +15,7 @@
 #	|	|
 #	|	+--- comments.py [?(...)u=(usernum)(...)]
 #	|	+--- mailto.py [?(...)usernum=(usernum)(...)]
+#	|	+--- swish.py [?(...)usernum=(usernum)(...)]
 #	|	+--- count.py
 #	|	|	Restricted alongside the /users/(usernum) dir
 #	|	|
@@ -112,7 +113,7 @@ def classify_file( path, query ):
 				usernum = m_usernum[0]
 				filetype = USER_FILE
 			print "blog comments:usernum",usernum
-		elif path.startswith( '/system/mailto.py' ) or path.startswith( '/system/count.py' ):
+		elif path.startswith( '/system/mailto.py' ) or path.startswith( '/system/count.py' ) or path.startswith( '/system/swish.py' ):
 			m_usernum = re.findall( 'usernum=0*(\d+)', query )
 			if m_usernum:
 				if len( m_usernum ) > 1:

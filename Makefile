@@ -173,7 +173,7 @@ scripts:
 	$(INSTALL_RO) $(addprefix comments/, $(COMMENTFILES)) $(COMMENTDIR)/
 
 	# Install the default web files (index, history, readme) in www/;
-	# you can safely edit the files in $PREFIX/var/lib/pycs/www/ once
+	# you can safely edit the files in $(PREFIX)/var/lib/pycs/www/ once
 	# this is done as they will not be overwritten by a future install.
 	perl -w make_readme.pl < README > www/readme.html
 	$(INSTALL_MKDIR_RO) -d $(WEBDIR)
