@@ -64,6 +64,7 @@ def checkUniqueToken( token, password ):
 			file = open( fname )
 			chall = file.readline()
 			file.close()
+			os.unlink( fname )
 			chall = string.strip( chall )
 			if chall == token[0]:
 				return token
