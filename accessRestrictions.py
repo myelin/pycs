@@ -180,7 +180,7 @@ class accessRestrictions_handler:
 				ures = group.user.select({'name':username})
 				if len(ures):
 					return { 'flError': xmlrpclib.True,
-						'messge': _("user %s is in group %s" % (username, group.name))
+						'message': _("user %s is in group %s" % (username, group.name))
 					}
 			self.users.delete(idx)
 			self.set.Commit()
@@ -414,7 +414,7 @@ class accessRestrictions_handler:
 				ures = location.group.select({'name':groupname})
 				if len(ures):
 					return { 'flError': xmlrpclib.True,
-						'messge': _("group %s is in location %s" % (groupname, location.locname))
+						'message': _("group %s is in location %s" % (groupname, location.locname))
 					}
 			self.groups.delete(idx)
 			self.set.Commit()
