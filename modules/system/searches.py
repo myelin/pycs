@@ -30,6 +30,7 @@ import pycs_settings
 import time
 from urllib import unquote
 from search_engines import checkUrlForSearchEngine
+from string_collector import StringCollector
 
 def orderLink(username,group,order):
 	return set.ServerUrl() + '/system/referers.py?usernum=%s&group=%s&order=%s' % (usernum, group, order)
@@ -53,7 +54,7 @@ page = {
 		think something is broken.</p>""",
 	}
 
-s = ''
+s = StringCollector(set.DocumentEncoding())
 
 if not query.has_key('usernum'):
 	# no usernum specified - dump out a short explanation of why this is bad
@@ -142,7 +143,7 @@ else:
 	
 # Dump it all out
 
-page['body'] = s
+page['body'] = str(s)
 s = set.Render( page, hidden=1 )
 
 request['Content-Length'] = len(s)

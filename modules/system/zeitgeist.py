@@ -30,6 +30,7 @@ import pycs_settings
 import time
 
 from urllib import unquote, quote
+from string_collector import StringCollector
 
 # format of the entries:
 #  first line is a pattern for the search engine to research
@@ -161,7 +162,7 @@ page = {
 		think something is broken.</p>""",
 	}
 
-s = ''
+s = StringCollector(set.DocumentEncoding())
 
 if not query.has_key('usernum'):
 	# no usernum specified - dump out a short explanation of why this is bad
@@ -270,7 +271,7 @@ else:
 	
 # Dump it all out
 
-page['body'] = s
+page['body'] = str(s)
 s = set.Render( page, hidden=1, usernum=user.usernum )
 
 request['Content-Length'] = len(s)
