@@ -34,9 +34,9 @@ class comment:
 		else:
 			self.dateString = time.strftime( ' at %I:%M:%S %p on %B %d, %Y', strptime.strptime( cmt.date, STANDARDDATEFORMAT ) )
 		
-		self.commentFooter = "%s%s%s" % (
+		self.commentFooter = "%s%s" % (
 			self.nameString,
-			self.emailString,
+			#self.emailString,
 			self.dateString,
 		)
 		

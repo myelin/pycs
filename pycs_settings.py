@@ -44,8 +44,10 @@ class User:
 
 class Settings:
 
-	def __init__( self, quiet=False ):
+	def __init__( self, quiet=0 ):
 		storFn = pycs_paths.DATADIR + "/settings.dat"
+		if not quiet:
+			print "reading data from",storFn
 		self.db = metakit.storage( storFn, 1 )
 
 		confFn = pycs_paths.CONFDIR + "/pycs.conf"

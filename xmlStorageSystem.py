@@ -306,6 +306,7 @@ class xmlStorageSystem_handler:
 				'wav', 'swf', 'sit', 'hqx', 'gz', 'zip',
 				'htaccess',
 				],
+			'urlReferers': self.userFolder( email ) + '/referrers.html',
 			'urlSpamFreeMailto': self.set.ServerUrl() + '/system/mailto.py',
 			'urlWeblogUpdates': self.set.ServerUrl() + '/system/updates.py',
 			'webBugUrl': self.set.ServerUrl() + '/system/count.py',
@@ -481,7 +482,7 @@ class xmlStorageSystem_handler:
 
 	def munge( self, name ):
 		# Make sure we don't have any '..'s
-		if re.compile( '\.\.' ).search( name ):
+		if name.find( '..' ) != -1:
 			raise "Security warning: '..' found in filename"
 
 		# Get rid of odd chars		

@@ -22,7 +22,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-import md5
+import md5, time
 import updatesDb
 
 request['Content-Type'] = 'text/html'
@@ -30,7 +30,7 @@ request['Content-Type'] = 'text/html'
 page = {
 	'title': 'Recently updated weblogs',
 	'body': """<p>Something went wrong; there should be some text here!</p>
-		<p>Mail <a href="mailto:pp@myelin.co.nz">Phil</a> at 
+		<p><a href="mailto:pp@myelin.co.nz">Mail Phil</a> at 
 		<a href="http://www.myelin.co.nz/">Myelin</a> if you
 		think something is broken.</p>""",
 	}
@@ -39,28 +39,40 @@ s = """
 <table width="80%%" cellspacing="0" cellpadding="2">
 """
 
-updates = updatesDb.updatesDb( set )
-tbl = updates.updatesTable
-
-if len( tbl ) == 0:
-	s += '<tr><td>(none)</td></tr>'
-else:
-	# Run through all updates and make a row for each ('1. | My blog | 2002-03-22 03:30 AM')
-	nDispIndex = 1
-	for nIndex in range( len( tbl ), 0, -1 ):
-		u = tbl[nIndex - 1]
-		s += """
-		<tr>
-		<td>%d.</td>
-		<td><strong><a href="%s">%s</a></strong></td>
-		<td><strong>%s</strong></td>
-		</tr>
-		""" % ( nDispIndex, u.blogUrl, u.blogName, u.updateTime )
-		nDispIndex += 1
-		
-s += """
-</table>
-"""
+if 0:
+	updates = updatesDb.updatesDb( set )
+	tbl = updates.updatesTable
+	
+	if len( tbl ) == 0:
+		s += '<tr><td>(none)</td></tr>'
+	else:
+		# Run through all updates and make a row for each ('1. | My blog | 2002-03-22 03:30 AM')
+		blogs = []
+		for nIndex in range( len( tbl ), 0, -1 ):
+			u = tbl[nIndex - 1]
+			if type( u.updateTime ) == type( 1 ):
+				blogs.append( ( u.updateTime, u ) )
+			else:
+				blogs.append( ( 0, None ) )
+		blogs.sort()
+		blogs.reverse()
+		nDispIndex = 1
+		for blog in blogs:
+			tm, u = blog
+			s += """
+			<tr>
+			<td>%d.</td>
+			<td><strong><a href="%s">%s</a></strong></td>
+			<td><strong>%s</strong></td>
+			</tr>
+			""" % ( nDispIndex, u.blogUrl, u.blogName,
+				time.strftime( '%Y-%m-%d %I:%M %p', time.localtime( u.updateTime ) )
+				)
+			nDispIndex += 1
+			
+	s += """
+	</table>
+	"""
 	
 # Dump it all out
 

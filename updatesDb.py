@@ -1,3 +1,4 @@
+import time
 import pycs_settings
 
 class updatesDb:
@@ -5,7 +6,7 @@ class updatesDb:
 	def __init__( self, set ):
 		self.set = set
 		self.updatesTable = self.set.db.getas(
-			'weblogUpdates[updateTime:S,blogUrl:S,blogName:S]'
+			'blogUpdates[updateTime:I,blogUrl:S,blogName:S]'
 			).ordered( 2 )
 		
 	def Update( self, blogName, blogUrl ):
@@ -15,6 +16,6 @@ class updatesDb:
 			idx = tbl.find( blogName=blogName, blogUrl=blogUrl )
 			if idx == -1: break
 			tbl.delete( idx )
-		tbl.append( updateTime=self.set.GetTime(), blogName=blogName, blogUrl=blogUrl )
+		tbl.append( updateTime=time.time(), blogName=blogName, blogUrl=blogUrl )
 		self.set.Commit()
-		
+
