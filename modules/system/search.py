@@ -172,10 +172,11 @@ def search(usernum, posts_t, query, skip_hits):
 	hits_skipped = 0
 	max_hits = 10
 	total_hits = 0
-	for post in posts_t:
+	for post_idx in range(len(posts_t)-1, -1, -1):
+		post = posts_t[post_idx]
 		try:
 			# get the post text
-			text = post.description.decode('utf-8').lower()
+			text = (post.title + post.description).decode('utf-8').lower()
 			# see if it has any excluded words
 			for word in excluded:
 				if text.find(word) != -1: raise Skip()
@@ -186,7 +187,7 @@ def search(usernum, posts_t, query, skip_hits):
 			count = 0
 			for word in nice:
 				if text.find(word) != -1: count += 1
-			if not count: raise Skip()
+			if len(nice) and not count: raise Skip()
 			# if we got this far, we have a positive search result
 			if hits_skipped < skip_hits:
 				hits_skipped += 1
