@@ -50,11 +50,10 @@ class pycs_block_handler:
 				# catch this call
 				if user and user.disabled:
 					return 1
-							
 			except:
-				return 0
-		else:
-			return 0
+				pass
+		return 0
+
 	# handle this URL by passing it along to continue_request
 	def handle_request( self, request ):
 		self.continue_request( None, request )
