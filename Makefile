@@ -81,7 +81,7 @@ PYCSFILES = $(NOTEFILES) $(INSTFILES) $(CODEFILES) \
 	$(addsuffix .default, $(CONFFILES))
 
 COMMENTFILES = __init__.py rss.py html.py defaultFormatter.py
-PYCSMODFILES = updates.py mailto.py users.py comments.py login.py count.py referers.py
+PYCSMODFILES = updates.py mailto.py users.py comments.py login.py count.py referers.py searches.py rankings.py
 WEBFILES = index.html history.html readme.html
 RESFILES = defaultFeeds.opml defaultCategories.opml
 SPECIFICS = $(PYCSFILES) medusa/*.py metakit.py Mk4py.so
