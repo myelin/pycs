@@ -43,6 +43,11 @@ import pycs_settings
 import pycs_paths
 import pycs_tokens
 
+def retmsg( failed, msg ):
+	return {'flError': xmlrpclib.Boolean(failed),
+		'message': msg,
+		}
+
 
 def createUniqueToken( password, challenge=None ):
 	token = pycs_tokens.createToken( password, challenge )
@@ -79,8 +84,9 @@ def makeXmlBoolean( a ):
 		return xmlrpclib.False
 		
 
-
-
+def done_msg(msg = 'Done!'):
+	return retmsg(0, msg)
+param_err = retmsg(1, 'Wrong number of parameters!')
 
 class pycsAdmin_handler:
 	
@@ -105,6 +111,7 @@ class pycsAdmin_handler:
 			'setopt': [ self.setopt, 'Set an option for usernum' ],
 			'alias': [ self.alias, 'Set alias for usernum' ],
 			'password': [ self.password, 'Set password for usernum' ],
+			'normalize_comments': [ self.normalize_comments, 'Normalize comment usernums' ],
 		}
 		
 		
@@ -152,10 +159,7 @@ class pycsAdmin_handler:
 		if self.commands.has_key( params[0] ):
 			return self.commands[params[0]][0]( params[1] )
 		
-		return {
-			'flError': xmlrpclib.True,
-			'message': 'Command %s not found!' % ( params[0], ),
-			}
+		return retmsg(1, 'Command %s not found!' % ( params[0], ))
 		
 
 	def help( self, params ):
@@ -175,10 +179,7 @@ class pycsAdmin_handler:
 
 	def shuffle( self, params ):
 		if len(params) != 1:
-			return {
-				'flError': xmlrpclib.True,
-				'message': 'Wrong number of parameters!',
-				}
+			return retmsg(1, 'Wrong number of parameters!')
 
 		if params[0] == 'hits':
 			for row in self.set.users:
@@ -186,42 +187,24 @@ class pycsAdmin_handler:
 				row.hitstoday = 0
 			self.set.Commit()
 		else:
-			return {
-				'flError': xmlrpclib.True,
-				'message': 'Unknown object-spec %s' % params[0],
-				}
-		return {
-			'flError': xmlrpclib.False,
-			'message': 'Done!',
-			}
+			return retmsg(1, 'Unknown object-spec %s' % params[0])
+		return done_msg()
 			
 	def recalc( self, params ):
 		if len(params) != 1:
-			return {
-				'flError': xmlrpclib.True,
-				'message': 'Wrong number of parameters!',
-				}
+			return param_err
 
 		if params[0] == 'diskspace':
 			self.set.RecalculateUserSpace()
 		else:
-			return {
-				'flError': xmlrpclib.True,
-				'message': 'Unknown object-spec %s' % params[0],
-				}
-		return {
-			'flError': xmlrpclib.False,
-			'message': 'Done!',
-			}
+			return retmsg(1, 'Unknown object-spec %s' % params[0])
+		return done_msg()
 
 	def options( self, params ):
 		res = []
 
 		if len(params) != 1:
-			return {
-				'flError': xmlrpclib.True,
-				'message': 'Wrong number of parameters!',
-				}
+			return param_err
 
 		user = self.set.User( params[0] )
 
@@ -240,29 +223,20 @@ class pycsAdmin_handler:
 		res = []
 
 		if len(params) != 3:
-			return {
-				'flError': xmlrpclib.True,
-				'message': 'Wrong number of parameters!',
-				}
+			return param_err
 
 		user = self.set.User( params[0] )
 
 		self.set.setUserOption(user.usernum,params[1],params[2])
 
-		return {
-			'flError': xmlrpclib.False,
-			'message': 'Done!'
-			}
+		return done_msg()
 
 	def list( self, params ):
 		cols = []
 		res = []
 
 		if len(params) != 1:
-			return {
-				'flError': xmlrpclib.True,
-				'message': 'Wrong number of parameters!',
-				}
+			return param_err
 
 		if params[0] == 'users':
 			sth = self.set.users.ordered(1)
@@ -292,10 +266,7 @@ class pycsAdmin_handler:
 						flag = 'True'
 					res.append( [row.usernum, row.alias, flag] )
 		else:
-			return {
-				'flError': xmlrpclib.True,
-				'message': 'Unknown object-spec %s' % params[0],
-				}
+			return retmsg(1, 'Unknown object-spec %s' % params[0])
 
 		return {
 			'flError': xmlrpclib.False,
@@ -308,44 +279,29 @@ class pycsAdmin_handler:
 		res = []
 
 		if len(params) != 1:
-			return {
-				'flError': xmlrpclib.True,
-				'message': 'Wrong number of parameters!',
-				}
+			return param_err
 
 		user = self.set.User( params[0] )
 		user.disabled = 0
 		self.set.Commit()
 
-		return {
-			'flError': xmlrpclib.False,
-			'message': 'Done!',
-			}
+		return done_msg()
 
 	def disable( self, params ):
 		res = []
 
 		if len(params) != 1:
-			return {
-				'flError': xmlrpclib.True,
-				'message': 'Wrong number of parameters!',
-				}
+			return param_err
 
 		user = self.set.User( params[0] )
 		user.disabled = 1
 		self.set.Commit()
 
-		return {
-			'flError': xmlrpclib.False,
-			'message': 'Done!',
-			}
+		return done_msg()
 
 	def alias( self, params ):
 		if (len(params) < 2) or (len(params) > 3):
-			return {
-				'flError': xmlrpclib.True,
-				'message': 'Wrong number of parameters!',
-				}
+			return param_err
 		if params[0] == 'del':
 			if len(params) != 2:
 				return {
@@ -384,18 +340,12 @@ class pycsAdmin_handler:
 
 		self.set.Commit()
 
-		return {
-			'flError': xmlrpclib.False,
-			'message': 'Done!',
-			}
+		return done_msg()
 
 
 	def password( self, params ):
 		if len(params) != 2:
-			return {
-				'flError': xmlrpclib.True,
-				'message': 'Wrong number of parameters!',
-				}
+			return param_err
 		try:
 			user = self.set.User( params[0] )
 		except:
@@ -408,10 +358,27 @@ class pycsAdmin_handler:
 
 		self.set.Commit()
 
-		return {
-			'flError': xmlrpclib.False,
-			'message': 'Done!',
-			}
+		return done_msg()
+
+	def normalize_comments( self, params ):
+		if len(params) != 0:
+			return param_err
+		# now run through all comments and normalize the usernums
+		ct = self.set.getCommentTable()
+		count = changed = 0
+		changes = []
+		for row in ct:
+			count += 1
+			old_user = row.user
+			new_user = str(int(old_user))
+			if old_user != new_user:
+				changed += 1
+				changes.append('%s -> %s' % (old_user, new_user))
+				row.user = new_user
+				assert row.user == new_user
+		self.set.Commit()
+		# succeeded, we assume!
+		return done_msg("Normalized %d usernums out of %d in the comment table, changes: %s" % (changed, count, ", ".join(changes)))
 
 
 if __name__=='__main__':
