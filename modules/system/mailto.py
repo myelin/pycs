@@ -64,7 +64,7 @@ usernum = usernum.group(0)
 	
 u = set.User( usernum )
 
-if request.command == 'post':
+if request.command.lower() == 'post':
 
 	err = None
 	
