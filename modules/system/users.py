@@ -70,8 +70,10 @@ if query.has_key('usernum'):
 		localpart, domain = string.split( cols['email'], '@' )
 		nospamemail = '%s at %s' % ( localpart, domain )
 		cols['email'] = '<a href="mailto.py?usernum=%s">%s</a>' % ( cols['usernum'], nospamemail )
-		
-		for col in cols.keys():
+	
+		clist = cols.keys()
+		clist.sort()
+		for col in clist:
 			
 			s += '<tr><td>%s</td><td><strong>%s<strong></td></tr>' % ( col, cols[col] )
 		
