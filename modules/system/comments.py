@@ -45,6 +45,20 @@ commentTable = set.db.getas(
 
 [path, params, query, fragment] = request.split_uri()
 
+# see if someone is logged in already
+loggedInUser = None
+headers = util.IndexHeaders( request )
+cookies = util.IndexCookies( headers )
+if cookies.has_key( 'userInfo' ):
+	import re
+	import binascii
+	cookieU, cookieP = re.search( '"(.*?)_(.*?)"', cookies['userInfo'] ).groups()
+	cookieU = binascii.unhexlify( cookieU )
+	try:
+		loggedInUser = set.FindUser( cookieU, cookieP )
+	except set.PasswordIncorrect:
+		pass
+
 # Decode information in query string and form		
 query = util.SplitQuery( query )
 form = util.SplitQuery( input_data.read() )
@@ -59,15 +73,11 @@ if format == 'rss':
 	formatter = comments.rss.formatter( set )
 elif format == 'html':
 	import comments.html
-	formatter = comments.html.formatter( set )
+	formatter = comments.html.formatter( set, loggedInUser )
 
 request['Content-Type'] = formatter.contentType()
 
-headers = util.IndexHeaders( request )
-cookies = util.IndexCookies( headers )
-
-noCookies = 1
-
+noCookies = 1 # we don't know about the user info
 if cookies.has_key( 'commentInfo' ):
 	#s += "decoding cookie " + cookies['commentInfo'] + "<br>"
 	try:
@@ -77,7 +87,6 @@ if cookies.has_key( 'commentInfo' ):
 			string.split( urllib.unquote( cookies['commentInfo'] ), '&' )
 		)
 		noCookies = 0
-		
 	except ValueError:
 		# Broken cookie
 		print "ValueError"
@@ -88,7 +97,6 @@ if cookies.has_key( 'commentInfo' ):
 	except:
 		# Something else broken? :)
 		raise
-	
 if noCookies:
 	formatter.storedEmail = ""
 	formatter.storedName = ""
@@ -126,11 +134,11 @@ if query.has_key('c'):
 			for ( idx = 0; idx < nPosts; idx ++ ) {
 				if ( anID[idx] == nID ) {
 					document.write( anCount[idx] );
-					return
+					return;
 				}
 			}
 			document.write ( "0" );
-			return
+			return;
 		}
 		"""
 		
@@ -150,13 +158,12 @@ else:
 	
 	vw = commentTable.select( { 'user': formatter.u, 'paragraph': formatter.p } )
 	if len(vw) == 0:
-		# Never heard of that paragraph
-		#print "(new para)"
+		# Never heard of that post
 		notes = None
 		nComments = 0
 	else:
 		# Got it - grab the 'notes' view
-		#print "(existing para)"
+		#print "(existing post)"
 		notes = vw[0].notes
 		nComments = len(notes)
 	
@@ -166,76 +173,88 @@ else:
 		
 		#s += "looks like you're adding a comment:<br>"
 		#s += "(data %s)" % (`form`,)
-	
-		formatter.storedEmail = util.MungeHTML( form['email'] )
-		formatter.storedName = util.MungeHTML( form['name'] )
-		formatter.storedUrl = util.MungeHTML( form['url'] )
 		
-		rawCookie = '%s&%s&%s' % (
-			base64.encodestring( formatter.storedEmail ),
-			base64.encodestring( formatter.storedName ),
-			base64.encodestring( formatter.storedUrl ),
-		)
-		
-		outCookie = ''
-		for c in rawCookie:
-			if c not in ( ' ', "\n", "\r" ):
-				outCookie += c
-		
-		request['Set-Cookie'] = 'commentInfo=%s; expires=Fri, 31-Dec-9999 00:00:00 GMT' % (
-			urllib.quote( outCookie )
-		)
-		#s += "set " + request['Set-Cookie'] + "<br>"
-		
-		newComment = {
-			'email': formatter.storedEmail,
-			'name': formatter.storedName,
-			'url': formatter.storedUrl,
-			'comment': form['comment'],
-			'date': time.strftime( comments.STANDARDDATEFORMAT ),
-			}
-		
-		nComments += 1
-		
-		# If we don't have a row in for this user/paragraph, make one
-		if notes == None:
-			#print "new comment"
-			notes = metakit.view()
+		if form.has_key( 'delete' ):
+			# it's a DELETE command
 			
-			# Make a row in 'comments' for this paragraph
-			commentTable.append( {
-				'user': formatter.u,
-				'paragraph': formatter.p,
-				'notes': notes,
-				} )
-			
-			# Pull the row out again
-			vw = commentTable.select( { 'user': formatter.u, 'paragraph': formatter.p } )
-			notes = vw[0].notes
-			
-			# ... and add this particular comment in
-			notes.append( newComment )
+			if int( formatter.u ) != int( loggedInUser.usernum ):
+				raise "Unauthorised attempt to delete comment"
+				
+			delIdx = form['delete']
+			formatter.note = "Comment deleted." #"delete comment u=%s, p=%s, cmt=%s" % ( formatter.u, formatter.p, delIdx )
+			notes.delete( int( delIdx ) )
 			set.Commit()
+			
 		else:
-			# It's already there - add more comments
-			notes.append( newComment )
-			set.Commit()
+			# it's an ADD command
+			formatter.storedEmail = util.MungeHTML( form['email'] )
+			formatter.storedName = util.MungeHTML( form['name'] )
+			formatter.storedUrl = util.MungeHTML( form['url'] )
+			
+			rawCookie = '%s&%s&%s' % (
+				base64.encodestring( formatter.storedEmail ),
+				base64.encodestring( formatter.storedName ),
+				base64.encodestring( formatter.storedUrl ),
+			)
+			
+			outCookie = ''
+			for c in rawCookie:
+				if c not in ( ' ', "\n", "\r" ):
+					outCookie += c
+			
+			request['Set-Cookie'] = 'commentInfo=%s; expires=Fri, 31-Dec-9999 00:00:00 GMT' % (
+				urllib.quote( outCookie )
+			)
+			#s += "set " + request['Set-Cookie'] + "<br>"
+			
+			newComment = {
+				'email': formatter.storedEmail,
+				'name': formatter.storedName,
+				'url': formatter.storedUrl,
+				'comment': form['comment'],
+				'date': time.strftime( comments.STANDARDDATEFORMAT ),
+				}
+			
+			nComments += 1
+			
+			# If we don't have a row in for this user/paragraph, make one
+			if notes == None:
+				#print "new comment"
+				notes = metakit.view()
+				
+				# Make a row in 'comments' for this paragraph
+				commentTable.append( {
+					'user': formatter.u,
+					'paragraph': formatter.p,
+					'notes': notes,
+					} )
+				
+				# Pull the row out again
+				vw = commentTable.select( { 'user': formatter.u, 'paragraph': formatter.p } )
+				notes = vw[0].notes
+				
+				# ... and add this particular comment in
+				notes.append( newComment )
+				set.Commit()
+			else:
+				# It's already there - add more comments
+				notes.append( newComment )
+				set.Commit()
+			
+			formatter.note = "New comment added - thanks for participating!"
 	
-	# Print all comments
-	if nComments == 0:
-		if format == 'html':
-			s += '<tr><td class="cmt"><strong>No comments yet</strong></td></tr>'
-	else:
-		#s += '%d comments<br>' % (nComments,)
+	s += formatter.startTable()
 	
-		# Display comment table			
-	
+	# Display comment table			
+
+	if notes:
 		for iCmt in range( len( notes ) ):
 			cmt = notes[iCmt]
-			cmtObj = comments.comment( cmt )
-
+			cmtObj = comments.comment( cmt, iCmt )
 			s += formatter.comment( cmtObj )
-				
+
+	s += formatter.endTable()
+	
 	s += formatter.footer()
 	
 # Dump it all in the request object and send it off

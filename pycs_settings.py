@@ -45,10 +45,17 @@ class User:
 class Settings:
 
 	def __init__( self ):
+		storFn = pycs_paths.DATADIR + "/settings.dat"
+		self.db = metakit.storage( storFn, 1 )
 
-		self.db = metakit.storage( pycs_paths.DATADIR + "/settings.dat", 1 )
+		confFn = pycs_paths.CONFDIR + "/pycs.conf"
+		try:
+			import os
+			os.stat( confFn )
+		except:
+			raise "Can't read config data file: " + confFn
 		cp = ConfigParser.ConfigParser()
-		cp.read( pycs_paths.CONFDIR + "/pycs.conf" )
+		cp.read( confFn )
 
 		# Read in general config		
 		self.conf = self.readAllOptions( cp, "main" )

@@ -71,7 +71,13 @@ if __name__ == '__main__':
 
 	# Make URL rewriter
 	rewriteMap = []
-	execfile( pycs_paths.CONFDIR + '/rewrite.conf' )
+	rewriteFn = pycs_paths.CONFDIR + '/rewrite.conf'
+	try:
+		import os
+		os.stat( rewriteFn )
+	except:
+		raise "Can't read URL rewriting config file " + rewriteFn
+	execfile( rewriteFn )
 	
 	rw_h = pycs_rewrite_handler.pycs_rewrite_handler( set, rewriteMap )
 
@@ -123,6 +129,8 @@ if __name__ == '__main__':
 	
 	# Make web server
 	hs = http_server.http_server( '', set.ServerPort(), None, logger )
+	hs.server_name = set.conf['serverhostname']
+	
 	hs.install_handler( default_h )
 	#hs.install_handler( comment_h )
 	hs.install_handler( mod_h )

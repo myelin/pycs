@@ -9,8 +9,9 @@ footerString = """	</channel>
 </rss>
 """
 
+import defaultFormatter
 
-class formatter:
+class formatter( defaultFormatter.defaultFormatter ):
 
 	def __init__( self, set ):
 		self.set = set

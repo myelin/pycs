@@ -61,7 +61,11 @@ def IndexCookies( headers ):
 	cookies = {}
 	
 	if headers.has_key( 'Cookie' ):
-		cookies = SplitQuery( headers['Cookie'] )
+		import re
+		for line in re.split( '; ', headers['Cookie'] ):
+			key, val = re.match( '(.*?)=(.*)', line ).groups()
+			cookies[key] = val
+		#cookies = SplitQuery( headers['Cookie'] )
 		
 	return cookies
 

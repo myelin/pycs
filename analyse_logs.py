@@ -35,6 +35,9 @@ For referrers & rankings.
 
 """
 
+def removeSessId( s ):
+	return re.sub( 'PHPSESSID\=[a-z0-9]*', 'PHPSESSID=(censored)', s )
+
 if __name__ == '__main__':
 	if len( sys.argv ) > 1:
 		LOGFILE = sys.argv[1]
@@ -48,7 +51,7 @@ if __name__ == '__main__':
 	
 	f = open( LOGFILE, "rt" )
 	
-	splitter = re.compile( r'^([\d\.]*?) (.*?) (.*?) \[(.*?)\] \"(.*?)\" (.*?) (.*?) \"(.*?)\" \"(.*?)\"$' )
+	splitter = re.compile( r'^(.*?) (.*?) (.*?) \[(.*?)\] \"(.*?)\" (.*?) (.*?) \"(.*?)\" \"(.*?)\"$' )
 	req_splitter = re.compile( r'^(\w*?) (.*?) (.*?)$' )
 	
 	nPages = 0
@@ -76,6 +79,9 @@ if __name__ == '__main__':
 			#sys.stderr.write( "req: " + req + "\n" )
 			#sys.stderr.write( "line: " + s + "\n" )
 			continue
+
+		ref = removeSessId( ref )
+		page = removeSessId( page )
 	
 		#if page != '/' and page.find( '/users' ) != 0:
 		#	continue
@@ -89,8 +95,8 @@ if __name__ == '__main__':
 		pageData = pages.setdefault( page, { 'hits': 0, 'refs': {}, } )
 		pageData['hits'] += 1
 	
-		if ref.find( 'rcs.myelin.cjb.net' ) != -1:
-			continue
+		#if ref.find( 'rcs.myelin.cjb.net' ) != -1:
+		#	continue
 	
 		refData = pageData['refs'].setdefault( ref, { 'hits': 0, } )
 		refData['hits'] += 1
@@ -109,7 +115,12 @@ if __name__ == '__main__':
 	
 	#print "%d pages, %d new (%d ignored)" % ( nPages, nNew, nPages - nNew )
 	
-	print "<html><head></head><body>"
+	print """<html>
+<head>
+	<title>Referrer rankings!</title>
+	<link rel="stylesheet" href="http://www.myelin.co.nz/myelin.css" type="text/css" />
+</head>
+<body>"""
 	
 	print "<h1>Hits and referrer rankings as of", time.ctime(), "</h1>"
 	

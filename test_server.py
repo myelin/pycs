@@ -41,7 +41,7 @@ def test_server( s ):
 	
 	email = 'pycs_test@myelin.co.nz'
 	name = 'Test user'
-	usernum = '100035'
+	usernum = '0000005'
 	plainPassword = 'asdf'
 	password = md5.md5( plainPassword ).hexdigest()
 	clientPort = 80
@@ -83,8 +83,8 @@ def test_server( s ):
 		)
 
 if __name__ == '__main__':
-	test_server( 'http://pss.myelin.cjb.net/XMLRPC.php' )
-	#test_server( 'http://localhost:5445/RPC2' )
+	#test_server( 'http://pss.myelin.cjb.net/XMLRPC.php' )
+	test_server( 'http://www.pycs.net/RPC2' )
 	#test_server( 'http://rcs.userland.com:80/RPC2' )
 	#test_server( 'http://euro.weblogs.com:80/RPC2' )
 	#test_server( 'http://www.blognewsnetwork.com:5335/RPC2' )

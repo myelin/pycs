@@ -6,8 +6,8 @@ print <<HTML;
 <head>
 	<title>Python Community Server README</title>
 </head>
-<body>
-<pre>
+<body style="background-color: lightgreen;">
+<div style="margin-top: 0px; border: solid; border-color: green; background-color: white; padding-left: 3em; align: center; font-size: 1em;"><pre>
 HTML
 
 while (<>) {
@@ -15,7 +15,7 @@ while (<>) {
 }
 
 print <<HTML;
-</pre>
+</pre></div>
 </body>
 </html>
 HTML

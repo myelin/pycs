@@ -16,7 +16,7 @@ class htmlCleaner( SGMLParser ):
 		self.cleanedHTML += string.replace(
 			re.sub(
 				r'(http://[^\r\n \"\<]+)',
-				r'<a href="\1">\1</a>',
+				r'<a href="\1" target="_blank">\1</a>',
 				data,
 			),
 			"\n",
@@ -48,7 +48,7 @@ class htmlCleaner( SGMLParser ):
 		f=1
 		for key, val in attrs:
 			if key == 'href':
-				self.cleanedHTML += '<a href="%s">' % ( val, )
+				self.cleanedHTML += '<a href="%s" target="_blank">' % ( val, )
 				f=0
 		if f:
 			self.cleanedHTML += '<a>'

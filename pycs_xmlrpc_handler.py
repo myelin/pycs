@@ -75,7 +75,11 @@ class pycs_xmlrpc_handler( xmlrpc_handler.xmlrpc_handler ):
 		print "trying to find",base
 		if self.namespaces.has_key( base ):
 			try:
-				return self.namespaces[base].call( qualifiedName[1:], params )		
+				import profile
+				import __main__
+				__main__.xmlFunc = lambda theBase=base, namespaces=self.namespaces, qualifiedName=qualifiedName, params=params: namespaces[theBase].call( qualifiedName[1:], params )
+				exec 'import __main__; __main__.xmlFuncRet = __main__.xmlFunc()'
+				return __main__.xmlFuncRet
 			except:
 				try:
 					exception, detail, traceback = sys.exc_info()

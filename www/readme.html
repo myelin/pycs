@@ -2,11 +2,23 @@
 <head>
 	<title>Python Community Server README</title>
 </head>
-<body>
-<pre>
+<body style="background-color: lightgreen;">
+<div style="margin-top: 0px; border: solid; border-color: green; background-color: white; padding-left: 3em; align: center; font-size: 1em;"><pre>
 Python Community Server
 =======================
-         --> alpha test v0.05
+         --> alpha test v0.06
+         
+ -^--------^--      
+/   \      /  \    -----------
+|    O     O   |  / read me   \
+|       V      | C   hellooo~  |
+\             /   \   hoo hoo /
+ / \        / \    -----------
+|\  \      /  /|
+| \  \    /  / |
+|  ^^^    ^^^  |
+ \__  ____  __/
+    vv    vv
 
 PyCS is still unstable.  It's suitable for running a web server on - it's 
 running http://www.pycs.net/ quite happily - but it may require some hacking to 
@@ -18,8 +30,15 @@ Here are some notes to get you going.
 DEPENDENCIES
 	
 	Medusa - http://www.nightmare.com/medusa/
+
+		The docs are at the above URL, but you want to download the newer
+		version from SourceForge:
+
+		http://oedipus.sourceforge.net/medusa/
 	
-		Unpack this into the same dir as PyCS.
+		Unpack this into a subdirectory of your PyCS directory called
+		'medusa'.  When you run 'make install' it will be saved into
+		/usr/lib/pycs/bin/medusa.
 	
 	
 	MetaKit - http://www.equi4.com/metakit/python.html
@@ -30,7 +49,9 @@ DEPENDENCIES
 	
 	xmlrpclib - http://www.pythonware.com/products/xmlrpc/
 	
-		Just install this as you usually would.
+		Just install this as you usually would.  It should be installed
+		by default with Python 2.2.  If it's not there, make sure you
+		have the newest version of Python you can find.
 
 
 NOTES
@@ -42,6 +63,15 @@ NOTES
 		and 'serverport' should be the port you want to run on.  The 
 		server runs on port 5445 by default - change this to 80 if you 
 		don't have another server running on the same machine.
+
+		Now type:
+
+			make install
+
+		You'll need to be root as this will create a new user and copy some
+		files into /etc/pycs, /usr/lib/pycs and /var/lib/pycs.
+
+		To start the server, run /usr/lib/pycs/startserver.sh.
 		
 	
 	Virtual Hosting:
@@ -58,14 +88,13 @@ NOTES
 		
 		This way, Apache will send the requested hostname through to the 
 		PyCS server, allowing it to work out virtual hosts on its own. 
-		See rewrite.conf for more info on how to do this.
+		See /etc/pycs/rewrite.conf for more info on how to do this.
 		
 		Here's a more complete example of a VirtualHost block that 
 		proxies requests through to a PyCS server.
 		
 		<VirtualHost *>
 		        DocumentRoot /var/www/external
-		        ServerAlias pycs.net rcs.myelin.cjb.net
 		        ServerAlias pycs.net *.pycs.net
 		        ServerName pycs.net
 		
@@ -76,26 +105,30 @@ NOTES
 			RewriteRule ^(.+) http://127.0.0.1:5445/~~vhost~~/%{HTTP_HOST}$1 [P]
 		</VirtualHost>
 		
-		This tells Apache that requests for pycs.net, *.pycs.net and 
-		rcs.myelin.cjb.net should be sent through to the PyCS using the 
-		~~vhost~~ syntax (see rewrite.conf for more info), and that 
-		logging should go to /var/log/apache/rcs-{error,access}.log.
+		This tells Apache that requests for pycs.net and *.pycs.net
+		should be sent through to the PyCS using the ~~vhost~~ syntax
+		(see rewrite.conf for more info), and that logging should go
+		to /var/log/apache/rcs-{error,access}.log.
 		
 	
 	Security:
 	
-		You'll want to run PyCS as an unprivileged user.  It will do 
-		this automatically one day, but for the moment it just runs as 
-		whoever started it.  Create another user, copy all the files 
-		into their home dir, give them rwx to the www/ directory and rx 
-		to everytihng else, and run as them.
+		You'll want to run PyCS as an unprivileged user.  'make install'
+		will create the user account for you and put everything in the
+		right places.
+
+		Once you've started the server, run 'ps auxf' and check that
+		/usr/bin/python /var/lib/pycs/bin/pycs.py is not running as
+		root.  It should be something like 'www-pycs'.
 	
 
 	Logging:
 	
-		It dumps its log to stdout at the moment; pipe that to where you 
-		want the log to go.  There's a logging framework built into 
-		Medusa, but I haven't told it where to send things yet.
+		It writes three log files: access.log, etc.log and error.log. 
+		etc.log logs everything written to stdout and error.log logs 
+		everything written to stderr, while access.log logs hits and 
+		stuff - what you might expect to see from a basic Apache 
+		access.log.
 
 
 CONCLUSION
@@ -122,6 +155,6 @@ OFFICIAL WEB PAGES
 
 		http://www.myelin.co.nz/
 
-</pre>
+</pre></div>
 </body>
 </html>

@@ -10,9 +10,12 @@ STANDARDDATEFORMAT = '%Y-%m-%d %H:%M:%S'
 
 class comment:
 
-	def __init__( self, cmt ):
+	def __init__( self, cmt, iCmt ):
 		
 		self.cmt = cmt
+		
+		# index into the 'notes' subtable for this comment (used when deleting)
+		self.iCmt = iCmt
 		
 		if cmt.name == '':
 			self.name = 'an anonymous coward'

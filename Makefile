@@ -67,12 +67,12 @@ PYCSFILES = $(NOTEFILES) $(INSTFILES) $(CODEFILES) \
 	$(TESTFILES) \
 	$(CONFFILES)
 
-COMMENTFILES = __init__.py rss.py html.py
+COMMENTFILES = __init__.py rss.py html.py defaultFormatter.py
 PYCSMODFILES = updates.py mailto.py users.py comments.py login.py
 WEBFILES = index.html history.html readme.html
 RESFILES = defaultFeeds.opml defaultCategories.opml
 SPECIFICS = $(PYCSFILES) medusa/*.py metakit.py Mk4py.so
-VER = 0.06
+VER = 0.07
 DISTFN = pycs-$(VER)-src
 LATESTFN = pycs-latest-src
 
@@ -165,6 +165,7 @@ dist:
 	
 	mkdir -p $(DISTFN)/www
 	cp $(addprefix www/, $(WEBFILES)) $(DISTFN)/www/
+	if [ -f www/dist_index.html ]; then cp -f www/dist_index.html $(DISTFN)/www/index.html; fi
 	
 	mkdir -p $(DISTFN)/www/initialResources
 	cp $(addprefix www/initialResources/, $(RESFILES)) $(DISTFN)/www/initialResources

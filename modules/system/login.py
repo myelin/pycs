@@ -25,6 +25,7 @@
 import md5
 import pycs_settings
 import cgi
+import binascii
 import re
 
 request['Content-Type'] = 'text/html'
@@ -43,14 +44,25 @@ page = {
 
 s = ''
 
+fLoggedIn = 0
+
 headers = util.IndexHeaders( request )
 cookies = util.IndexCookies( headers )
-if cookies.has_key( 'u' ) and cookies.has_key( 'p' ):
-	s += "got u & p<br>"
-for k in cookies.keys():
-	s += "cookie %s: %s<br>" % ( k, cookies[k] )
-
-fLoggedIn = 0
+#if cookies.has_key( 'u' ) and cookies.has_key( 'p' ):
+#	s += "got u & p<br>"
+#for k in cookies.keys():
+#	s += "cookie %s: %s<br>" % ( k, cookies[k] )
+if cookies.has_key( 'userInfo' ):
+	u, p = re.search( '"(.*?)_(.*?)"', cookies['userInfo'] ).groups()
+	u = binascii.unhexlify( u )
+	s += "usernum %s, pass %s<br>" % ( u, p )
+	try:
+		user = set.FindUser( u, p )
+	except set.PasswordIncorrect:
+		s += "(password incorrect)"
+		
+	s += "user already logged in: " + user.usernum
+	s += "<br>"
 
 # Have we been POSTed to?
 if form.has_key('email') and form.has_key('password'):
@@ -65,9 +77,9 @@ if form.has_key('email') and form.has_key('password'):
 		
 		fLoggedIn = 1
 		
-		request['Set-Cookie'] = "u=%s&p=%s" % (
-			cgi.escape( user.usernum ),
-			cgi.escape( pwHash ),
+		request['Set-Cookie'] = 'userInfo="%s_%s"' % (
+			binascii.hexlify( user.usernum ),
+			pwHash,
 			)
 		
 		s += """
@@ -77,7 +89,7 @@ if form.has_key('email') and form.has_key('password'):
 		""" % ( user.usernum, user.name )
 	
 	except pycs_settings.NoSuchUser:
-		s += '<p>Sorry, user %s not found!</p>' % (usernum,)
+		s += '<p>Sorry, email address <b>%s</b> not found!</p>' % (form['email'],)
 	
 	except pycs_settings.PasswordIncorrect:
 		s += '<p>Sorry, the passsword was incorrect.  Please try again.</p>'
