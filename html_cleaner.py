@@ -58,13 +58,11 @@ class htmlCleaner( SGMLParser ):
 	def end_tt( self ): pass
 	
 	def start_a( self, attrs ):
-		f=1
-		for key, val in attrs:
-			if key == 'href':
-				self.cleanedHTML += '<a href="%s" target="_blank">' % ( val, )
-				f=0
-		if f:
-			self.cleanedHTML += '<a>'
+		for k,v in attrs:
+			if k == 'href':
+				self.cleanedHTML += '<a href="%s" target="_blank">' % v
+				return 1
+		self.cleanedHTML += '<a>'
 		return 1
 	def end_a( self ):
 		self.cleanedHTML += '</a>'
