@@ -66,7 +66,7 @@ add = s.append
 add("""<pre><b>comment spam administration</b>\n""")
 
 def menu():
-	add('\n(<a href="spam.py">main</a> | <a href="spam.py?op=blanks">find blank comments</a> | <a href="spam.py?op=words">word analysis</a> | <a href="spam.py?op=search">search</a>)\n\n')
+	add('\n(<a href="spam.py">main</a> | <a href="spam.py?op=blanks">find blank comments</a> | <a href="spam.py?op=words">word analysis</a> | <a href="spam.py?op=search">search</a> | <a href="spam.py?op=checkall">check all against blacklist</a>)\n\n')
 
 def list_all_comments():
 	r = 0
@@ -113,11 +113,23 @@ def analyse_words():
 	for count, link in links:
 		add("<li>%d - %s</li>" % (count, link))
 			
-		
+def checkall():
+	add("checking ALL posts against current blacklist\n")
+	from comments.spam import is_spam
+	found = tested = 0
+	start = time.time()
+	for cid,cmt,name,link in db.execute("SELECT id,commenttext,postername,posterurl FROM pycs_comments WHERE is_spam=0 AND commentdate > NOW() - interval '3000 day'"):
+		tested += 1
+		if is_spam(cmt, name, link):
+			add("spam: %d, %s\n" % (cid, util.esc(cmt[:100])))
+			db.execute("UPDATE pycs_comments SET is_spam=42 WHERE id=%d", (cid,))
+			found += 1
+	now = time.time()
+	add("found %d spams in %d comments (in %.1f s)\n" % (found, tested, now - start))
 		
 def main():
 	count, = db.fetchone("SELECT COUNT(*) FROM pycs_comments")
-	spamcount, = db.fetchone("SELECT COUNT(*) FROM pycs_comments WHERE is_spam=1")
+	spamcount, = db.fetchone("SELECT COUNT(*) FROM pycs_comments WHERE is_spam>0")
 	add("total: %d comments, %d marked as spam\n" % (count, spamcount))
 
 	menu()
@@ -144,6 +156,8 @@ def main():
 	elif op == 'setspam':
 		add("setting spam flag for a comment...\n")
 		db.execute("UPDATE pycs_comments SET is_spam=%d WHERE id=%d", (int(query['spam']), int(query['id'])))
+	elif op == 'checkall':
+		checkall()
 	else:
 		list_all_people()
 
@@ -156,5 +170,5 @@ else:
 
 add("</pre>")
 request['Content-Type'] = 'text/html'
-request.push(''.join(s))
+request.push(s)
 request.done()
