@@ -38,6 +38,49 @@ import strptime
 import html_cleaner
 import comments
 import md5
+import pycs_settings
+
+def save_comment():
+	# get ready to add comment
+
+	formatter.storedEmail = util.MungeHTML( form['email'] )
+	formatter.storedName = util.MungeHTML( form['name'] )
+	formatter.storedUrl = util.MungeHTML( form['url'] )
+
+	rawCookie = '%s&%s&%s' % (
+		base64.encodestring( formatter.storedEmail ),
+		base64.encodestring( formatter.storedName ),
+		base64.encodestring( formatter.storedUrl ),
+	)
+
+	outCookie = ''
+	for c in rawCookie:
+		if c not in ( ' ', "\n", "\r" ):
+			outCookie += c
+
+	request['Set-Cookie'] = 'commentInfo=%s; expires=Fri, 31-Dec-9999 00:00:00 GMT' % (
+		urllib.quote( outCookie )
+	)
+	#s += "set " + request['Set-Cookie'] + "<br>"
+
+	newComment = {
+		'email': formatter.storedEmail,
+		'name': formatter.storedName,
+		'url': formatter.storedUrl,
+		'comment': form['comment'],
+		'date': time.strftime( comments.STANDARDDATEFORMAT ),
+		}
+
+	cmttext = form['comment']
+	if not cmttext:
+		print "Didn't add blank comment"
+		formatter.note = _("I can't add a blank comment!  Try again, with a real comment this time.")
+	else:
+		set.pdb.execute("INSERT INTO pycs_comments (id, usernum, postid, postlink, postername, posteremail, posterurl, commenttext, commentdate, is_spam) VALUES (NEXTVAL('pycs_comments_id_seq'), %s, %s, %s, %s, %s, %s, %s, NOW(), 0)", (usernum, postid, form.get('link', ''), formatter.storedName, formatter.storedEmail, formatter.storedUrl, cmttext, ))
+		print "Added comment to usernum %d postid %s by %s, %d bytes" % (usernum, `postid`, `formatter.storedName`, len(cmttext))
+		formatter.note = _("New comment added - thanks for participating!")
+
+#####################################################
 
 [path, params, query, fragment] = request.split_uri()
 
@@ -123,6 +166,14 @@ if not query.has_key('u'):
 	usernum = None
 else:
 	usernum = formatter.u = int(query['u']) #str(int(query['u']))
+	formatter.comments_disabled = 0
+	try:
+		u = set.User(usernum)
+		if u.commentsdisabled:
+			formatter.comments_disabled = 1
+	except pycs_settings.NoSuchUser:
+		pass # don't care - assume comments enabled
+
 postid = query.get("p", None)
 
 if query.has_key('c'):
@@ -192,42 +243,12 @@ else:
 			
 		else:
 			# it's an ADD command
-			formatter.storedEmail = util.MungeHTML( form['email'] )
-			formatter.storedName = util.MungeHTML( form['name'] )
-			formatter.storedUrl = util.MungeHTML( form['url'] )
-			
-			rawCookie = '%s&%s&%s' % (
-				base64.encodestring( formatter.storedEmail ),
-				base64.encodestring( formatter.storedName ),
-				base64.encodestring( formatter.storedUrl ),
-			)
-			
-			outCookie = ''
-			for c in rawCookie:
-				if c not in ( ' ', "\n", "\r" ):
-					outCookie += c
-			
-			request['Set-Cookie'] = 'commentInfo=%s; expires=Fri, 31-Dec-9999 00:00:00 GMT' % (
-				urllib.quote( outCookie )
-			)
-			#s += "set " + request['Set-Cookie'] + "<br>"
-			
-			newComment = {
-				'email': formatter.storedEmail,
-				'name': formatter.storedName,
-				'url': formatter.storedUrl,
-				'comment': form['comment'],
-				'date': time.strftime( comments.STANDARDDATEFORMAT ),
-				}
 
-			cmttext = form['comment']
-			if not cmttext:
-				print "Didn't add blank comment"
-				formatter.note = _("I can't add a blank comment!  Try again, with a real comment this time.")
+			# are comments enabled for this user?
+			if formatter.comments_disabled:
+				formatter.note = _("Sorry - comments are disabled for this user.")
 			else:
-				set.pdb.execute("INSERT INTO pycs_comments (id, usernum, postid, postlink, postername, posteremail, posterurl, commenttext, commentdate, is_spam) VALUES (NEXTVAL('pycs_comments_id_seq'), %s, %s, %s, %s, %s, %s, %s, NOW(), 0)", (usernum, postid, form.get('link', ''), formatter.storedName, formatter.storedEmail, formatter.storedUrl, cmttext, ))
-				print "Added comment to usernum %d postid %s by %s, %d bytes" % (usernum, `postid`, `formatter.storedName`, len(cmttext))
-				formatter.note = _("New comment added - thanks for participating!")
+				save_comment()
 
 	if not(fullfeed):
 		formatter.p = postid

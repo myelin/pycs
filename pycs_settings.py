@@ -24,7 +24,6 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-import metakit
 import time
 import re
 import os
@@ -72,6 +71,7 @@ class Settings:
 		if nomk:
 			self.db = None
 		else:
+			import metakit
 			self.db = metakit.storage(storFn, 1)
 
 		confFn = pycs_paths.CONFDIR + "/pycs.conf"
@@ -104,7 +104,7 @@ class Settings:
 				"users[usernum:S,email:S,password:S,name:S,weblogTitle:S,serialNumber:S,organization:S," +
 				"flBehindFirewall:I,hitstoday:I,hitsyesterday:I,hitsalltime:I," +
 				"membersince:S,lastping:S,pings:I,lastupstream:S,upstreams:I,lastdelete:S,deletes:I,bytesupstreamed:I," +
-				"signons:I,signedon:I,lastsignon:S,lastsignoff:S,clientPort:I,disabled:I,alias:S,flManila:I,bytesused:I,stylesheet:S]"
+				"signons:I,signedon:I,lastsignon:S,lastsignoff:S,clientPort:I,disabled:I,alias:S,flManila:I,bytesused:I,stylesheet:S,commentsdisabled:I]"
 				).ordered()
 			
 			if len(self.users) == 0:
@@ -461,10 +461,12 @@ class Settings:
 		u = self.User(usernum)
 		if option == 'stylesheet':
 			u.stylesheet = value
-			self.Commit()
+		elif option == 'disable_comments':
+			u.commentsdisabled = int(value) and 1 or 0
 		else:
 			raise KeyError(option)
-	
+		self.Commit()
+			
 	def SpaceString(self, bytes):
 		if bytes < 1024:
 			return "%d bytes" % bytes

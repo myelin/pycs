@@ -88,7 +88,7 @@ def install_handlers ():
 	signal.signal( signal.SIGTTOU, signal.SIG_IGN )
 	signal.signal( signal.SIGTTIN, signal.SIG_IGN )
 	signal.signal( signal.SIGCHLD, signal.SIG_IGN )
-	signal.signal( signal.SIGTSTP, terminate )
+#	signal.signal( signal.SIGTSTP, terminate )
 	signal.signal( signal.SIGTERM, terminate )
 	signal.signal( signal.SIGINT, terminate )
 

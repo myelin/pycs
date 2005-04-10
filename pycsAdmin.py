@@ -102,12 +102,15 @@ class pycsAdmin_handler:
 	
 	def __init__( self, set ):
 		self.set = set
+		self.adminenabled = self.adminbroken = 0
 		self.adminpassword = str( random.random() )
 		stat = os.stat( pycs_paths.PYCS_CONF )
 
-		if (stat[0] & 0077) == 0 or os.name == 'nt':
-			if set.conf.has_key( 'adminpassword' ):
-				self.adminpassword = set.conf['adminpassword']
+		if set.conf.has_key( 'adminpassword' ):
+			self.adminpassword = set.conf['adminpassword']
+			self.adminenabled = 1
+			if (stat[0] & 0077) and os.name != 'nt':
+				self.adminbroken = 1
 		self.commands = {}
 		for name,desc in (
 			('help', 'Show table of all commands'),
@@ -150,6 +153,10 @@ class pycsAdmin_handler:
 		else:
 			if len( params ) < 1:
 				raise "pycsAdmin call has to few arguments"
+			if not self.adminenabled:
+				raise "administration module not enabled (no adminpassword found in /etc/pycs/pycs.conf)"
+			if self.adminbroken:
+				raise "/etc/pycs/pycs.conf has too open permissions; admin module not enabled.  please chmod go-rwx /etc/pycs/pycs.conf to enable"
 			if not( checkUniqueToken( params[0], self.adminpassword ) ):
 				raise "authorization for pycsAdmin call failed"
 			if handlers.has_key( base ):
@@ -244,6 +251,7 @@ class pycsAdmin_handler:
 
 		user = self.set.User( params[0] )
 
+		print "calling setUserOption(%s, %s, %s)" % (user.usernum,params[1],params[2])
 		self.set.setUserOption(user.usernum,params[1],params[2])
 
 		return done_msg()

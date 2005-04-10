@@ -93,14 +93,14 @@ class formatter( defaultFormatter.defaultFormatter ):
 			ret.append( _('<div class="cmt"><strong>No comments yet</strong></li>') )
 
 		ret.append( endTableString )
-		ret.append( """
-		<div style="border: solid 1px black; padding: 1em; background-color: lightgrey; ">
-		<form method="post" action="comments.py?u=%s&amp;p=%s">
-		""" % ( self.u, self.p ) )
-		if hasattr(self, 'link'):
-			if self.link:
+		ret.append( """<div style="border: solid 1px black; padding: 1em; background-color: lightgrey;">""")
+		if self.comments_disabled:
+			ret.append(_("Comments are disabled for this user."))
+		else:
+			ret.append("""<form method="post" action="comments.py?u=%s&amp;p=%s">""" % ( self.u, self.p ) )
+			if hasattr(self, 'link') and self.link:
 				ret.append( '<input type="hidden" name="link" value="%s" />' % self.link )
-		ret.append( """
+			ret.append( """
 		<table width="100%%" cellspacing="0" cellpadding="2">
 		<tr><td></td><td><strong>%s</strong></td></tr>
 		<tr><td><label for="name">%s</label></td><td width="99%%"><input type="text" size="50" name="name" id="name" value="%s"/></td></tr>
@@ -136,7 +136,7 @@ class formatter( defaultFormatter.defaultFormatter ):
 			_("Subscribe to this comment thread in Radio UserLand"),
 			cgi.escape(self.xmlFeedLink, 1), self.set.ServerUrl(),
 			_("Link to the RSS (XML) feed for this comment thread"),
-		) )
+			) )
 		
 		return ''.join( ret )
 
