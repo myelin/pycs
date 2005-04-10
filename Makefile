@@ -87,7 +87,7 @@ PYCSFILES = $(NOTEFILES) $(INSTFILES) $(CODEFILES) \
 	$(TESTFILES) \
 	$(addsuffix .default, $(CONFFILES))
 
-COMMENTFILES = __init__.py rss.py rssfull.py export_mt.py html.py defaultFormatter.py
+COMMENTFILES = __init__.py rss.py rssfull.py export_mt.py html.py defaultFormatter.py spam.py
 TRACKBACKFILES = __init__.py rss.py rssfull.py html.py defaultFormatter.py
 PYCSMODFILES = updates.py mailto.py users.py comments.py login.py count.py referers.py searches.py rankings.py zeitgeist.py trackback.py search.py
 WEBFILES = index.html history.html readme.html pycs.css
@@ -171,7 +171,7 @@ install: user scripts
 scripts:
 	$(INSTALL_MKDIR_RO) -d $(MODDIR)
 	$(INSTALL_MKDIR_RO) -d $(MODDIR)/system
-	for f in `cd modules && find * | grep -E "\.py$$" && cd ..`; do $(INSTALL_RO) modules/$$f $(MODDIR)/$$f; done
+	if [ ! -d $(MODDIR)/system/CVS ]; then echo "* installing /system scripts"; for f in `cd modules && find * | grep -E "\.py$$" && cd ..`; do $(INSTALL_RO) modules/$$f $(MODDIR)/$$f; done; else echo "* /system seems to be under CVS; not overwriting"; fi
 
 	$(INSTALL_MKDIR_RO) -d $(COMMENTDIR)
 	$(INSTALL_RO) $(addprefix comments/, $(COMMENTFILES)) $(COMMENTDIR)/

@@ -44,6 +44,7 @@ import xmlrpclib
 import pycs_settings
 import pycs_paths
 import pycs_tokens
+import pycs_db
 
 def retmsg( failed, msg ):
 	return {'flError': xmlrpclib.Boolean(failed),
@@ -442,26 +443,28 @@ class pycsAdmin_handler:
 			ret += "%s: %s\n" % (k, ", ".join(usernums[k]))
 		return done_msg(ret)
 	
-	def _make_comment_block(self, u, p):
-		"retrieve row in comments table for a post, creating it if it doesn't exist"
-		ct = self.set.getCommentTable()
-		rows = ct.select({'user': u, 'paragraph': p})
-		if not len(rows):
-			ct.append(user=u, paragraph=p)
-			rows = ct.select({'user': u, 'paragraph': p})
-		cmt_block = rows[0]
-		return cmt_block
-
+#	def _make_comment_block(self, u, p):
+#		"retrieve row in comments table for a post, creating it if it doesn't exist"
+#		ct = self.set.getCommentTable()
+#		rows = ct.select({'user': u, 'paragraph': p})
+#		if not len(rows):
+#			ct.append(user=u, paragraph=p)
+#			rows = ct.select({'user': u, 'paragraph': p})
+#		cmt_block = rows[0]
+#		return cmt_block
+#
 	def add_comments( self, params ):
 		if len(params) != 2: return param_err(2, args='usernum, plist')
 
 		import comments
 
+		self.set.pdb.execute("ROLLBACK")
+
 		ret = ''
 		u, plist = params
 		for p,cmts in plist.items():
 			# prepare db space for this post
-			cmt_block = self._make_comment_block(u, p)
+#			cmt_block = self._make_comment_block(u, p)
 
 			# add all comments for this post
 			for cmt in cmts:
@@ -475,15 +478,14 @@ class pycsAdmin_handler:
 				      'comment': cmt['comment'].strip().encode('utf-8'),
 				      }
 				print ci
-				rows = cmt_block.notes.select(ci)
-				print rows
-				if len(rows):
+				if self.set.pdb.fetchone("SELECT id FROM pycs_comments WHERE usernum=%s AND postid=%s AND postername=%s AND posterurl=%s AND commenttext=%s",
+						     (u, p, ci['name'], ci['url'], ci['comment'])):
 					ret += "already got comment %s\n" % `ci`
 				else:
 					ret += "added comment %s\n" % `ci`
-					cmt_block.notes.append(ci)
+					self.set.pdb.execute("INSERT INTO pycs_comments (id, usernum, postid, postlink, postername, posteremail, posterurl, commenttext, commentdate, is_spam) VALUES (NEXTVAL('pycs_comments_id_seq'), %s, %s, %s, %s, %s, %s, %s, %s, 0)", (u, p, '', ci['name'], ci['email'], ci['url'], ci['comment'], pycs_db.timeto8601(when)))
 
-		self.set.Commit()
+		self.set.pdb.execute("COMMIT")
 		
 		return done_msg(ret)
 

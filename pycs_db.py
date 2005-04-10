@@ -16,13 +16,16 @@ def toutf8(s):
         s = s.decode("iso-8859-1")
     return s.encode("utf-8")
 
+def timeto8601(t):
+    return time.strftime("%Y%m%dT%H:%M:%S", t)
+
 def pyto8601(ts, has_am=1):
     if has_am:
         fmt = '%Y-%m-%d %I:%M:%S %p'
     else:
         fmt = '%Y-%m-%d %H:%M:%S'
     t = time.strptime(ts, fmt)
-    return time.strftime("%Y%m%dT%H:%M:%S", t)
+    return timeto8601(t)
 
 class DB:
     def __init__(self, set, host, db, user, pwd, noupgrade=0):
