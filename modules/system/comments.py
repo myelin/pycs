@@ -61,15 +61,6 @@ def save_comment():
 	request['Set-Cookie'] = 'commentInfo=%s; expires=Fri, 31-Dec-9999 00:00:00 GMT' % (
 		urllib.quote( outCookie )
 	)
-	#s += "set " + request['Set-Cookie'] + "<br>"
-
-	newComment = {
-		'email': formatter.storedEmail,
-		'name': formatter.storedName,
-		'url': formatter.storedUrl,
-		'comment': form['comment'],
-		'date': time.strftime( comments.STANDARDDATEFORMAT ),
-		}
 
 	cmttext = form['comment']
 	if not cmttext:
@@ -152,9 +143,6 @@ if cookies.has_key( 'commentInfo' ):
 	except binascii.Error:
 		# some other sort of broken cookie
 		print "binascii.Error"
-	except:
-		# Something else broken? :)
-		raise
 if noCookies:
 	formatter.storedEmail = ""
 	formatter.storedName = ""
