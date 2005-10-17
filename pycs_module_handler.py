@@ -179,6 +179,7 @@ class pycs_module_handler:
 				} )
 
 			print "call to %s took %.1f s" % (realPath, time.time() - start_time)
+			self.set.pdb.disconnect() # avoid deadlocking with postgres, as seems to happen sometimes - it looks like sometimes we don't finish reading the whole resultset, and start sending a new query before postgres is ready.
 			return ret
 		except SystemExit:
 			raise

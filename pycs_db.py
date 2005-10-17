@@ -43,9 +43,14 @@ class DB:
             self.update_schema()
 
     def connect(self):
-        print "Connecting to PostgreSQL database"
+        print "Connecting to PostgreSQL database...",
         self.con = bpgsql.connect(host=self.dbhost, dbname=self.dbname, username=self.dbuser, password=self.dbpass)
-        print "Connected"
+        print "connected"
+
+    def disconnect(self):
+        if self.con:
+            self.con.close()
+            self.con = None
 
     def quote(self, s):
         return bpgsql._fix_arg(s)
@@ -54,6 +59,7 @@ class DB:
         return self.quote(s)[1:-1]
 
     def execute(self, sql, args=None):
+        if not self.con: self.connect()
         cur = self.con.cursor()
         try:
             cur.execute(sql, args)
