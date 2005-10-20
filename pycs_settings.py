@@ -118,9 +118,6 @@ class Settings:
 				self.meta.append(nextUsernum=1)
 				self.Commit()
 			
-			# Update data
-			self.updates = self.db.getas("updates[time:S,usernum:S,title:S]").ordered(2)
-
 			# Search data
 			self.mirrored_posts = self.db.getas("mirroredPosts[usernum:S,posts[date:S,postid:S,guid:S,url:S,title:S,description:S]]").ordered()
 
@@ -193,30 +190,6 @@ class Settings:
 		elif hh > 12: hh -= 12
 		
 		return '%04d-%02d-%02d %02d:%02d:%02d %s' % (y, m, d, hh, mm, ss, pm)
-
-	def AddUpdate(self, usernum):
-		theTime = self.GetTime()
-		
-		user = self.User(usernum)
-		logTitle = user.weblogTitle
-		
-		# See if that user has updated today already
-		sth = self.updates.select({ 'usernum': usernum })
-		row = None
-		if len(sth) != 0:
-			# They have - update the timestamp
-			row = sth[0]
-			row.time = theTime
-			row.title = logTitle
-		else:
-			# They haven't - add a new row to the DB
-			self.updates.append({
-				'usernum': usernum,
-				'time': theTime,
-				'title': logTitle,
-				})
-			
-		self.Commit()
 
 	def AddReferrer(self, usernum, group, referrer):
 		usernum = int(usernum)
@@ -569,3 +542,8 @@ class Settings:
 	def SetAccessRestrictionsHandler(self, ar_h):
 		self.ar_h = ar_h
 
+	def AddUpdatePing(self, title, url):
+		self.pdb.execute("DELETE FROM pycs_updates WHERE title=%s AND url=%s",
+				 (pycs_db.toutf8(title), pycs_db.toutf8(url)))
+		self.pdb.execute("INSERT INTO pycs_updates (update_time, title, url) VALUES (CURRENT_TIMESTAMP, %s, %s)",
+				 (pycs_db.toutf8(title), pycs_db.toutf8(url)))

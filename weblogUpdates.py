@@ -88,9 +88,8 @@ class weblogUpdates_handler:
 		if type(blogName) == type(u''):
 			blogName = blogName.encode(self.set.DocumentEncoding())
 		print "got a ping from '%s' at '%s'" % ( blogName, blogUrl )
-		
-		import updatesDb
-		updatesDb.updatesDb( self.set ).Update( blogName, blogUrl )
+
+		self.set.AddUpdatePing(blogName, blogUrl)
 		
 		return {
 			'flError': xmlrpclib.False,

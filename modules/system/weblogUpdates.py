@@ -23,7 +23,6 @@
 
 
 import md5, time
-import updatesDb
 import cgi
 import re
 
@@ -40,41 +39,32 @@ page = {
 s = _("<p>Here are the weblogs that have updated in the last 24 hours.  Is yours in there?  ;-)</p>")
 s += '\n<table width="80%" cellspacing="0" cellpadding="2">'
 
-updates = updatesDb.updatesDb( set )
-tbl = updates.updatesTable
+# get rid of old updates
+set.pdb.execute("DELETE FROM pycs_updates WHERE update_time < CURRENT_TIMESTAMP - INTERVAL '24 HOURS'")
 
-if len( tbl ) == 0:
+# now run through all updates and make a row for each ('1. | My blog | 2002-03-22 03:30 AM')
+nDispIndex = 1
+for update_time, how_long_ago, blog_url, blog_title in set.pdb.execute("SELECT DATE_TRUNC('minute', update_time), DATE_TRUNC('minute', CURRENT_TIMESTAMP - update_time), url, title FROM pycs_updates ORDER BY update_time DESC"):
+	# work out how long ago
+	hrs_ago, mins_ago, secs_ago = [int(x) for x in how_long_ago.split(":")]
+	# munge blog name to display properly in HTML
+	blog_title = blog_title.replace('&apos;', "'")
+	blog_title = re.sub(r'\<.*?\>', '', blog_title)
+	# display line
+	s += """
+	<tr>
+	<td>%d.</td>
+	<td><strong><a href="%s">%s</a></strong></td>
+	<td><strong>%s (%s ago)</strong></td>
+	</tr>
+	""" % ( nDispIndex, blog_url, blog_title,
+		update_time[-8:-3],
+		hrs_ago and ("%d h" % hrs_ago) or mins_ago and ("%d m" % mins_ago) or ("%d s" % secs_ago),
+#		time.strftime( '%Y-%m-%d %I:%M %p', time.localtime( u.updateTime ) )
+		)
+	nDispIndex += 1
+if nDispIndex == 1:
 	s += '<tr><td>(none)</td></tr>'
-else:
-	# Run through all updates and make a row for each ('1. | My blog | 2002-03-22 03:30 AM')
-	blogs = []
-	now = time.time()
-	for nIndex in range( len( tbl ), 0, -1 ):
-		u = tbl[nIndex - 1]
-		blogs.append( ( u.updateTime, u, nIndex - 1 ) )
-	blogs.sort()
-	blogs.reverse()
-	nDispIndex = 1
-	for blog in blogs:
-		tm, u, idx = blog
-		if ( now - u.updateTime ) > ( 24 * 3600 ):
-			# it's old - delete it
-			tbl.delete( idx )
-			continue
-		# munge blog name to display properly in HTML
-		blogName = u.blogName.replace('&apos;', "'")
-		blogName = re.sub(r'\<.*?\>', '', blogName)
-		# display line
-		s += """
-		<tr>
-		<td>%d.</td>
-		<td><strong><a href="%s">%s</a></strong></td>
-		<td><strong>%s</strong></td>
-		</tr>
-		""" % ( nDispIndex, u.blogUrl, blogName,
-			time.strftime( '%Y-%m-%d %I:%M %p', time.localtime( u.updateTime ) )
-			)
-		nDispIndex += 1
 		
 s += "</table>\n"
 s += _('<p>See also: <a href="rankings.py">most popular weblogs, ranked by page views</a>.</p>')

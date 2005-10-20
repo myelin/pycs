@@ -167,5 +167,23 @@ class DB:
             # repair damage by comment bug that inserted NULL instead of 0 for is_spam on comment posting
             self.execute("""UPDATE pycs_comments SET is_spam=0 WHERE is_spam IS NULL""")
             self.set_db_version(5)
+
+        if self.db_id < 6:
+            print "Creating pycs_updates table for weblog updates"
+            self.execute("""CREATE TABLE pycs_updates (update_time TIMESTAMP, url VARCHAR(1024), title VARCHAR(1024))""")
+            self.execute("""CREATE INDEX pycs_updates_by_time ON pycs_updates (update_time)""")
+            self.execute("""CREATE INDEX pycs_updates_url_title ON pycs_updates (url, title)""")
+
+            # fill it with data
+            print "Copying weblog update data over to pycs_updates table"
+            updates_table = self.set.db.getas('blogUpdates[updateTime:I,blogUrl:S,blogName:S]')
+            for row in updates_table:
+                self.execute("INSERT INTO pycs_updates (update_time, url, title) VALUES (%s, %s, %s)",
+                             (timeto8601(time.localtime(row.updateTime)),
+                              row.blogUrl,
+                              row.blogName,
+                              ))
+            self.set_db_version(6)
+            
         
         print "Finished updating schema"

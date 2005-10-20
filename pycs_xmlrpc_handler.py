@@ -153,7 +153,7 @@ class pycs_xmlrpc_handler( xmlrpc_handler.xmlrpc_handler ):
 				# this code here out because someone might
 				# want to profile scripts in future.
 
-				import profile
+#				import profile
 				import __main__
 				__main__.xmlFunc = lambda theBase=base, namespaces=self.namespaces, qualifiedName=qualifiedName, params=params: namespaces[theBase].call( qualifiedName[1:], params )
 				exec 'import __main__; __main__.xmlFuncRet = __main__.xmlFunc()'

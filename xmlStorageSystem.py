@@ -210,9 +210,6 @@ class xmlStorageSystem_handler:
 		u.lastupstream = self.set.GetTime()
 		self.set.Commit()
 
-		# update 'updates' page
-		self.set.AddUpdate( email )
-		
 		if failure is None:
 			message = _('%d files have been saved for you, %s') % (nFilesSaved, u.name)
 		else:
