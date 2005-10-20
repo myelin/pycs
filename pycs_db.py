@@ -184,6 +184,11 @@ class DB:
                               row.blogName,
                               ))
             self.set_db_version(6)
-            
+
+        if self.db_id < 7:
+            print "Creating pycs_spam_commenters table"
+            self.execute("""CREATE TABLE pycs_spam_commenters (name VARCHAR(1024))""")
+            self.execute("""CREATE INDEX pycs_spam_commenters_name ON pycs_spam_commenters (name)""")
+            self.set_db_version(7)
         
         print "Finished updating schema"

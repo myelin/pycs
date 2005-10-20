@@ -66,7 +66,7 @@ add = s.append
 add("""<pre><b>comment spam administration</b>\n""")
 
 def menu():
-	add('\n(<a href="spam.py">main</a> | <a href="spam.py?op=blanks">find blank comments</a> | <a href="spam.py?op=words">word analysis</a> | <a href="spam.py?op=search">search</a> | <a href="spam.py?op=checkall">check all against blacklist</a>)\n\n')
+	add('\n(<a href="spam.py">main</a> | <a href="spam.py?op=blanks">find blank comments</a> | <a href="spam.py?op=words">word analysis</a> | <a href="spam.py?op=search">search</a> | <a href="spam.py?op=checkall">check all against blacklist</a> | <a href="spam.py?op=showblacklist">show blacklist</a>)\n\n')
 
 def list_all_comments():
 	r = 0
@@ -77,7 +77,7 @@ def list_all_comments():
 
 def list_all_people():
 	for name,count in db.execute("SELECT postername,COUNT(id) AS ct FROM pycs_comments WHERE is_spam=0 GROUP BY postername ORDER BY ct DESC"):
-		add('  %s posted <a href="spam.py?op=personsearch&name=%s">%d comments</a>\n' % (name, urllib.quote(name), count))
+		add('  %s posted <a href="spam.py?op=personsearch&name=%s">%d comments</a> (<a href="spam.py?op=markspam&name=%s">ban</a>)\n' % (name, urllib.quote(name), count, urllib.quote(name)))
 
 def personsearch(term, showspam):
 	add("searching for %s ... " % term)
@@ -126,7 +126,13 @@ def checkall():
 			found += 1
 	now = time.time()
 	add("found %d spams in %d comments (in %.1f s)\n" % (found, tested, now - start))
-		
+
+def showblacklist():
+	add("blacklist:\n\n")
+	for name, in db.execute("SELECT name FROM pycs_spam_commenters ORDER BY name"):
+		add("name: %s\n" % name)
+	add("\nthat's all.\n")
+	
 def main():
 	count, = db.fetchone("SELECT COUNT(*) FROM pycs_comments")
 	spamcount, = db.fetchone("SELECT COUNT(*) FROM pycs_comments WHERE is_spam>0")
@@ -140,7 +146,10 @@ def main():
 	if op == 'personsearch':
 		personsearch(query['name'], showspam)
 	elif op == 'markspam':
-		db.execute("UPDATE pycs_comments SET is_spam=1 WHERE postername=%s", (query['name'],))
+		name = query['name'].strip()
+		db.execute("DELETE FROM pycs_spam_commenters WHERE name=%s", (name,))
+		db.execute("INSERT INTO pycs_spam_commenters (name) VALUES (%s)", (name,))
+		db.execute("UPDATE pycs_comments SET is_spam=1 WHERE postername=%s", (name,))
 		add("all marked as spam from %s\n" % util.esc(query['name']))
 	elif op == 'blanks':
 		count, = db.fetchone("SELECT COUNT(*) FROM pycs_comments WHERE commenttext=''")
@@ -158,6 +167,8 @@ def main():
 		db.execute("UPDATE pycs_comments SET is_spam=%d WHERE id=%d", (int(query['spam']), int(query['id'])))
 	elif op == 'checkall':
 		checkall()
+	elif op == 'showblacklist':
+		showblacklist()
 	else:
 		list_all_people()
 
