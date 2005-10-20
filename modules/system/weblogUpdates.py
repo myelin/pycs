@@ -44,7 +44,7 @@ set.pdb.execute("DELETE FROM pycs_updates WHERE update_time < CURRENT_TIMESTAMP 
 
 # now run through all updates and make a row for each ('1. | My blog | 2002-03-22 03:30 AM')
 nDispIndex = 1
-for update_time, how_long_ago, blog_url, blog_title in set.pdb.execute("SELECT DATE_TRUNC('minute', update_time), DATE_TRUNC('minute', CURRENT_TIMESTAMP - update_time), url, title FROM pycs_updates ORDER BY update_time DESC"):
+for update_time, how_long_ago, blog_url, blog_title in set.pdb.execute("SELECT DATE_TRUNC('minute', update_time), DATE_TRUNC('second', CURRENT_TIMESTAMP - update_time), url, title FROM pycs_updates ORDER BY update_time DESC"):
 	# work out how long ago
 	hrs_ago, mins_ago, secs_ago = [int(x) for x in how_long_ago.split(":")]
 	# munge blog name to display properly in HTML
