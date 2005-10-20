@@ -66,10 +66,18 @@ def save_comment():
 	if not cmttext:
 		print "Didn't add blank comment"
 		formatter.note = _("I can't add a blank comment!  Try again, with a real comment this time.")
-	else:
-		set.pdb.execute("INSERT INTO pycs_comments (id, usernum, postid, postlink, postername, posteremail, posterurl, commenttext, commentdate, is_spam) VALUES (NEXTVAL('pycs_comments_id_seq'), %s, %s, %s, %s, %s, %s, %s, NOW(), 0)", (usernum, postid, form.get('link', ''), formatter.storedName, formatter.storedEmail, formatter.storedUrl, cmttext, ))
-		print "Added comment to usernum %d postid %s by %s, %d bytes" % (usernum, `postid`, `formatter.storedName`, len(cmttext))
-		formatter.note = _("New comment added - thanks for participating!")
+		return
+
+	# check for obvious spam
+	for name, in set.pdb.execute("SELECT name FROM pycs_spam_commenters WHERE name=%s",
+				     (formatter.storedName.strip(),)):
+		formatter.note = _("I'm sorry, I have received too much spam from you.")
+		return
+
+	# all good - save comment
+	set.pdb.execute("INSERT INTO pycs_comments (id, usernum, postid, postlink, postername, posteremail, posterurl, commenttext, commentdate, is_spam) VALUES (NEXTVAL('pycs_comments_id_seq'), %s, %s, %s, %s, %s, %s, %s, NOW(), 0)", (usernum, postid, form.get('link', ''), formatter.storedName, formatter.storedEmail, formatter.storedUrl, cmttext, ))
+	print "Added comment to usernum %d postid %s by %s, %d bytes" % (usernum, `postid`, `formatter.storedName`, len(cmttext))
+	formatter.note = _("New comment added - thanks for participating!")
 
 #####################################################
 

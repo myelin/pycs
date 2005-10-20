@@ -76,13 +76,19 @@ def list_all_comments():
 	add("(%d rows)\n" % r)
 
 def list_all_people():
+	whitelist = dict([(name,1) for name, in db.execute("SELECT name FROM pycs_good_commenters")])
+	blacklist = dict([(name,1) for name, in db.execute("SELECT name FROM pycs_spam_commenters")])
+	
 	for name,count in db.execute("SELECT postername,COUNT(id) AS ct FROM pycs_comments WHERE is_spam=0 GROUP BY postername ORDER BY ct DESC"):
-		add('  %s posted <a href="spam.py?op=personsearch&name=%s">%d comments</a> (<a href="spam.py?op=markspam&name=%s">ban</a>)\n' % (name, urllib.quote(name), count, urllib.quote(name)))
+		if whitelist.has_key(name.strip()): continue
+		dispname = name
+		if blacklist.has_key(name.strip()): dispname = '<b>%s</b>' % dispname
+		add('  %s posted <a href="spam.py?op=personsearch&name=%s">%d comments</a> (<a href="spam.py?op=markspam&name=%s">ban</a> | <a href="spam.py?op=whitelist&name=%s">good</a>)\n' % (dispname, urllib.quote(name), count, urllib.quote(name), urllib.quote(name)))
 
 def personsearch(term, showspam):
 	add("searching for %s ... " % term)
 	showsp_msg = showspam and "don't " or ""
-	add('(<a href="spam.py?op=markspam&name=%s">mark all as spam</a> | <a href="spam.py?op=personsearch&name=%s&showspam=%d">%sshow spam from this person</a>)\n\n' % (urllib.quote(term), urllib.quote(term), (not showspam and 1 or 0), showsp_msg))
+	add('(<a href="spam.py?op=markspam&name=%s">mark all as spam</a> | <a href="spam.py?op=personsearch&name=%s&showspam=%d">%sshow spam from this person</a> | <a href="spam.py?op=whitelist&name=%s">whitelist this person</a>)\n\n' % (urllib.quote(term), urllib.quote(term), (not showspam and 1 or 0), showsp_msg, urllib.quote(term)))
 	search("postername=%s", (term,), showspam=showspam)
 
 def search(where, sqlargs, showspam=0):
@@ -132,6 +138,17 @@ def showblacklist():
 	for name, in db.execute("SELECT name FROM pycs_spam_commenters ORDER BY name"):
 		add("name: %s\n" % name)
 	add("\nthat's all.\n")
+
+def whitelist(name):
+	name = name.strip()
+	add("whitelisting '%s'\n" % name)
+	db.execute("DELETE FROM pycs_good_commenters WHERE name=%s", (name,))
+	db.execute("DELETE FROM pycs_spam_commenters WHERE name=%s", (name,))
+	db.execute("INSERT INTO pycs_good_commenters (name) VALUES (%s)", (name,))
+	add("done\n\nwhitelist so far:\n")
+
+	for name, in db.execute("SELECT name FROM pycs_good_commenters ORDER BY name"):
+		add("- %s\n" % name)
 	
 def main():
 	count, = db.fetchone("SELECT COUNT(*) FROM pycs_comments")
@@ -148,6 +165,7 @@ def main():
 	elif op == 'markspam':
 		name = query['name'].strip()
 		db.execute("DELETE FROM pycs_spam_commenters WHERE name=%s", (name,))
+		db.execute("DELETE FROM pycs_good_commenters WHERE name=%s", (name,))
 		db.execute("INSERT INTO pycs_spam_commenters (name) VALUES (%s)", (name,))
 		db.execute("UPDATE pycs_comments SET is_spam=1 WHERE postername=%s", (name,))
 		add("all marked as spam from %s\n" % util.esc(query['name']))
@@ -169,6 +187,8 @@ def main():
 		checkall()
 	elif op == 'showblacklist':
 		showblacklist()
+	elif op == 'whitelist':
+		whitelist(query['name'])
 	else:
 		list_all_people()
 

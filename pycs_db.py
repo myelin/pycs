@@ -190,5 +190,10 @@ class DB:
             self.execute("""CREATE TABLE pycs_spam_commenters (name VARCHAR(1024))""")
             self.execute("""CREATE INDEX pycs_spam_commenters_name ON pycs_spam_commenters (name)""")
             self.set_db_version(7)
+
+        if self.db_id < 8:
+            self.execute("""CREATE TABLE pycs_good_commenters (name VARCHAR(1024))""")
+            self.execute("""CREATE INDEX pycs_good_commenters_name ON pycs_good_commenters (name)""")
+            self.set_db_version(8)
         
         print "Finished updating schema"
