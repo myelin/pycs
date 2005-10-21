@@ -195,5 +195,10 @@ class DB:
             self.execute("""CREATE TABLE pycs_good_commenters (name VARCHAR(1024))""")
             self.execute("""CREATE INDEX pycs_good_commenters_name ON pycs_good_commenters (name)""")
             self.set_db_version(8)
+
+        if self.db_id < 9:
+            print "Indexing poster names in comments table"
+            self.execute("""CREATE INDEX pycs_comments_postername ON pycs_comments (postername)""")
+            self.set_db_version(9)
         
         print "Finished updating schema"

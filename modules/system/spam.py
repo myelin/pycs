@@ -151,9 +151,9 @@ def whitelist(name):
 		add("- %s\n" % name)
 	
 def main():
-	count, = db.fetchone("SELECT COUNT(*) FROM pycs_comments")
-	spamcount, = db.fetchone("SELECT COUNT(*) FROM pycs_comments WHERE is_spam>0")
-	add("total: %d comments, %d marked as spam\n" % (count, spamcount))
+#	count, = db.fetchone("SELECT COUNT(*) FROM pycs_comments")
+#	spamcount, = db.fetchone("SELECT COUNT(*) FROM pycs_comments WHERE is_spam>0")
+#	add("total: %d comments, %d marked as spam\n" % (count, spamcount))
 
 	menu()
 
@@ -163,10 +163,11 @@ def main():
 	if op == 'personsearch':
 		personsearch(query['name'], showspam)
 	elif op == 'markspam':
-		name = query['name'].strip()
-		db.execute("DELETE FROM pycs_spam_commenters WHERE name=%s", (name,))
-		db.execute("DELETE FROM pycs_good_commenters WHERE name=%s", (name,))
-		db.execute("INSERT INTO pycs_spam_commenters (name) VALUES (%s)", (name,))
+		name = query['name']
+		spamname = name.strip()
+		db.execute("DELETE FROM pycs_spam_commenters WHERE name=%s", (spamname,))
+		db.execute("DELETE FROM pycs_good_commenters WHERE name=%s", (spamname,))
+		db.execute("INSERT INTO pycs_spam_commenters (name) VALUES (%s)", (spamname,))
 		db.execute("UPDATE pycs_comments SET is_spam=1 WHERE postername=%s", (name,))
 		add("all marked as spam from %s\n" % util.esc(query['name']))
 	elif op == 'blanks':
