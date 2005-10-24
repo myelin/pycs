@@ -46,6 +46,12 @@ bad_words = [re.compile(x, re.I) for x in [
     "dvd.netleih.de",
     "intimplace.com",
     "quality-generic.com",
+    "loan-consolidation",
+    "bestcasinos",
+    "poker",
+    "atlantawebpackages",
+    "pacific.poker",
+    
     
     ]]
 

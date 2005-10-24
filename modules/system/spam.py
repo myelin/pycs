@@ -124,7 +124,7 @@ def checkall():
 	from comments.spam import is_spam
 	found = tested = 0
 	start = time.time()
-	for cid,cmt,name,link in db.execute("SELECT id,commenttext,postername,posterurl FROM pycs_comments WHERE is_spam=0 AND commentdate > NOW() - interval '3000 day'"):
+	for cid,cmt,name,link in db.execute("SELECT id,commenttext,postername,posterurl FROM pycs_comments WHERE is_spam=0 AND commentdate > NOW() - interval '30 day'"):
 		tested += 1
 		if is_spam(cmt, name, link):
 			add("spam: %d, %s\n" % (cid, util.esc(cmt[:100])))

@@ -200,5 +200,10 @@ class DB:
             print "Indexing poster names in comments table"
             self.execute("""CREATE INDEX pycs_comments_postername ON pycs_comments (postername)""")
             self.set_db_version(9)
+
+# not doing this because we don't get the IP address from the front-end proxy anyway
+#        if self.db_id < 10:
+#            print "Adding IP address field to comments table"
+#            self.execute("""ALTER TABLE pycs_comments ADD COLUMN posterip VARCHAR(15)""")
         
         print "Finished updating schema"
