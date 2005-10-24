@@ -66,7 +66,7 @@ add = s.append
 add("""<pre><b>comment spam administration</b>\n""")
 
 def menu():
-	add('\n(<a href="spam.py">main</a> | <a href="spam.py?op=blanks">find blank comments</a> | <a href="spam.py?op=words">word analysis</a> | <a href="spam.py?op=search">search</a> | <a href="spam.py?op=checkall">check all against blacklist</a> | <a href="spam.py?op=showblacklist">show blacklist</a>)\n\n')
+	add('\n(<a href="spam.py">main</a> | <a href="spam.py?op=blanks">find blank comments</a> | <a href="spam.py?op=words">word analysis</a> | <a href="spam.py?op=search">search</a> | <a href="spam.py?op=checkall">check all against bad word list</a> | <a href="spam.py?op=showblacklist">show blacklist</a>)\n\n')
 
 def list_all_comments():
 	r = 0
@@ -120,7 +120,7 @@ def analyse_words():
 		add("<li>%d - %s</li>" % (count, link))
 			
 def checkall():
-	add("checking ALL posts against current blacklist\n")
+	add("checking ALL posts against current bad word list\n")
 	from comments.spam import is_spam
 	found = tested = 0
 	start = time.time()
