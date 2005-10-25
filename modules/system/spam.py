@@ -36,7 +36,7 @@ import base64
 import time
 import strptime
 import html_cleaner
-import comments
+import comments, comments.spam
 import md5
 import BeautifulSoup
 db = set.pdb
@@ -68,6 +68,13 @@ add("""<pre><b>comment spam administration</b>\n""")
 def menu():
 	add('\n(<a href="spam.py">main</a> | <a href="spam.py?op=blanks">find blank comments</a> | <a href="spam.py?op=words">word analysis</a> | <a href="spam.py?op=search">search</a> | <a href="spam.py?op=checkall">check all against bad word list</a> | <a href="spam.py?op=showblacklist">show blacklist</a>)\n\n')
 
+def markspam(name):
+	spamname = name.strip()
+	db.execute("DELETE FROM pycs_spam_commenters WHERE name=%s", (spamname,))
+	db.execute("DELETE FROM pycs_good_commenters WHERE name=%s", (spamname,))
+	db.execute("INSERT INTO pycs_spam_commenters (name) VALUES (%s)", (spamname,))
+	db.execute("UPDATE pycs_comments SET is_spam=1 WHERE postername=%s", (name,))
+
 def list_all_comments():
 	r = 0
 	for usernum,postid,count in db.execute("SELECT usernum,postid,COUNT(id) FROM pycs_comments GROUP BY usernum,postid"):
@@ -78,12 +85,20 @@ def list_all_comments():
 def list_all_people():
 	whitelist = dict([(name,1) for name, in db.execute("SELECT name FROM pycs_good_commenters")])
 	blacklist = dict([(name,1) for name, in db.execute("SELECT name FROM pycs_spam_commenters")])
-	
+
+	n = 0
 	for name,count in db.execute("SELECT postername,COUNT(id) AS ct FROM pycs_comments WHERE is_spam=0 GROUP BY postername ORDER BY ct DESC"):
 		if whitelist.has_key(name.strip()): continue
 		dispname = name
-		if blacklist.has_key(name.strip()): dispname = '<b>%s</b>' % dispname
+		bad = 0
+		if blacklist.has_key(name.strip()): bad = 1; dispname = '<b>%s</b>' % dispname
+		if comments.spam.is_spam(name): bad = 1; dispname = '<i>%s</i>' % dispname
+		if bad:
+			markspam(name)
+			dispname += " BANNED"
 		add('  %s posted <a href="spam.py?op=personsearch&name=%s">%d comments</a> (<a href="spam.py?op=markspam&name=%s">ban</a> | <a href="spam.py?op=whitelist&name=%s">good</a>)\n' % (dispname, urllib.quote(name), count, urllib.quote(name), urllib.quote(name)))
+		n += 1
+		if n > 100: break
 
 def personsearch(term, showspam):
 	add("searching for %s ... " % term)
@@ -164,11 +179,7 @@ def main():
 		personsearch(query['name'], showspam)
 	elif op == 'markspam':
 		name = query['name']
-		spamname = name.strip()
-		db.execute("DELETE FROM pycs_spam_commenters WHERE name=%s", (spamname,))
-		db.execute("DELETE FROM pycs_good_commenters WHERE name=%s", (spamname,))
-		db.execute("INSERT INTO pycs_spam_commenters (name) VALUES (%s)", (spamname,))
-		db.execute("UPDATE pycs_comments SET is_spam=1 WHERE postername=%s", (name,))
+		markspam(name)
 		add("all marked as spam from %s\n" % util.esc(query['name']))
 	elif op == 'blanks':
 		count, = db.fetchone("SELECT COUNT(*) FROM pycs_comments WHERE commenttext=''")
