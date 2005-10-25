@@ -36,7 +36,7 @@ import base64
 import time
 import strptime
 import html_cleaner
-import comments
+import comments, comments.spam
 import md5
 import pycs_settings
 
@@ -72,6 +72,11 @@ def save_comment():
 	for name, in set.pdb.execute("SELECT name FROM pycs_spam_commenters WHERE name=%s",
 				     (formatter.storedName.strip(),)):
 		formatter.note = _("I'm sorry, I have received too much spam from you.")
+		return
+
+	# and using the blacklist ...
+	if comments.spam.is_spam(formatter.storedName, formatter.storedUrl, cmttext):
+		formatter.note = _("I'm sorry, that looks like spam.")
 		return
 
 	# all good - save comment
