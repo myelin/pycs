@@ -131,6 +131,7 @@ class pycsAdmin_handler:
 			('renumber_all_comments', 'Moves all comments for a usernum to another usernum'),
 			('summarize_comments', 'Summarises comment counts and content for a usernum'),
 			('email', 'Set email address for usernum' ),
+			('username', 'Set name for usernum' ),
 			):
 			self.commands[name] = [ getattr(self, name), desc ]
 		
@@ -414,6 +415,20 @@ class pycsAdmin_handler:
 				'message': 'User %s not found' % params[1],
 				}
 		user.email = params[1]
+		self.set.Commit()
+		return done_msg()
+
+	def username( self, params ):
+		if len(params) != 2:
+			return param_err(2, args="usernum, name")
+		try:
+			user = self.set.User( params[0] )
+		except:
+			return {
+				'flError': xmlrpclib.True,
+				'message': 'User %s not found' % params[1],
+				}
+		user.name = params[1]
 		self.set.Commit()
 		return done_msg()
 
