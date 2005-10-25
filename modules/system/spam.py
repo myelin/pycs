@@ -68,11 +68,12 @@ add("""<pre><b>comment spam administration</b>\n""")
 def menu():
 	add('\n(<a href="spam.py">main</a> | <a href="spam.py?op=blanks">find blank comments</a> | <a href="spam.py?op=words">word analysis</a> | <a href="spam.py?op=search">search</a> | <a href="spam.py?op=checkall">check all against bad word list</a> | <a href="spam.py?op=showblacklist">show blacklist</a>)\n\n')
 
-def markspam(name):
+def markspam(name, mark=1):
 	spamname = name.strip()
-	db.execute("DELETE FROM pycs_spam_commenters WHERE name=%s", (spamname,))
-	db.execute("DELETE FROM pycs_good_commenters WHERE name=%s", (spamname,))
-	db.execute("INSERT INTO pycs_spam_commenters (name) VALUES (%s)", (spamname,))
+	if mark:
+		db.execute("DELETE FROM pycs_good_commenters WHERE name=%s", (spamname,))
+		db.execute("DELETE FROM pycs_spam_commenters WHERE name=%s", (spamname,))
+		db.execute("INSERT INTO pycs_spam_commenters (name) VALUES (%s)", (spamname,))
 	db.execute("UPDATE pycs_comments SET is_spam=1 WHERE postername=%s", (name,))
 
 def list_all_comments():
@@ -94,11 +95,13 @@ def list_all_people():
 		if blacklist.has_key(name.strip()): bad = 1; dispname = '<b>%s</b>' % dispname
 		if comments.spam.is_spam(name): bad = 1; dispname = '<i>%s</i>' % dispname
 		if bad:
-			markspam(name)
+			markspam(name, mark=0)
 			dispname += " BANNED"
 		add('  %s posted <a href="spam.py?op=personsearch&name=%s">%d comments</a> (<a href="spam.py?op=markspam&name=%s">ban</a> | <a href="spam.py?op=whitelist&name=%s">good</a>)\n' % (dispname, urllib.quote(name), count, urllib.quote(name), urllib.quote(name)))
 		n += 1
-		if n > 100: break
+#		if n > 100: break
+	add("\ntotal: %d\n" % n)
+   
 
 def personsearch(term, showspam):
 	add("searching for %s ... " % term)

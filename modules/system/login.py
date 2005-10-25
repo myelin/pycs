@@ -64,6 +64,8 @@ if cookies.has_key( 'userInfo' ):
 	s += _("user already logged in: ") + user.usernum
 	s += "<br>"
 
+return_to = query.get("return", "")
+
 # Have we been POSTed to?
 if form.has_key('email') and form.has_key('password'):
 
@@ -99,7 +101,7 @@ if not fLoggedIn:
 	<p>%s</p>
 	
 	<table align="center" width="100%%" cellspacing="2" cellpadding="2">
-	<form method="post" action="login.py">
+	<form method="post" action="login.py?return=%s">
 	<table>
 		<tr>
 			<td>%s</td>
@@ -117,12 +119,15 @@ if not fLoggedIn:
 	</table>
 	
 	""" % (	_("Enter your e-mail address and your password to log in. If you have more than one weblog hosted here, make sure you enter the e-mail address for the right blog."),
+		return_to,
 		_("E-mail address"),
 		_("Password"),
 		_("Log in"),
 	)
 else:
 	s += _("""<p>Now you should see 'delete' buttons next to comments for <a href="%s">your weblog</a>.</p>""") % ( set.UserFolder( user.usernum ), )
+	if return_to:
+		s += _("""<p><a href="%s">Click here to return to the page you came from</a>.</p>""") % return_to
 
 
 
