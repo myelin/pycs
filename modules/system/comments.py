@@ -208,7 +208,7 @@ if query.has_key('c'):
 		"""
 		
 	else:
-		s = "unknown 'c' value: %s ..." % ( html_munge( c ), )
+		s = "unknown 'c' value: %s ..." % ( cgi.escape( c ), )
 
 elif not query.has_key('u'):
 	s = """<p>no usernum supplied; the comment link bringing you to this page is broken!</p>"""

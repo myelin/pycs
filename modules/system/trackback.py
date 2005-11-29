@@ -163,7 +163,7 @@ if query.has_key('c'):
 		"""
 		
 	else:
-		s = "unknown 'c' value: %s ..." % ( html_munge( c ), )
+		s = "unknown 'c' value: %s ..." % ( cgi.escape( c ), )
 
 else:	
 

@@ -333,20 +333,11 @@ class Settings:
 
 	def FindUserByEmail(self, email, password):
 		# Look for user with that address
-		vw = self.users.select({ 'email': email })
-		
-		# If we got a blank view, the user doesn't exist
-		if len(vw) == 0:
+		r = self.pdb.fetchone("SELECT usernum FROM pycs_users WHERE email=%s", (email,))
+		if not r:
 			raise NoSuchUser
-		
-		# Get the user row (there should only be one)
-		u = User(self, vw[0])
-		
-		if u.password != password:
-			raise PasswordIncorrect
 
-		return u
-		
+		return self.FindUser(r[0], password)
 
 	def NewUser(self, email, password, name):
 		# Make sure we're not full already
