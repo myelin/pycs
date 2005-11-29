@@ -10,29 +10,31 @@ STANDARDDATEFORMAT = '%Y-%m-%d %H:%M:%S'
 
 class comment:
 
-	def __init__( self, cmt, iCmt ):
+	def __init__( self, tid, usernum, postid, name, url, title, date, excerpt ):
+
+		self.tid = tid
+		self.usernum = usernum
+		self.postid = postid
+
+		self.tbname = name
+		self.tburl = url
 		
-		self.cmt = cmt
-		
-		# index into the 'notes' subtable for this comment (used when deleting)
-		self.iCmt = iCmt
-		
-		if cmt.name == '':
+		if name == '':
 			self.name = 'an anonymous blog'
 		else:
-			self.name = cmt.name
-		if cmt.url in [ '', 'http://' ]:
+			self.name = name
+		if url in [ '', 'http://' ]:
 			self.nameString = '<span class="quietlink">%s</span>' % ( cgi.escape( self.name ), )
 		else:
-			self.nameString = '<a href="%s" class="quietlink">%s</a>' % ( pycs_http_util.MungeHTML( cmt.url ), cgi.escape( self.name ) )
-		if cmt.title == '':
+			self.nameString = '<a href="%s" class="quietlink">%s</a>' % ( pycs_http_util.MungeHTML( url ), cgi.escape( self.name ) )
+		if title == '':
 			self.titleString = 'an untitled blog'
 		else:
-			self.titleString = cmt.title
-		if cmt.date == '':
+			self.titleString = title
+		if date == '':
 			self.dateString = ''
 		else:
-			self.dateString = time.strftime( _(' at %I:%M:%S %p on %B %d, %Y'), strptime.strptime( cmt.date, STANDARDDATEFORMAT ) )
+			self.dateString = date.strftime( _(' at %I:%M:%S %p on %B %d, %Y') )
 		
 		self.commentFooter = "%s%s" % (
 			self.nameString,
@@ -44,9 +46,9 @@ class comment:
 			re.sub(
 				r'[^"](http://[^\r\n \"\<]+)[^"]',
 				r'<a href="\1">\1</a>',
-				cgi.escape( cmt.excerpt ),
+				cgi.escape( excerpt ),
 			),
 			"\n", "<br />"
 		)
 		
-		self.cleanedUpComment = html_cleaner.cleanHtml( cmt.excerpt )
+		self.cleanedUpComment = html_cleaner.cleanHtml( excerpt )

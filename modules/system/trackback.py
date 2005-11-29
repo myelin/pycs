@@ -119,6 +119,7 @@ elif format == 'html':
 request['Content-Type'] = formatter.contentType()
 
 formatter.u = query['u']
+usernum = int(formatter.u)
 if query.has_key('c'):
 
 	# We are being called to supply the number of trackbacks; have to
@@ -126,7 +127,7 @@ if query.has_key('c'):
 
 	c = query['c']
 	if c == 'counts':
-		rows = [row for row in set.pdb.execute("SELECT postid, COUNT(id) FROM pycs_trackbacks WHERE usernum=%d GROUP BY postid", (int(formatter.u),))]
+		rows = [row for row in set.pdb.execute("SELECT postid, COUNT(id) FROM pycs_trackbacks WHERE usernum=%d GROUP BY postid", (usernum,))]
 		if rows:
 			paragraphs, counts = zip(*rows)
 		else:
@@ -178,31 +179,6 @@ else:
 		)
 
 	s = formatter.header()
-
-	# a full feed lists all trackbacks, a paragraph feed only trackbacks to
-	# one paragraph
-	if fullfeed:
-		vw = trackbackTable.select( { 'user': formatter.u } )
-	else:
-		vw = trackbackTable.select( { 'user': formatter.u, 'paragraph': formatter.p } )
-	if len(vw) == 0:
-		# Never heard of that post or that user, return empty list
-		notes = None
-		nComments = 0
-	else:
-		# Got it - grab the 'notes' view or construct a list of
-		# (note, paragraph) tuples
-		#print "(existing post)"
-		if fullfeed:
-			notes = []
-			nComments = 0
-			for p in vw:
-				for n in p.notes:
-					notes.append( (n, p) )
-				nComments += len(p.notes)
-		else:
-			notes = vw[0].notes
-			nComments = len(notes)
 
 	# some trackback client (e.g. MovableType) send ping using GET method
 	if request.command.lower() in ('put', 'post') or (
@@ -295,25 +271,27 @@ else:
 	
 	# Display trackback table			
 
-	if notes:
-		if fullfeed:
-			# fullfeeds are sorted by date in reverse (newest
-			# note first)
-			notes.sort(lambda a,b: -1*cmp(a[0].date,b[0].date))
-			if fullfeed < 3:
-				now = time.strftime( "%Y-%m-%d %H:%M:%S", time.gmtime( time.time() - 14*24*3600 ) )
-				notes = filter( lambda a: a[0].date >= now, notes )
-		for iCmt in range( len( notes ) ):
-			# a fullfeed has to pass in the paragraph to the
-			# formatter, while a paragraph related feed does
-			# not
-			cmt = notes[iCmt]
-			if fullfeed:
-				cmtObj = trackbacks.comment( cmt[0], iCmt )
-				s += formatter.comment( cmtObj, paragraph=cmt[1], level=fullfeed )
-			else:
-				cmtObj = trackbacks.comment( cmt, iCmt )
-				s += formatter.comment( cmtObj )
+	# a full feed lists all trackbacks, a paragraph feed only trackbacks to
+	# one paragraph
+	sql = 'SELECT id,postid,tbname,tburl,tbtitle,tbdate,tbexcerpt FROM pycs_trackbacks WHERE usernum=%d'
+	args = [usernum]
+	if fullfeed:
+		if fullfeed < 3:
+			# only show last 2 weeks of trackbacks
+			sql += " AND (tbdate > CURRENT_TIMESTAMP - INTERVAL '14 DAYS')"
+		# fullfeeds are sorted by date in reverse (newest
+		# note first)
+		sql += " ORDER BY tbdate DESC"
+	else:
+		sql += " AND postid=%s ORDER BY tbdate"
+		args.append(formatter.p)
+
+	for tid,tpostid,tname,turl,ttitle,tdate,texcerpt in set.pdb.execute(sql, tuple(args)):
+		# a fullfeed has to pass in the paragraph to the
+		# formatter, while a paragraph related feed does
+		# not
+		cmtObj = trackbacks.comment(tid, usernum, tpostid, tname, turl, ttitle, tdate, texcerpt)
+		s += formatter.comment( cmtObj, level=fullfeed )
 
 	s += formatter.endTable()
 	

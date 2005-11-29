@@ -42,14 +42,14 @@ class formatter( rss.formatter ):
 
 		return headerString + s
 
-	def comment( self, cmt, paragraph, level ):
+	def comment( self, cmt, level ):
 		title = _("Comment by")
-		if cmt.cmt.name == '':
+		if cmt.tbname == '':
 			title += _(" an anonymous blog")
 		else:
-			title += " " + cmt.cmt.name
-		link = '%s/system/trackback.py?u=%s&amp;p=%s' % ( self.set.ServerUrl(), paragraph.user, paragraph.paragraph )
-		title += _(" for post %s") % paragraph.paragraph
+			title += " " + cmt.name
+		link = '%s/system/trackback.py?u=%s&amp;p=%s' % ( self.set.ServerUrl(), cmt.usernum, cmt.postid )
+		title += _(" for post %s") % cmt.postid
 		title += cmt.dateString
 		desc = cmt.cleanedUpComment
 		if level == 1:

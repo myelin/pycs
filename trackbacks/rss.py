@@ -48,16 +48,16 @@ class formatter( defaultFormatter.defaultFormatter ):
 	def footer( self ):
 		return footerString
 
-	def comment( self, cmt, paragraph=None, level=0 ):
+	def comment( self, cmt, level=0 ):
 		title = _("Comment by")
-		if cmt.cmt.name == '':
+		if cmt.tbname == '':
 			title += _(" an anonymous blog")
 		else:
-			title += " " + cmt.cmt.name
-		if cmt.cmt.url in [ '', 'http://' ]:
+			title += " " + cmt.name
+		if cmt.tburl in [ '', 'http://' ]:
 			link = self.set.ServerUrl()
 		else:
-			link = cmt.cmt.url
+			link = cmt.tburl
 		title += cmt.dateString
 		return """		<item>
 			<title>%s</title>
