@@ -67,12 +67,6 @@ def convertEncoding(text, src_enc, dst_enc):
 					text = escape_8bit(text)
 	return text
 
-
-# order by user & paragraph
-trackbackTable = set.db.getas(
-	'trackbacks[user:S,paragraph:S,notes[name:S,title:S,url:S,excerpt:S,date:S]]'
-	).ordered( 2 )
-
 [path, params, query, fragment] = request.split_uri()
 
 # see if someone is logged in already
@@ -132,13 +126,11 @@ if query.has_key('c'):
 
 	c = query['c']
 	if c == 'counts':
-		paragraphs = []
-		counts = []
-
-		posts = trackbackTable.select( { 'user': formatter.u } )
-		for post in posts:
-			paragraphs.append( post.paragraph )
-			counts.append( len( post.notes ) )
+		rows = [row for row in set.pdb.execute("SELECT postid, COUNT(id) FROM pycs_trackbacks WHERE usernum=%d GROUP BY postid", (int(formatter.u),))]
+		if rows:
+			paragraphs, counts = zip(*rows)
+		else:
+			paragraphs = counts = []
 		
 		s = "anTbID = [" + string.join(
 			['"%s"' % (x,) for x in paragraphs]

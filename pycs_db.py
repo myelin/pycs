@@ -102,6 +102,9 @@ class DB:
             print>>sys.stderr, "got socket.error",e.args
             self.connect()
             cur.execute(sql, args)
+        except:
+            print>>sys.stderr, "Error executing SQL %s with args %s" % (`sql`, `args`)
+            raise
         return cur
 
     def execute(self, sql, args=None):
@@ -343,7 +346,7 @@ class DB:
         # all messed up though - done without thinking enough.  i'm
         # checking this in to cvs anyway just in case someone else
         # wants to fix it up for me :-)
-        if 0 and self.db_id < 13:
+        if 0 and self.db_id < 13: # if you want to fix this, give it a new id - higher than the current max, whatever that is
             print "moving access restrictions into postgres..."
 
             self.execute("CREATE TABLE pycs_access_locations (blogid INT, locname VARCHAR(1024), regexp VARCHAR(1024), groupname VARCHAR(1024))")
@@ -384,7 +387,36 @@ class DB:
                               ))
             self.set_db_version(13)
 
-        # next db id: 14
+        if self.db_id < 14:
+            print "Moving trackbacks over to Postgres"
+            trackbacks = mkdb.getas(
+                'trackbacks[user:S,paragraph:S,notes[name:S,title:S,url:S,excerpt:S,date:S]]'
+                ).ordered( 2 )
+
+            self.execute("CREATE TABLE pycs_trackbacks (id INT PRIMARY KEY, usernum INT, postid VARCHAR(255), postlink VARCHAR(2048), tbname VARCHAR(2048), tbtitle VARCHAR(2048), tburl VARCHAR(2048), tbexcerpt TEXT, tbdate TIMESTAMP)")
+            self.execute("CREATE SEQUENCE pycs_trackbacks_id_seq")
+            self.execute("CREATE INDEX pycs_trackbacks_post_index ON pycs_trackbacks (usernum, postid, id)")
+
+            self.execute("DELETE FROM pycs_trackbacks") # in case something broke during an earlier import
+            
+            for user in trackbacks:
+                usernum = int(user.user)
+                postid = user.paragraph
+                print "\tusernum %d postid %s" % (usernum, postid)
+                for tb in user.notes:
+                    self.execute("INSERT INTO pycs_trackbacks (id, usernum, postid, tbname, tbtitle, tburl, tbexcerpt, tbdate) VALUES (NEXTVAL('pycs_trackbacks_id_seq'), %d, %s, %s, %s, %s, %s, %s)", (
+                        usernum,
+                        toutf8(postid),
+                        toutf8(tb.name),
+                        toutf8(tb.title),
+                        toutf8(tb.url),
+                        toutf8(tb.excerpt),
+                        pyto8601(tb.date, has_am=0),
+                        ))
+            self.set_db_version(14)
+
+        # next db id: 15
+
 
 # not doing this because we don't get the IP address from the front-end proxy anyway
 #        if self.db_id < XXX:
