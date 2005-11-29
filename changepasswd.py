@@ -86,7 +86,7 @@ def main():
 	
 	s = md5.md5( password ).hexdigest()
 	u.password = s
-	set.Commit()
+	u.save()
 	print 'Password changed for user %s (%s)' % ( usernum, u.email )
 
 if __name__ == '__main__':

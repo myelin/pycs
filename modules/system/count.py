@@ -45,7 +45,7 @@ if query.has_key('usernum'):
 
 		user.hitstoday += 1
 		user.hitsalltime += 1
-		set.Commit()
+		user.save()
 
 		group = 'default'
 		if query.has_key('group'):

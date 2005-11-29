@@ -30,6 +30,7 @@ if ROOTDIR == '{{PRE' + 'FIX}}':
 CONFDIR = os.path.join( ROOTDIR, 'etc/pycs' )
 if not os.path.isdir(CONFDIR): CONFDIR=os.path.normpath('.')
 PYCS_CONF = first_of(os.path.join( CONFDIR, "pycs.conf" ), os.path.join(CONFDIR, 'pycs.conf.default'))
+print "pycs.conf: %s" % PYCS_CONF
 REWRITE_CONF = first_of(os.path.join(CONFDIR, "rewrite.conf"), os.path.join(CONFDIR, "rewrite.conf.default"))
 
 # Read-only stuff

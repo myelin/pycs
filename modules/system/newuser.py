@@ -112,6 +112,7 @@ try:
 			s += "<p>Creating your account ..."
 			u = set.NewUser(email, pwHash, name)
 			s += " done!</p>"
+			print "created user, now back in newuser.py."
 			show_urls(u)
 except Exception, e:
 	if e is stop:

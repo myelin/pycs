@@ -46,7 +46,6 @@ set.pdb.execute("DELETE FROM pycs_updates WHERE update_time < CURRENT_TIMESTAMP 
 nDispIndex = 1
 for update_time, how_long_ago, blog_url, blog_title in set.pdb.execute("SELECT DATE_TRUNC('minute', update_time), DATE_TRUNC('second', CURRENT_TIMESTAMP - update_time), url, title FROM pycs_updates ORDER BY update_time DESC"):
 	# work out how long ago
-	hrs_ago, mins_ago, secs_ago = [int(x) for x in how_long_ago.split(":")]
 	# munge blog name to display properly in HTML
 	blog_title = blog_title.replace('&apos;', "'")
 	blog_title = re.sub(r'\<.*?\>', '', blog_title)
@@ -58,8 +57,8 @@ for update_time, how_long_ago, blog_url, blog_title in set.pdb.execute("SELECT D
 	<td><strong>%s (%s ago)</strong></td>
 	</tr>
 	""" % ( nDispIndex, blog_url, blog_title,
-		update_time[-8:-3],
-		hrs_ago and ("%d h" % hrs_ago) or mins_ago and ("%d m" % mins_ago) or ("%d s" % secs_ago),
+		update_time.strftime("%I:%m %p"),
+		int(how_long_ago.hours) and ("%d h" % how_long_ago.hours) or int(how_long_ago.minutes) and ("%d m" % how_long_ago.minutes) or ("%d s" % how_long_ago.seconds),
 #		time.strftime( '%Y-%m-%d %I:%M %p', time.localtime( u.updateTime ) )
 		)
 	nDispIndex += 1

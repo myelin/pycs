@@ -51,7 +51,7 @@ if query.has_key('usernum'):
 
 	try:
 		usernum = query['usernum']
-		
+
 		user = set.User( usernum )
 		
 		s += """
@@ -61,25 +61,28 @@ if query.has_key('usernum'):
 		
 		cols = {}
 		
-		for col in set.users.structure():
-			cols[col.name] = getattr( user, col.name )
-		mirror = set.mirrored_posts.find(usernum=user.usernum)
-		if mirror == -1:
-			cols['search_index_active'] = 0
-		else:
-			cols['search_index_active'] = 1
-			cols['search_index_posts'] = len(set.mirrored_posts[mirror].posts)
-		
+		for colname, in set.pdb.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='pycs_users' ORDER BY COLUMN_NAME"):
+			cols[colname] = getattr( user, colname )
+
 		# Get rid of ones we don't want people to see
 		del cols['password']
-		del cols['serialNumber']
-		
+		del cols['serialnumber']
+
+		# this crashes sometimes: port to postgres asap
+#		mirror = set.mirrored_posts.find(usernum=user.usernum)
+#		if mirror == -1:
+#			cols['search_index_active'] = 0
+#		else:
+#			cols['search_index_active'] = 1
+#			cols['search_index_posts'] = len(set.mirrored_posts[mirror].posts)
+
 		url = set.UserFolder( usernum )
 		cols['url'] = '<a href="%s">%s</a>' % ( url, url )
-		
-		localpart, domain = string.split( cols['email'], '@' )
-		nospamemail = '%s at %s' % ( localpart, domain )
-		cols['email'] = '<a href="mailto.py?usernum=%s">%s</a>' % ( cols['usernum'], nospamemail )
+
+		if cols['email'].find("@") != -1:
+			localpart, domain = string.split( cols['email'], '@' )
+			nospamemail = '%s at %s' % ( localpart, domain )
+			cols['email'] = '<a href="mailto.py?usernum=%s">%s</a>' % ( cols['usernum'], nospamemail )
 	
 		clist = cols.keys()
 		clist.sort()
@@ -107,14 +110,8 @@ else:
 		s += '<title>%s</title>\n' % _('RSS feed of users')
 		s += '<link>%s</link>\n' % set.ServerUrl()
 		s += '<description>%s</description>\n' % _('RSS feed of all blogs and users registered on this community server')
-		liste = []
-		for user in set.users:
-			url = set.UserFolder( user.usernum )
-			liste.append((user.name, user.usernum, user.weblogTitle, url))
-		liste.reverse()
-		if len(liste) > 30:
-			liste = liste[:30]
-		for (name, usernum, weblogTitle, url) in liste:
+		for usernum,name,weblogTitle in set.pdb.execute("SELECT usernum,name,weblogTitle FROM pycs_users ORDER BY usernum DESC LIMIT 30"):
+			url = set.UserFolder(usernum)
 			s += '<item>\n'
 			s += '<title>%s (%d)</title>\n' % (
 				esc(name),
@@ -129,24 +126,16 @@ else:
 		s += _('<p>This is a list of all users registered on this server:</p>')
 		s += '<p><a href="users.py?format=rss">RSS</a> | <a href="users.py?sort=usernum">%s</a> | <a href="users.py?sort=space">%s</a></p>' % (_('sort by usernum'), _('sort by space used'))
 		s += '<ul>'
-		users = []
-		for user in set.users:
-			url = set.UserFolder( user.usernum )
-			if sort_spec == 'usernum':
-				sort_key = int(user.usernum)
-			elif sort_spec == 'space':
-				sort_key = user.bytesused
-			user_info = (
-				int(user.usernum),
-				url,
-				user.name,
-				user.weblogTitle,
-				set.SpaceString(user.bytesused),
-			)
-			users.append((sort_key, user_info))
-		users.sort()
-		for user in users:
-			s += '<li><strong>%d</strong> <a href="%s">%s</a> - %s (%s)</li>' % user[1]
+		if sort_spec == 'space':
+			sort_key = "bytesused"
+		else: #sort_spec == 'usernum':
+			sort_key = "usernum"
+		for usernum,name,weblogTitle,bytesused in set.pdb.execute("SELECT usernum,name,weblogTitle,bytesused FROM pycs_users ORDER BY "+sort_key):
+			url = set.UserFolder(usernum)
+			space = set.SpaceString(bytesused)
+			
+			s += '<li><strong>%d</strong> <a href="%s">%s</a> - %s (%s)</li>' % (
+				usernum, url, name, weblogTitle, space)
 		s += '</ul>'
 
 # Dump it all out

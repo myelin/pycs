@@ -75,6 +75,7 @@ def markspam(name, mark=1):
 		db.execute("DELETE FROM pycs_spam_commenters WHERE name=%s", (spamname,))
 		db.execute("INSERT INTO pycs_spam_commenters (name) VALUES (%s)", (spamname,))
 	db.execute("UPDATE pycs_comments SET is_spam=1 WHERE postername=%s", (name,))
+	db.execute("COMMIT")
 
 def list_all_comments():
 	r = 0
@@ -149,6 +150,7 @@ def checkall():
 			db.execute("UPDATE pycs_comments SET is_spam=42 WHERE id=%d", (cid,))
 			found += 1
 	now = time.time()
+	db.execute("COMMIT")
 	add("found %d spams in %d comments (in %.1f s)\n" % (found, tested, now - start))
 
 def showblacklist():
@@ -163,6 +165,7 @@ def whitelist(name):
 	db.execute("DELETE FROM pycs_good_commenters WHERE name=%s", (name,))
 	db.execute("DELETE FROM pycs_spam_commenters WHERE name=%s", (name,))
 	db.execute("INSERT INTO pycs_good_commenters (name) VALUES (%s)", (name,))
+	db.execute("COMMIT")
 	add("done\n\nwhitelist so far:\n")
 
 	for name, in db.execute("SELECT name FROM pycs_good_commenters ORDER BY name"):
@@ -198,6 +201,7 @@ def main():
 	elif op == 'setspam':
 		add("setting spam flag for a comment...\n")
 		db.execute("UPDATE pycs_comments SET is_spam=%d WHERE id=%d", (int(query['spam']), int(query['id'])))
+		db.execute("COMMIT")
 	elif op == 'checkall':
 		checkall()
 	elif op == 'showblacklist':

@@ -31,8 +31,10 @@ import stat
 import os.path
 import md5
 import ConfigParser
+import types
 import pycs_paths
 import pycs_db
+import mx.DateTime
 
 
 class Error:
@@ -45,8 +47,64 @@ class NoSuchUser(Error):
 	pass
 
 class User:
-	pass
-
+	valid_columns = [
+		"usernum",
+		"email",
+		"password",
+		"name",
+		"weblogTitle",
+		"serialNumber",
+		"organization",
+		"flBehindFirewall",
+		"hitstoday",
+		"hitsyesterday",
+		"hitsalltime",
+		"membersince",
+		"lastping",
+		"pings",
+		"lastupstream",
+		"upstreams",
+		"lastdelete",
+		"deletes",
+		"bytesupstreamed",
+		"signons",
+		"signedon",
+		"lastsignon",
+		"lastsignoff",
+		"clientPort",
+		"disabled",
+		"alias",
+		"flManila",
+		"bytesused",
+		"stylesheet",
+		"commentsdisabled",
+		]
+	valid_columns_lookup = dict([(x.lower(), 1) for x in valid_columns])
+	def __init__(self, set, data=None):
+		if data is None: data = {}
+		self.__dict__['data'] = data
+		self.__dict__['changed_columns'] = {}
+		self.__dict__['set'] = set
+	def __getattr__(self, k):
+		d = self.__dict__['data']
+		k = k.lower()
+		if type(d) == types.DictType:
+			return d[k]
+		else:
+			return getattr(d, k)
+	def __setattr__(self, k, v):
+		k = k.lower()
+		assert (User.valid_columns_lookup.has_key(k)), ("DB column %s doesn't exist" % k)
+		d = self.__dict__['data']
+		if type(d) == types.DictType:
+			d[k] = v
+		else:
+			setattr(d, k, v)
+		self.__dict__['changed_columns'][k] = 1
+	def save(self):
+#		print "saving changed columns to db:",self.__dict__['changed_columns']
+		self.__dict__['set'].save_user_to_db(self)
+		
 # count used bytes in a path
 def counterCallback( sumf, dir, files):
 	for f in files:
@@ -60,20 +118,11 @@ def usedBytes( path ):
 
 class Settings:
 
-	def __init__(self, quiet=0, nomk=0, nopg=0, noupgrade=0, authorizer=None):
+	def __init__(self, quiet=0, nopg=0, noupgrade=0, authorizer=None):
 		self.authorizer = authorizer
 		self.rewrite_h = None
 		self.ar_h = None
 		
-		storFn = pycs_paths.DATADIR + "/settings.dat"
-		if not quiet:
-			print "reading data from",storFn
-		if nomk:
-			self.db = None
-		else:
-			import metakit
-			self.db = metakit.storage(storFn, 1)
-
 		confFn = pycs_paths.CONFDIR + "/pycs.conf"
 		try:
 			os.stat(confFn)
@@ -97,32 +146,6 @@ class Settings:
 			alias = self.aliases[user]
 			if len(alias) and alias[-1] == '/':
 				self.aliases[user] = alias[:-1]		
-
-		# User info - one row per user
-		if self.db:
-			self.users = self.db.getas(
-				"users[usernum:S,email:S,password:S,name:S,weblogTitle:S,serialNumber:S,organization:S," +
-				"flBehindFirewall:I,hitstoday:I,hitsyesterday:I,hitsalltime:I," +
-				"membersince:S,lastping:S,pings:I,lastupstream:S,upstreams:I,lastdelete:S,deletes:I,bytesupstreamed:I," +
-				"signons:I,signedon:I,lastsignon:S,lastsignoff:S,clientPort:I,disabled:I,alias:S,flManila:I,bytesused:I,stylesheet:S,commentsdisabled:I]"
-				).ordered()
-			
-			if len(self.users) == 0:
-				# Blank database - put any predefined users here
-				pass
-
-			# Metadata - only one row
-			self.meta = self.db.getas("meta[nextUsernum:I]")
-			if len(self.meta) == 0:
-				# initialize row
-				self.meta.append(nextUsernum=1)
-				self.Commit()
-			
-			# Search data
-			self.mirrored_posts = self.db.getas("mirroredPosts[usernum:S,posts[date:S,postid:S,guid:S,url:S,title:S,description:S]]").ordered()
-
-			if not quiet:
-				self.DumpData()
 
 		# Set up PostgreSQL connection
 		if not nopg:
@@ -180,6 +203,9 @@ class Settings:
 		
 		return '%04d-%02d-%02d' % (y, m, d)
 
+	def GetDbTime(self):
+		return mx.DateTime.now()
+
 	def GetTime(self):
 		(y, m, d, hh, mm, ss, wday, jday, dst) = time.localtime()
 		
@@ -225,20 +251,13 @@ class Settings:
 			else:
 				# it isn't, so add a new row to the DB
 				self.pdb.execute("INSERT INTO pycs_referrers (id, usernum, usergroup, referrer, hit_time, hit_count) VALUES (NEXTVAL('pycs_referrers_id_seq'), %d, %s, %s, NOW(), 1)", (usernum, group, referrer))
+			self.pdb.execute("COMMIT")
 	
 	def Commit(self):
 		self.db.commit()
 		
 	def DumpData(self):
-		self.DumpMeta()
 		self.DumpUsers()
-		
-	def DumpMeta(self):
-		print "Dumping metadata"
-		meta = self.meta[0]
-		st = self.meta.structure()
-		for col in st:
-			print "  %s: %s" % (col.name, getattr(meta, col.name))
 	
 	def DumpUsers(self):
 		print "Dumping user data"
@@ -264,20 +283,42 @@ class Settings:
 			return str.replace('<?xml version="1.0"?>', new, 1)
 		else:
 			return str
+
+	def save_user_to_db(self, user):
+#		print "save this user to the db"
+		d = user.__dict__['data']
+#		print d
+#		print "FIXME"
+		fields = []
+		values = []
+		for change in user.__dict__['changed_columns']:
+#			print "changed col:",change,d[change]
+			fields.append(change+'=%s')
+			values.append(d[change])
+		sql = 'UPDATE pycs_users SET ' + ", ".join(fields) + " WHERE usernum=%d"
+		values.append(d['usernum'])
+		self.pdb.execute(sql, values)
+#		print sql,values
+		self.pdb.execute("COMMIT")
 	
 	def User(self, usernum):
 	
 		"See if the user exists, and return its DB row if it does"
 
 		no = self.FormatUsernum(usernum)
-		
-		row = self.users.select({ 'usernum': self.FormatUsernum(no) })
-		
-		if len(row) == 0:
+
+		sql = "SELECT "+",".join(User.valid_columns)+" FROM pycs_users WHERE usernum=%d"
+#		print "sql:",sql
+		row = self.pdb.fetchone(sql, (int(usernum),))
+#		print "row:",row
+		if not row:
 			print "User not found (%s)!" % (no,)
 			raise NoSuchUser
 			
-		return row[0]
+		row = dict(zip([x.lower() for x in User.valid_columns], row))
+#		print "user row from db:",row
+			
+		return User(self, row)
 
 	def FindUser(self, usernum, password):
 	
@@ -299,44 +340,31 @@ class Settings:
 			raise NoSuchUser
 		
 		# Get the user row (there should only be one)
-		u = vw[0]
+		u = User(self, vw[0])
 		
 		if u.password != password:
 			raise PasswordIncorrect
-			
+
 		return u
 		
 
 	def NewUser(self, email, password, name):
-		# Prepare new row
-		user = User()
-
 		# Make sure we're not full already
 		if self.conf.has_key('maxusernum'):
-			if int(self.meta[0].nextUserNum) >= int(self.conf['maxusernum']):
-				raise "Sorry; we're full!  We can't take any more users"
-		
-		while 1:
-			# Assign a usernum and keep incrementing until we get
-			# an unused one.  Will only need to increment if the
-			# user table has been manually edited.
-			
-			user.usernum = "%07d" % (self.meta[0].nextUsernum,)
-			self.meta[0].nextUsernum += 1
-			
-			if len(self.users.select({ 'usernum': user.usernum })) == 0:
-				# We have a unique usernum - stop looking
-				break
-		
-		user.email = email
-		user.password = password
-		user.name = name
+			max_users = int(self.conf['maxusernum'])
+			current_num = int(self.pdb.fetchone("SELECT last_value FROM pycs_users_id_seq")[0])
+			if current_num >= max_users:
+				raise "Sorry; we're full!  We can't take any more users (%d so far; max %d)." % (current_num, max_users)
 
-		# Increment max usernum and add row to users
-		print "New user row =",self.users.append(user.__dict__)
-		self.Commit()
-
-		return user
+		usernum, = self.pdb.fetchone("SELECT NEXTVAL('pycs_users_id_seq')")
+		self.pdb.execute("INSERT INTO pycs_users (usernum, email, password, name) VALUES (%d, %s, %s, %s)",
+				 (usernum, pycs_db.toutf8(email), pycs_db.toutf8(password), pycs_db.toutf8(name)))
+		self.pdb.execute("COMMIT")
+		print "new user (%d) saved in database" % usernum
+		
+		# return the user row as a User object
+		return self.User(usernum)
+	
 
 	def reloadAliases(self, rewriteHandler=None):
 		# set the rewriteHandler for later access (if none is given,
@@ -354,13 +382,14 @@ class Settings:
 		# You don't need the alias rewrite rules, those are created
 		# automatically, as are the aliases settings!
 		rewriteMap = []
-		for row in self.users:
-			if row.alias:
-				usernum = self.FormatUsernum(row.usernum)
-				if row.flManila:
-					self.aliases[usernum] = "http://%s.%s" % (row.alias, self.ServerHostname())
+		for usernum,alias,flManila in self.pdb.execute("SELECT usernum,alias,flManila FROM pycs_users"):
+#		for row in self.users:
+			if alias:
+				usernum = self.FormatUsernum(usernum)
+				if flManila:
+					self.aliases[usernum] = "http://%s.%s" % (alias, self.ServerHostname())
 				else:
-					self.aliases[usernum] = "http://%s/%s" % (self.ServerHostname(), row.alias)
+					self.aliases[usernum] = "http://%s/%s" % (self.ServerHostname(), alias)
 				rewriteMap.append([
 					'automatic user ' + usernum + ' -> ' + self.aliases[usernum] + ' redirect',
 					re.compile(r'^http://[^/]+/users/' + usernum + '(.*)$'),
@@ -368,8 +397,8 @@ class Settings:
 					'R=301',
 				])
 				rewriteMap.append([
-					'automatic /' + row.alias + ' rewrite to /users/' + usernum,
-					re.compile(r'http://[^/]+/' + row.alias + r'(.*)$'),
+					'automatic /' + alias + ' rewrite to /users/' + usernum,
+					re.compile(r'http://[^/]+/' + alias + r'(.*)$'),
 					r'http://' + self.ServerHostname() + r'/users/' + usernum + r'\1',
 					'',
 				])
@@ -383,26 +412,26 @@ class Settings:
 		u = self.User(usernum)
 		u.alias = alias
 		u.flManila = flManila
-		self.Commit()
+		u.save()
 
 	def Password(self, usernum, password):
 		formattedUsernum = self.FormatUsernum(usernum)
 		u = self.User(usernum)
 		u.password = md5.md5(password).hexdigest()
-		self.Commit()
+		u.save()
 
 	def PasswordMD5(self, usernum, password_hash):
 		formattedUsernum = self.FormatUsernum(usernum)
 		u = self.User(usernum)
 		u.password = password_hash
-		self.Commit()
+		u.save()
 
 	def RecalculateUserSpace(self):
 		"re-calculate space used for all users and store in the database"
 		for user in self.users:
 			user.bytesused = self.UserSpaceUsed(user.usernum)
 			print "user %s: %d bytes used" % (user.usernum, user.bytesused)
-		self.Commit()
+			user.save()
 
 	def UserSpaceUsed( self, email ):
 		return usedBytes( self.UserLocalFolder( email ) )
@@ -438,7 +467,7 @@ class Settings:
 			u.commentsdisabled = int(value) and 1 or 0
 		else:
 			raise KeyError(option)
-		self.Commit()
+		u.save()
 			
 	def SpaceString(self, bytes):
 		if bytes < 1024:
@@ -547,3 +576,4 @@ class Settings:
 				 (pycs_db.toutf8(title), pycs_db.toutf8(url)))
 		self.pdb.execute("INSERT INTO pycs_updates (update_time, title, url) VALUES (CURRENT_TIMESTAMP, %s, %s)",
 				 (pycs_db.toutf8(title), pycs_db.toutf8(url)))
+		self.pdb.execute("COMMIT")

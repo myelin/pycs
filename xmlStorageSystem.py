@@ -34,6 +34,7 @@ import os
 import sys
 import re
 import stat
+import traceback
 
 import pycs_settings
 import pycs_paths
@@ -55,7 +56,7 @@ class xmlStorageSystem_handler:
 		
 		
 	def call( self, method, params ):
-		print "XSS method",method #,"params",params
+#		print "XSS method",method #,"params",params
 		
 		handlers = {
 			'registerUser': self.registerUser,
@@ -86,6 +87,9 @@ class xmlStorageSystem_handler:
 				return { 'flError': xmlrpclib.True,
 					'message': _("User not found"),
 				}
+			except:
+				traceback.print_exc()
+				raise
 		
 		raise Exception("xmlStorageSystem method '%s' not found" % ( method, ))
 
@@ -208,7 +212,7 @@ class xmlStorageSystem_handler:
 		except TypeError: u.bytesupstreamed = nBytesSaved
 		u.bytesused = self.set.UserSpaceUsed(email)
 		u.lastupstream = self.set.GetTime()
-		self.set.Commit()
+		u.save()
 
 		if failure is None:
 			message = _('%d files have been saved for you, %s') % (nFilesSaved, u.name)
@@ -269,7 +273,7 @@ class xmlStorageSystem_handler:
 		u.deletes += nFilesDeleted
 		u.lastdelete = self.set.GetTime()
 		u.bytesused = self.set.UserSpaceUsed(email)
-		self.set.Commit()
+		u.save()
 		
 		return {
 			'errorList': errorList,
@@ -288,16 +292,15 @@ class xmlStorageSystem_handler:
 
 		u = self.set.FindUser( email, password )
 
-		search_inf = []; flHasSearch = 0; urlSearch = ''
-		search_idx = self.set.mirrored_posts.find(usernum=u.usernum)
-		if search_idx != -1:
-			search_inf = self.set.mirrored_posts[search_idx].posts
-		if len(search_inf):
-			# the rationale here is to turn on flHasSearch if the search
-			# feature is active for this particular user.  clients should
-			# test for flCanMirrorPosts and send in a copy of their posts
-			# if it exists and is true.  then, if flHasSearch becomes true,
-			# put a search box on their pages ...
+		flHasSearch = 0; urlSearch = ''
+		if self.set.pdb.fetchone("SELECT postguid FROM pycs_mirrored_posts WHERE usernum=%d LIMIT 1", (u.usernum,)):
+			# return flHasSearch=true if the user has
+			# mirrored at least one post into the
+			# database.  clients should test for
+			# flCanMirrorPosts and send in a copy of their
+			# posts if it exists and is true.  then, if
+			# flHasSearch becomes true, put a search box
+			# on their pages.
 			flHasSearch = 1
 			urlSearch = '%s/system/search.py?u=%s' % (self.set.ServerUrl(), u.usernum)
 		
@@ -410,7 +413,7 @@ class xmlStorageSystem_handler:
 		print "userinfo", userinfo
 
 		u = self.set.FindUser( email, password )
-		print "---USER INFO---",userinfo,"------"
+#		print "---USER INFO---",userinfo,"------"
 
 		try:
 			clientPort = int(clientPort)
@@ -425,7 +428,7 @@ class xmlStorageSystem_handler:
 			u.flBehindFirewall = (userinfo['flBehindFirewall'] == xmlrpclib.True)
 			u.name = encodeUnicode(userinfo['name'], self.set.DocumentEncoding())
 		
-		now = self.set.GetTime()
+		now = str(self.set.GetDbTime())
 		
 		if u.signedon:
 			if status:
@@ -441,20 +444,20 @@ class xmlStorageSystem_handler:
 			
 		u.lastping = now
 		u.pings += 1
-		if u.membersince == '':
+		if not u.membersince:
 			u.membersince = now
-		
-		self.set.Commit()
+
+		u.save()
 			
 
-		return {
+		ret = {
 			'flError': xmlrpclib.False,
 			'cloudData': {
 				'email': u.email,
 				'name': u.name,
 				'organization': u.organization,
 				'ctFileDeletions': u.deletes,
-				'whenCreated': u.membersince,
+				'whenCreated': u.membersince and str(u.membersince) or '',
 				'ctAccesses': u.pings,
 				'serialNumber': u.serialNumber,
 				'url': self.userFolder( u.usernum ),
@@ -463,14 +466,14 @@ class xmlStorageSystem_handler:
 				'ctUpstreams': u.upstreams,
 				'ctSignons': u.signons,
 				'whenLastAccess': u.lastping,
-				'whenLastUpstream': u.lastupstream,
+				'whenLastUpstream': u.lastupstream and str(u.lastupstream) or '',
 				'port': u.clientPort,
 				'ctBytesUpstreamed': u.bytesupstreamed,
 				'userAgent': "don't know",
 				'ctBytesInUse': u.bytesused,
-				'whenLastSignOff': u.lastsignoff,
+				'whenLastSignOff': u.lastsignoff and str(u.lastsignoff) or '',
 				'messageOfTheDay': '',
-				'whenLastSignOn': u.lastsignon,
+				'whenLastSignOn': u.lastsignon and str(u.lastsignon) or '',
 				'flSignedOn': xmlrpclib.boolean( u.signedon ),
 				'usernum': u.usernum,
 				'ip': "don't know",
@@ -478,6 +481,10 @@ class xmlStorageSystem_handler:
 			'message': 'Pong!',
 			'yourUpstreamFolderUrl': self.userFolder( email ),
 		}
+
+		print "ret=",ret
+		
+		return ret
 
 
 	def mirrorPosts( self, method, params ):
@@ -490,13 +497,7 @@ class xmlStorageSystem_handler:
 		assert type(posts) == type([])
 
 		# make sure the user exists
-		self.set.FindUser( email, password )
-
-		# make sure the user has a spot in the post mirror database
-		pos = self.set.mirrored_posts.find(usernum=email)
-		if pos == -1:
-			self.set.mirrored_posts.append(usernum=email, posts=[])
-		posts_t = self.set.mirrored_posts[pos].posts
+		u = self.set.FindUser( email, password )
 
 		updateCount = 0
 		addCount = 0
@@ -507,7 +508,7 @@ class xmlStorageSystem_handler:
 			store_post = {}
 			for k in ('date',):
 				assert isinstance(post[k], xmlrpclib.DateTime)
-				post[k] = post[k].value
+				post[k] = post[k].value.encode('utf-8')
 			for k in ('date', 'postid', 'guid', 'url', 'title', 'description'):
 				assert type(post[k]) in (type(''), type(u'')), "Invalid type for parameter '%s': must be some sort of string" % k
 				if type(post[k]) == type(u''):
@@ -517,20 +518,24 @@ class xmlStorageSystem_handler:
 			# if we already have this post, remove it
 			postid = store_post['postid']
 			assert(type(postid)==type(''))
-			pos = posts_t.find(postid=postid)
-			if pos != -1:
-				updateCount += 1
-				posts_t.delete(pos)
-			else:
-				addCount += 1
+			self.set.pdb.execute("DELETE FROM pycs_mirrored_posts WHERE usernum=%d AND postid=%s",
+					     (u.usernum, postid))
 			# now add it
-			posts_t.append(store_post)
-		# all there - save
-		self.set.Commit()
+			print `post['date']`
+			self.set.pdb.execute("INSERT INTO pycs_mirrored_posts (usernum, postdate, postid, postguid, posturl, posttitle, postcontent) VALUES (%d, %s, %s, %s, %s, %s, %s)", (
+				u.usernum,
+				post['date'],
+				post['postid'],
+				post['guid'],
+				post['url'],
+				post['title'],
+				post['description'],
+				))
+		post_count, = self.set.pdb.fetchone("SELECT COUNT(*) FROM pycs_mirrored_posts WHERE usernum=%d", (u.usernum,))
 		# and tell the user it worked
 		return {'flError': xmlrpclib.False,
-			'message': _('%d posts updated and %d posts added to the database for you (usernum %s).  Now you have %d posts') % (updateCount, addCount, email, len(posts_t)),
-			'totalPostsKnown': len(posts_t),
+			'message': _('%d posts updated and %d posts added to the database for you (usernum %s).  Now you have %d posts') % (updateCount, addCount, email, post_count),
+			'totalPostsKnown': post_count,
 			'postsMirroredNow': len(posts),
 			'addedPosts': addCount,
 			'updatedPosts': updateCount,
@@ -546,41 +551,27 @@ class xmlStorageSystem_handler:
 		assert type(postids) == type([])
 
 		# make sure the user exists
-		self.set.FindUser( email, password )
+		u = self.set.FindUser( email, password )
 
-		# make sure the user has a spot in the post mirror database
-		pos = self.set.mirrored_posts.find(usernum=email)
-		if pos != -1:
-			# if user exists, delete posts
-			deleteCount = 0
-			posts_t = self.set.mirrored_posts[pos].posts
-			for postid in postids:
-				# make sure it's a string
-				assert type(postid) == type('')
-				pos = posts_t.find(postid=postid)
-				if pos != -1:
-					deleteCount += 1
-					posts_t.delete(pos)
-			# all there - save
-			self.set.Commit()
-			# and tell the user it worked
-			return {'flError': xmlrpclib.False,
-				'message': _('%d posts deleted from the database for you (usernum %s).  Now you have %d posts') % (deleteCount, email, len(posts_t)),
-				'totalPostsKnown': len(posts_t),
-				'postsDeletedNow': len(postids),
-				'deletedPosts': deleteCount,
-				}
-		else:
-			return {'flError': xmlrpclib.False,
-				'message': _("You (usernum %s) don't have any postings stored, yet.") % email,
-				'totalPostsKnown': 0,
-				'postsDeletedNow': len(postids),
-				'deletedPosts': 0,
-				}
+		# delete the posts
+		orig_count, = self.set.pdb.fetchone("SELECT COUNT(*) FROM pycs_mirrored_posts WHERE usernum=%d", (u.usernum,))
+		for postid in postids:
+			self.set.pdb.execute("DELETE FROM pycs_mirrored_posts WHERE usernum=%d AND postid=%s",
+					     (u.usernum, postid))
+		final_count, = self.set.pdb.fetchone("SELECT COUNT(*) FROM pycs_mirrored_posts WHERE usernum=%d", (u.usernum,))
+
+		# now tell the user it worked
+		return {'flError': xmlrpclib.False,
+			'message': _('%d posts deleted from the database for you (usernum %d).  Now you have %d posts') % (orig_count - final_count, u.usernum, final_count),
+			'totalPostsKnown': final_count,
+			'postsDeletedNow': len(postids),
+			'deletedPosts': orig_count - final_count,
+			}
+
+
+
 
 	# Support functions
-
-
 
 	def userFolder( self, email ):
 		return self.set.UserFolder( email )

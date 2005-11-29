@@ -81,6 +81,7 @@ def save_comment():
 
 	# all good - save comment
 	set.pdb.execute("INSERT INTO pycs_comments (id, usernum, postid, postlink, postername, posteremail, posterurl, commenttext, commentdate, is_spam) VALUES (NEXTVAL('pycs_comments_id_seq'), %s, %s, %s, %s, %s, %s, %s, NOW(), 0)", (usernum, postid, form.get('link', ''), formatter.storedName, formatter.storedEmail, formatter.storedUrl, cmttext, ))
+	set.pdb.execute("COMMIT")
 	print "Added comment to usernum %d postid %s by %s, %d bytes" % (usernum, `postid`, `formatter.storedName`, len(cmttext))
 	formatter.note = _("New comment added - thanks for participating!")
 

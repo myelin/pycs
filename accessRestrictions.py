@@ -49,17 +49,21 @@ class accessRestrictions_handler:
 	
 	def __init__( self, set ):
 		self.set = set
-		self.locations = self.set.db.getas(
-			"arlocations[blogid:S,locname:S,regexp:S,group[name:S]]"
-		).ordered(2)
-		self.groups = self.set.db.getas(
-			"argroups[blogid:S,name:S,user[name:S]]"
-		).ordered(2)
-		self.users = self.set.db.getas(
-			"arusers[blogid:S,name:S,password:S]"
-		).ordered(2)
+#		self.locations = self.set.db.getas(
+#			"arlocations[blogid:S,locname:S,regexp:S,group[name:S]]"
+#		).ordered(2)
+#		self.groups = self.set.db.getas(
+#			"argroups[blogid:S,name:S,user[name:S]]"
+#		).ordered(2)
+#		self.users = self.set.db.getas(
+#			"arusers[blogid:S,name:S,password:S]"
+#		).ordered(2)
 		
 	def checkUrlAccess( self, usernum, url, user, password, quiet=0 ):
+		# WARNING: ACCESS RESTRICTIONS DISABLED AT THE MOMENT
+		# (until someone makes a Postgres version of this code :-)
+		return 1
+	
 		if not(quiet): print "checking URL %s for user %s" % ( url, user )
 		if user:
 			password = md5.md5(password).hexdigest()

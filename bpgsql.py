@@ -362,7 +362,7 @@ class _Connection:
         #  to handle the response
         #
         if DEBUG:
-            print '>[%s]' % self.__input_buffer
+            print '>[%s]' % `self.__input_buffer`
 
         pkt_type = self.__read_bytes(1)
 

@@ -23,23 +23,23 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import xmlrpc_urllib_transport
+#import xmlrpc_urllib_transport
 import xmlrpclib
 import md5
 
 def test_server( s ):
 	print
 	print "Testing server",s
-	trans = xmlrpc_urllib_transport.Transport()
+#	trans = xmlrpc_urllib_transport.Transport()
 	#trans.user_agent = "Python Community Server test bot"
-	radio = xmlrpclib.Server( s, trans )
+	radio = xmlrpclib.Server( s )#, trans )
 	xss = radio.xmlStorageSystem
 	rcs = radio.radioCommunityServer
 
 	print "radioCommunityServer.getInitialResources"
 	print rcs.getInitialResources()
 	
-	email = 'pycs_test@myelin.co.nz'
+	email = 'pycs_test3@myelin.co.nz'
 	name = 'Test user'
 	usernum = '0000005'
 	plainPassword = 'asdf'
@@ -48,7 +48,9 @@ def test_server( s ):
 	userAgent = 'Python Community Server Test (test_server.py) - http://notes.pycs.net/'
 
 	print "registerUser"
-	print xss.registerUser( email, name, password, clientPort, userAgent )
+	r = xss.registerUser( email, name, password, clientPort, userAgent )
+	print r
+	usernum = r['usernum']
 	
 	print "getServerCapabilities"
 	caps = xss.getServerCapabilities( usernum, password )
@@ -83,8 +85,9 @@ def test_server( s ):
 		)
 
 if __name__ == '__main__':
+	test_server("http://localhost:5445/RPC2")
 	#test_server( 'http://pss.myelin.cjb.net/XMLRPC.php' )
-	test_server( 'http://www.pycs.net/RPC2' )
+#	test_server( 'http://www.pycs.net/RPC2' )
 	#test_server( 'http://rcs.userland.com:80/RPC2' )
 	#test_server( 'http://euro.weblogs.com:80/RPC2' )
 	#test_server( 'http://www.blognewsnetwork.com:5335/RPC2' )

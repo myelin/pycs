@@ -134,10 +134,10 @@ class pycs_xmlrpc_handler( xmlrpc_handler.xmlrpc_handler ):
 		
 		# Root namespaces that we can handle
 		
-		print "qual name:",qualifiedName
+		print "XML-RPC CALL:",qualifiedName
 		# See if we can match the base name
 		base = qualifiedName[0]
-		print "trying to find",base
+#		print "trying to find",base
 		if self.namespaces.has_key( base ):
 			try:
 				# We could just say 'return xmlFunc()', or
